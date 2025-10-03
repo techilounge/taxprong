@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Search, Download, AlertCircle } from "lucide-react";
+import { Plus, Search, Download, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -28,6 +28,16 @@ import { useOrganization } from "@/hooks/useOrganization";
 import { ExpenseForm } from "@/components/expenses/ExpenseForm";
 import { BankImport } from "@/components/bank/BankImport";
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Expense {
   id: string;
@@ -45,6 +55,8 @@ const Expenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [deleteExpenseId, setDeleteExpenseId] = useState<string | null>(null);
   const { organization } = useOrganization();
   const [searchParams] = useSearchParams();
 
@@ -127,6 +139,30 @@ const Expenses = () => {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Expense deleted successfully");
+      loadExpenses();
+    } catch (error: any) {
+      console.error("Error deleting expense:", error);
+      toast.error("Failed to delete expense");
+    } finally {
+      setDeleteExpenseId(null);
+    }
+  };
+
+  const handleEdit = (expense: Expense) => {
+    setEditingExpense(expense);
+    setDialogOpen(true);
+  };
+
   const filteredExpenses = expenses.filter(
     (exp) =>
       exp.merchant.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -146,7 +182,10 @@ const Expenses = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={dialogOpen} onOpenChange={(open) => {
+              setDialogOpen(open);
+              if (!open) setEditingExpense(null);
+            }}>
               <DialogTrigger asChild>
                 <Button disabled={!organization}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -155,19 +194,24 @@ const Expenses = () => {
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Add New Expense</DialogTitle>
+                  <DialogTitle>{editingExpense ? "Edit Expense" : "Add New Expense"}</DialogTitle>
                   <DialogDescription>
-                    Record a business expense with receipt upload
+                    {editingExpense ? "Update expense details" : "Record a business expense with receipt upload"}
                   </DialogDescription>
                 </DialogHeader>
                 {organization && (
                   <ExpenseForm
                     orgId={organization.id}
+                    expense={editingExpense}
                     onSuccess={() => {
                       setDialogOpen(false);
+                      setEditingExpense(null);
                       loadExpenses();
                     }}
-                    onCancel={() => setDialogOpen(false)}
+                    onCancel={() => {
+                      setDialogOpen(false);
+                      setEditingExpense(null);
+                    }}
                   />
                 )}
               </DialogContent>
@@ -252,18 +296,19 @@ const Expenses = () => {
                   <TableHead className="text-right">Amount</TableHead>
                   <TableHead className="text-right">VAT</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       Loading expenses...
                     </TableCell>
                   </TableRow>
                 ) : filteredExpenses.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       {searchTerm
                         ? "No expenses match your search."
                         : "No expenses recorded yet. Add your first expense to get started."}
@@ -299,6 +344,24 @@ const Expenses = () => {
                           );
                         })()}
                       </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(expense)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDeleteExpenseId(expense.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -307,6 +370,27 @@ const Expenses = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteExpenseId} onOpenChange={(open) => !open && setDeleteExpenseId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Expense</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this expense? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteExpenseId && handleDelete(deleteExpenseId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 };

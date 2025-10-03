@@ -40,6 +40,17 @@ type ExpenseFormData = z.infer<typeof expenseSchema>;
 interface ExpenseFormProps {
   orgId: string;
   businessId?: string;
+  expense?: {
+    id: string;
+    date: string;
+    merchant: string;
+    description?: string;
+    amount: number;
+    vat_amount?: number;
+    category: string;
+    vat_recoverable_pct?: number;
+    receipt_url?: string;
+  } | null;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -56,7 +67,7 @@ const categories = [
   "Other",
 ];
 
-export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseFormProps) {
+export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }: ExpenseFormProps) {
   const [uploading, setUploading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -64,7 +75,15 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
-    defaultValues: {
+    defaultValues: expense ? {
+      date: expense.date,
+      merchant: expense.merchant,
+      description: expense.description || "",
+      amount: expense.amount.toString(),
+      vat_amount: expense.vat_amount?.toString() || "",
+      category: expense.category,
+      vat_recoverable_pct: expense.vat_recoverable_pct?.toString() || "100",
+    } : {
       date: new Date().toISOString().split("T")[0],
       merchant: "",
       description: "",
@@ -180,26 +199,51 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
         flags_json: needsReview ? { needs_review: true, reason: "VAT amount exceeds total" } : null,
       };
 
-      const { data: expense, error } = await supabase
-        .from("expenses")
-        .insert(expenseData)
-        .select()
-        .single();
+      if (expense) {
+        // Update existing expense
+        const { error } = await supabase
+          .from("expenses")
+          .update(expenseData)
+          .eq("id", expense.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Upload receipt if file is selected
-      if (receiptFile && expense) {
-        const receiptUrl = await uploadReceipt(expense.id);
-        if (receiptUrl) {
-          await supabase
-            .from("expenses")
-            .update({ receipt_url: receiptUrl })
-            .eq("id", expense.id);
+        // Upload receipt if new file is selected
+        if (receiptFile) {
+          const receiptUrl = await uploadReceipt(expense.id);
+          if (receiptUrl) {
+            await supabase
+              .from("expenses")
+              .update({ receipt_url: receiptUrl })
+              .eq("id", expense.id);
+          }
         }
+
+        toast.success("Expense updated successfully!");
+      } else {
+        // Create new expense
+        const { data: newExpense, error } = await supabase
+          .from("expenses")
+          .insert(expenseData)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Upload receipt if file is selected
+        if (receiptFile && newExpense) {
+          const receiptUrl = await uploadReceipt(newExpense.id);
+          if (receiptUrl) {
+            await supabase
+              .from("expenses")
+              .update({ receipt_url: receiptUrl })
+              .eq("id", newExpense.id);
+          }
+        }
+
+        toast.success("Expense added successfully!");
       }
 
-      toast.success("Expense added successfully!");
       onSuccess();
     } catch (error: any) {
       console.error("Error saving expense:", error);
@@ -377,7 +421,7 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
             Cancel
           </Button>
           <Button type="submit" disabled={uploading}>
-            {uploading ? "Saving..." : "Save Expense"}
+            {uploading ? "Saving..." : expense ? "Update Expense" : "Save Expense"}
           </Button>
         </div>
       </form>
