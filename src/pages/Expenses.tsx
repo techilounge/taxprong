@@ -20,13 +20,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Search, Download, AlertCircle, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Download, AlertCircle, Pencil, Trash2, HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useOrganization } from "@/hooks/useOrganization";
 import { ExpenseForm } from "@/components/expenses/ExpenseForm";
 import { BankImport } from "@/components/bank/BankImport";
+import { ExpenseGuide } from "@/components/expenses/ExpenseGuide";
 import { format } from "date-fns";
 import {
   AlertDialog,
@@ -57,6 +58,7 @@ const Expenses = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deleteExpenseId, setDeleteExpenseId] = useState<string | null>(null);
+  const [guideOpen, setGuideOpen] = useState(false);
   const { organization } = useOrganization();
   const [searchParams] = useSearchParams();
 
@@ -71,6 +73,19 @@ const Expenses = () => {
       loadExpenses();
     }
   }, [organization, searchParams]);
+
+  useEffect(() => {
+    // Auto-show guide for first-time users
+    const hasSeenGuide = localStorage.getItem('expenses-guide-seen');
+    if (!hasSeenGuide) {
+      setGuideOpen(true);
+    }
+  }, []);
+
+  const handleCloseGuide = () => {
+    localStorage.setItem('expenses-guide-seen', 'true');
+    setGuideOpen(false);
+  };
 
   const loadExpenses = async () => {
     if (!organization) return;
@@ -182,6 +197,10 @@ const Expenses = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setGuideOpen(true)}>
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Guide
+            </Button>
             <Dialog open={dialogOpen} onOpenChange={(open) => {
               setDialogOpen(open);
               if (!open) setEditingExpense(null);
@@ -391,6 +410,9 @@ const Expenses = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Interactive Guide */}
+      <ExpenseGuide isOpen={guideOpen} onClose={handleCloseGuide} />
     </DashboardLayout>
   );
 };
