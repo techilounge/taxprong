@@ -747,6 +747,9 @@ export type Database = {
           engagement_id: string
           id: string
           payment_ref: string | null
+          platform_fee_amount: number | null
+          platform_fee_percent: number | null
+          pro_payout_amount: number | null
           status: Database["public"]["Enums"]["payment_status"] | null
         }
         Insert: {
@@ -755,6 +758,9 @@ export type Database = {
           engagement_id: string
           id?: string
           payment_ref?: string | null
+          platform_fee_amount?: number | null
+          platform_fee_percent?: number | null
+          pro_payout_amount?: number | null
           status?: Database["public"]["Enums"]["payment_status"] | null
         }
         Update: {
@@ -763,6 +769,9 @@ export type Database = {
           engagement_id?: string
           id?: string
           payment_ref?: string | null
+          platform_fee_amount?: number | null
+          platform_fee_percent?: number | null
+          pro_payout_amount?: number | null
           status?: Database["public"]["Enums"]["payment_status"] | null
         }
         Relationships: [
@@ -771,6 +780,51 @@ export type Database = {
             columns: ["engagement_id"]
             isOneToOne: false
             referencedRelation: "engagements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pro_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          engagement_id: string | null
+          id: string
+          pro_id: string
+          rating: number
+          reviewer_user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          engagement_id?: string | null
+          id?: string
+          pro_id: string
+          rating: number
+          reviewer_user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          engagement_id?: string | null
+          id?: string
+          pro_id?: string
+          rating?: number
+          reviewer_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_reviews_engagement_id_fkey"
+            columns: ["engagement_id"]
+            isOneToOne: true
+            referencedRelation: "engagements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_reviews_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "pros"
             referencedColumns: ["id"]
           },
         ]
@@ -804,6 +858,7 @@ export type Database = {
       }
       pros: {
         Row: {
+          avg_rating: number | null
           badges: string[] | null
           bio: string | null
           created_at: string
@@ -812,10 +867,12 @@ export type Database = {
           kyc_status: string | null
           org_id: string
           practice_name: string | null
+          review_count: number | null
           services: string[] | null
           user_id: string
         }
         Insert: {
+          avg_rating?: number | null
           badges?: string[] | null
           bio?: string | null
           created_at?: string
@@ -824,10 +881,12 @@ export type Database = {
           kyc_status?: string | null
           org_id: string
           practice_name?: string | null
+          review_count?: number | null
           services?: string[] | null
           user_id: string
         }
         Update: {
+          avg_rating?: number | null
           badges?: string[] | null
           bio?: string | null
           created_at?: string
@@ -836,6 +895,7 @@ export type Database = {
           kyc_status?: string | null
           org_id?: string
           practice_name?: string | null
+          review_count?: number | null
           services?: string[] | null
           user_id?: string
         }
@@ -902,6 +962,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          plan: string
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan: string
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan?: string
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       tasks: {
         Row: {

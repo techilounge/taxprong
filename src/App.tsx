@@ -12,6 +12,8 @@ import CIT from "./pages/CIT";
 import ProConsole from "./pages/ProConsole";
 import ClientPortal from "./pages/ClientPortal";
 import Exceptions from "./pages/Exceptions";
+import Marketplace from "./pages/Marketplace";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ const App = () => (
           <Route path="/pro-console" element={<ProConsole />} />
           <Route path="/client-portal" element={<ClientPortal />} />
           <Route path="/exceptions" element={<Exceptions />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
