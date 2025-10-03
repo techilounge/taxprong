@@ -158,6 +158,17 @@ Deno.serve(async (req) => {
         processed_by: user.id,
       })
       .eq('id', request_id);
+    
+    // Log to audit logs
+    await supabase
+      .from('audit_logs')
+      .insert({
+        entity: 'delete_request',
+        entity_id: request_id,
+        action: 'delete',
+        user_id: user.id,
+        payload_hash: `${deleteRequest.scope}: ${deleteRequest.scope_ref}`,
+      });
 
     // Log audit
     await logAudit(

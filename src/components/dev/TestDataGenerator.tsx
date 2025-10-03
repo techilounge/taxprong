@@ -26,6 +26,9 @@ export function TestDataGenerator() {
     setLoading('businesses');
     
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+      
       const businesses = [
         { name: "Tech Solutions Ltd", tin: "12345678-0001", sector: "Technology", turnover_band: "50M-100M", vat_registered: true },
         { name: "Retail Ventures", tin: "12345678-0002", sector: "Retail", turnover_band: "10M-50M", vat_registered: true },
@@ -34,7 +37,11 @@ export function TestDataGenerator() {
 
       const { data, error } = await supabase
         .from('businesses')
-        .insert(businesses.map(b => ({ ...b, org_id: organization.id, owner_id: organization.owner_id })))
+        .insert(businesses.map(b => ({ 
+          ...b, 
+          org_id: organization.id, 
+          owner_id: user.id 
+        })))
         .select();
 
       if (error) throw error;
@@ -117,8 +124,8 @@ export function TestDataGenerator() {
       
       const invoices = Array.from({ length: 8 }, (_, i) => ({
         business_id: businessId,
-        type: i % 2 === 0 ? 'sales' : 'purchase',
-        supply_type: 'standard',
+        type: (i % 2 === 0 ? 'sale' : 'purchase') as 'sale' | 'purchase',
+        supply_type: 'standard' as const,
         issue_date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         net: Math.floor(Math.random() * 100000) + 10000,
         vat_rate: 7.5,
@@ -151,11 +158,11 @@ export function TestDataGenerator() {
     
     try {
       const tasks = [
-        { title: "Submit VAT Return", link_to: "vat-console", due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' },
-        { title: "File CIT Return", link_to: "cit", due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' },
-        { title: "Review Expenses", link_to: "expenses", due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' },
-        { title: "Client Meeting", link_to: null, due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' },
-        { title: "Reconcile Bank Statements", link_to: "exceptions", due_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'done' },
+        { title: "Submit VAT Return", link_to: "vat-console", due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' as const },
+        { title: "File CIT Return", link_to: "cit", due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' as const },
+        { title: "Review Expenses", link_to: "expenses", due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' as const },
+        { title: "Client Meeting", link_to: null, due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'open' as const },
+        { title: "Reconcile Bank Statements", link_to: "exceptions", due_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], status: 'done' as const },
       ];
 
       const { data, error } = await supabase
@@ -227,7 +234,7 @@ export function TestDataGenerator() {
         business_id: businessId,
         date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         amount: Math.floor(Math.random() * 100000) + 5000,
-        direction: i % 3 === 0 ? 'credit' : 'debit',
+        direction: (i % 3 === 0 ? 'credit' : 'debit') as 'credit' | 'debit',
         narration: `Test transaction ${i + 1} - ${i % 2 === 0 ? 'Invoice payment' : 'Operating expense'}`,
         import_batch_id: `TEST-${Date.now()}`,
       }));

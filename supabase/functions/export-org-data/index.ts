@@ -169,15 +169,35 @@ serve(async (req) => {
 
     console.log(`Files uploaded to: ${exportFolder}`);
 
-    // Update request with success
+    // Get export request details to get requester
+    const { data: exportRequest } = await supabase
+      .from('data_export_requests')
+      .select('requested_by')
+      .eq('id', request_id)
+      .single();
+    
+    // Update status to completed
     await supabase
       .from('data_export_requests')
       .update({
-        status: 'ready',
-        file_url: exportFolder,
-        finished_at: new Date().toISOString()
+        status: 'completed',
+        file_url: `${exportFolder}/summary.json`,
+        finished_at: new Date().toISOString(),
       })
       .eq('id', request_id);
+    
+    // Log to audit logs
+    if (exportRequest) {
+      await supabase
+        .from('audit_logs')
+        .insert({
+          entity: 'data_export',
+          entity_id: request_id,
+          action: 'create',
+          user_id: exportRequest.requested_by,
+          payload_hash: `${Object.keys(exportData).length} tables exported`,
+        });
+    }
 
     // Generate download links for all files
     const files = ['summary.json', ...Object.keys(csvFiles).filter(t => csvFiles[t]).map(t => `${t}.csv`)];
