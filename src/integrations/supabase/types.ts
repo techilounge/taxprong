@@ -1316,6 +1316,22 @@ export type Database = {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
       }
+      match_kb_chunks: {
+        Args: {
+          filter_org_id?: string
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          chunk_index: number
+          doc_id: string
+          doc_title: string
+          id: string
+          score: number
+          text: string
+        }[]
+      }
       send_task_reminders: {
         Args: Record<PropertyKey, never>
         Returns: undefined
