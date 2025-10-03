@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -59,6 +59,8 @@ const categories = [
 export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseFormProps) {
   const [uploading, setUploading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
@@ -72,6 +74,64 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
       vat_recoverable_pct: "100",
     },
   });
+
+  const handleFileSelect = (file: File) => {
+    // Validate file type
+    const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload PDF, PNG, or JPG files only");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size must be less than 10MB");
+      return;
+    }
+
+    setReceiptFile(file);
+    toast.success(`File selected: ${file.name}`);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  };
+
+  const uploadReceipt = async (expenseId: string): Promise<string | null> => {
+    if (!receiptFile) return null;
+
+    const fileExt = receiptFile.name.split('.').pop();
+    const fileName = `${expenseId}.${fileExt}`;
+    const filePath = `receipts/${orgId}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('data-exports')
+      .upload(filePath, receiptFile, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('data-exports')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
 
   const onSubmit = async (data: ExpenseFormData) => {
     try {
@@ -103,9 +163,24 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
         flags_json: needsReview ? { needs_review: true, reason: "VAT amount exceeds total" } : null,
       };
 
-      const { error } = await supabase.from("expenses").insert(expenseData);
+      const { data: expense, error } = await supabase
+        .from("expenses")
+        .insert(expenseData)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Upload receipt if file is selected
+      if (receiptFile && expense) {
+        const receiptUrl = await uploadReceipt(expense.id);
+        if (receiptUrl) {
+          await supabase
+            .from("expenses")
+            .update({ receipt_url: receiptUrl })
+            .eq("id", expense.id);
+        }
+      }
 
       toast.success("Expense added successfully!");
       onSuccess();
@@ -234,7 +309,15 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
 
         <div className="space-y-2">
           <Label>Receipt Upload</Label>
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
+          <div 
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+              isDragging ? 'border-primary bg-primary/5' : 'hover:border-primary'
+            }`}
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">
               Click to upload or drag and drop
@@ -243,18 +326,19 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
               PDF, PNG, JPG up to 10MB
             </p>
             <Input
+              ref={fileInputRef}
               type="file"
               className="hidden"
               accept=".pdf,.png,.jpg,.jpeg"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) setReceiptFile(file);
+                if (file) handleFileSelect(file);
               }}
             />
           </div>
           {receiptFile && (
-            <p className="text-sm text-muted-foreground">
-              Selected: {receiptFile.name}
+            <p className="text-sm text-green-600 dark:text-green-400">
+              ✓ Selected: {receiptFile.name}
             </p>
           )}
         </div>
