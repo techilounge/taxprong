@@ -7,6 +7,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
 import { DataExport } from "@/components/settings/DataExport";
 import { DeleteRequest } from "@/components/settings/DeleteRequest";
+import { BackupSettings } from "@/components/settings/BackupSettings";
 
 const PRICING_PLANS = [
   {
@@ -211,6 +212,8 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        <BackupSettings />
+        
         <DataExport />
         
         <DeleteRequest />

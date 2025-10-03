@@ -52,6 +52,53 @@ export type Database = {
           },
         ]
       }
+      backup_settings: {
+        Row: {
+          access_key: string
+          bucket: string
+          created_at: string
+          enabled: boolean
+          org_id: string
+          prefix: string
+          provider: string
+          region: string | null
+          secret_key: string
+          updated_at: string
+        }
+        Insert: {
+          access_key: string
+          bucket: string
+          created_at?: string
+          enabled?: boolean
+          org_id: string
+          prefix?: string
+          provider: string
+          region?: string | null
+          secret_key: string
+          updated_at?: string
+        }
+        Update: {
+          access_key?: string
+          bucket?: string
+          created_at?: string
+          enabled?: boolean
+          org_id?: string
+          prefix?: string
+          provider?: string
+          region?: string | null
+          secret_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_settings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bank_txns: {
         Row: {
           amount: number
