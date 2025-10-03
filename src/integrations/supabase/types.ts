@@ -1027,6 +1027,33 @@ export type Database = {
           },
         ]
       }
+      qa_citations: {
+        Row: {
+          answer: string
+          citations: Json | null
+          created_at: string
+          id: string
+          question: string
+          session_id: string | null
+        }
+        Insert: {
+          answer: string
+          citations?: Json | null
+          created_at?: string
+          id?: string
+          question: string
+          session_id?: string | null
+        }
+        Update: {
+          answer?: string
+          citations?: Json | null
+          created_at?: string
+          id?: string
+          question?: string
+          session_id?: string | null
+        }
+        Relationships: []
+      }
       stamp_instruments: {
         Row: {
           attachment: string | null

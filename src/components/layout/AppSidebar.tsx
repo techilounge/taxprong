@@ -15,6 +15,7 @@ import {
   Presentation,
   AlertTriangle,
   BookOpen,
+  Search,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,6 +44,7 @@ const proNavItems = [
   { title: "Client Portal", url: "/client-portal", icon: Presentation },
   { title: "Exceptions", url: "/exceptions", icon: AlertTriangle },
   { title: "Knowledge Base", url: "/knowledge", icon: BookOpen },
+  { title: "Tax Q&A", url: "/tax-qa", icon: Search },
 ];
 
 export function AppSidebar() {
