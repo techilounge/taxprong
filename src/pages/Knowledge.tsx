@@ -96,7 +96,21 @@ export default function Knowledge() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      const fileUrl = `https://example.com/pdfs/${file.name}`;
+      // Upload file to storage
+      const fileName = `${session.user.id}/${Date.now()}_${file.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("kb-documents")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("kb-documents")
+        .getPublicUrl(fileName);
 
       const { data: doc, error: docError } = await supabase
         .from("kb_docs")
@@ -104,7 +118,7 @@ export default function Knowledge() {
           org_id: organization.id,
           title: title,
           source_url: sourceUrl || null,
-          file_url: fileUrl,
+          file_url: publicUrl,
           uploaded_by: session.user.id,
         })
         .select()
