@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
@@ -19,6 +20,7 @@ interface Props {
 export function ExpensesByCategoryWidget({ orgId }: Props) {
   const [data, setData] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadData();
@@ -62,6 +64,11 @@ export function ExpensesByCategoryWidget({ orgId }: Props) {
       style: "currency",
       currency: "NGN",
     }).format(value);
+  };
+
+  const handleCategoryClick = (category: string) => {
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0];
+    navigate(`/expenses?category=${encodeURIComponent(category)}&dateFrom=${startOfYear}`);
   };
 
   if (loading) {
@@ -109,6 +116,8 @@ export function ExpensesByCategoryWidget({ orgId }: Props) {
               cy="50%"
               outerRadius={100}
               label={(entry) => entry.category}
+              onClick={(entry) => handleCategoryClick(entry.category)}
+              cursor="pointer"
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -132,7 +141,11 @@ export function ExpensesByCategoryWidget({ orgId }: Props) {
               const total = data.reduce((sum, d) => sum + d.total, 0);
               const percentage = ((item.total / total) * 100).toFixed(1);
               return (
-                <TableRow key={item.category}>
+                <TableRow 
+                  key={item.category}
+                  onClick={() => handleCategoryClick(item.category)}
+                  className="cursor-pointer hover:bg-accent"
+                >
                   <TableCell className="flex items-center gap-2">
                     <div 
                       className="w-3 h-3 rounded-full" 

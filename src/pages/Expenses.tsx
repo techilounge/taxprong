@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +46,7 @@ const Expenses = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { organization } = useOrganization();
+  const [searchParams] = useSearchParams();
 
   const [stats, setStats] = useState({
     totalExpenses: 0,
@@ -56,7 +58,7 @@ const Expenses = () => {
     if (organization) {
       loadExpenses();
     }
-  }, [organization]);
+  }, [organization, searchParams]);
 
   const loadExpenses = async () => {
     if (!organization) return;
@@ -64,17 +66,37 @@ const Expenses = () => {
     try {
       setLoading(true);
 
-      // Get current month expenses
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      // Parse URL params for filters
+      const categoryFilter = searchParams.get('category');
+      const dateFromFilter = searchParams.get('dateFrom');
+      const dateToFilter = searchParams.get('dateTo');
+      const hasVATFilter = searchParams.get('hasVAT');
+
+      // Default to current month if no date filters
+      const startDate = dateFromFilter || new Date(new Date().getFullYear(), new Date().getMonth(), 1)
         .toISOString()
         .split("T")[0];
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("expenses")
         .select("*")
         .eq("org_id", organization.id)
-        .gte("date", startOfMonth)
-        .order("date", { ascending: false });
+        .gte("date", startDate);
+
+      // Apply filters
+      if (categoryFilter) {
+        query = query.eq("category", categoryFilter);
+      }
+
+      if (dateToFilter) {
+        query = query.lte("date", dateToFilter);
+      }
+
+      if (hasVATFilter === 'true') {
+        query = query.not("vat_amount", "is", null).gt("vat_amount", 0);
+      }
+
+      const { data, error } = await query.order("date", { ascending: false });
 
       if (error) throw error;
 

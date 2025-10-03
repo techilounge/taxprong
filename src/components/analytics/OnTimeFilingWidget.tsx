@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, TrendingUp, TrendingDown } from "lucide-react";
@@ -11,6 +12,7 @@ export function OnTimeFilingWidget({ orgId }: Props) {
   const [percentage, setPercentage] = useState<number | null>(null);
   const [trend, setTrend] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadData();
@@ -114,10 +116,10 @@ export function OnTimeFilingWidget({ orgId }: Props) {
   const trendDirection = getTrendDirection();
 
   return (
-    <Card>
+    <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/filing-events')}>
       <CardHeader>
         <CardTitle>On-Time Filing Rate</CardTitle>
-        <CardDescription>Rolling 12-month compliance</CardDescription>
+        <CardDescription>Rolling 12-month compliance (click to view details)</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

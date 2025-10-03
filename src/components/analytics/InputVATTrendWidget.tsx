@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +17,7 @@ interface Props {
 export function InputVATTrendWidget({ orgId }: Props) {
   const [data, setData] = useState<VATTrendData[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadData();
@@ -81,6 +83,14 @@ export function InputVATTrendWidget({ orgId }: Props) {
     return date.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
   };
 
+  const handleMonthClick = (period: string) => {
+    const [year, month] = period.split('-');
+    const startDate = new Date(Number(year), Number(month) - 1, 1);
+    const endDate = new Date(Number(year), Number(month), 0);
+    
+    navigate(`/expenses?dateFrom=${startDate.toISOString().split('T')[0]}&dateTo=${endDate.toISOString().split('T')[0]}&hasVAT=true`);
+  };
+
   if (loading) {
     return (
       <Card>
@@ -117,7 +127,7 @@ export function InputVATTrendWidget({ orgId }: Props) {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
+          <LineChart data={data} onClick={(e) => e?.activeLabel && handleMonthClick(e.activeLabel)}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="period" 
@@ -136,8 +146,8 @@ export function InputVATTrendWidget({ orgId }: Props) {
               dataKey="input_vat" 
               stroke="#8884d8" 
               strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ r: 4, cursor: 'pointer' }}
+              activeDot={{ r: 6, cursor: 'pointer' }}
             />
           </LineChart>
         </ResponsiveContainer>

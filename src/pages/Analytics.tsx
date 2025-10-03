@@ -1,12 +1,31 @@
+import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ExpensesByCategoryWidget } from "@/components/analytics/ExpensesByCategoryWidget";
 import { InputVATTrendWidget } from "@/components/analytics/InputVATTrendWidget";
 import { OnTimeFilingWidget } from "@/components/analytics/OnTimeFilingWidget";
+import { SaveReportDialog } from "@/components/analytics/SaveReportDialog";
+import { SavedReportsList } from "@/components/analytics/SavedReportsList";
+import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/hooks/useOrganization";
-import { Loader2 } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Analytics() {
   const { organization, loading } = useOrganization();
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [savedReportsKey, setSavedReportsKey] = useState(0);
+  const { toast } = useToast();
+
+  const handleReportSaved = () => {
+    setSavedReportsKey(prev => prev + 1);
+  };
+
+  const handleReportSelect = (report: any) => {
+    toast({
+      title: "Report Loaded",
+      description: `Viewing ${report.name}`,
+    });
+  };
 
   if (loading) {
     return (
@@ -31,12 +50,24 @@ export default function Analytics() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground">
-            Key metrics and insights for {organization.name}
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Analytics</h1>
+            <p className="text-muted-foreground">
+              Key metrics and insights for {organization.name}
+            </p>
+          </div>
+          <Button onClick={() => setSaveDialogOpen(true)}>
+            <Save className="mr-2 h-4 w-4" />
+            Save Report
+          </Button>
         </div>
+
+        <SavedReportsList 
+          key={savedReportsKey}
+          orgId={organization.id} 
+          onReportSelect={handleReportSelect}
+        />
 
         <div className="grid gap-6">
           {/* On-Time Filing KPI - Full width */}
@@ -48,6 +79,13 @@ export default function Analytics() {
             <InputVATTrendWidget orgId={organization.id} />
           </div>
         </div>
+
+        <SaveReportDialog
+          open={saveDialogOpen}
+          onOpenChange={setSaveDialogOpen}
+          orgId={organization.id}
+          onSaved={handleReportSaved}
+        />
       </div>
     </DashboardLayout>
   );
