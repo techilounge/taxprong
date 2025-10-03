@@ -19,6 +19,7 @@ import {
   Shield,
   BarChart3,
   HelpCircle,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,7 +41,9 @@ const mainNavItems = [
   { title: "VAT Console", url: "/vat", icon: FileText },
   { title: "PIT & PAYE", url: "/pit", icon: Calculator },
   { title: "CIT & Levy", url: "/cit", icon: DollarSign },
+  { title: "CGT", url: "/cgt", icon: TrendingUp },
   { title: "Stamp Duty", url: "/stamp", icon: Stamp },
+  { title: "Compliance", url: "/compliance", icon: Shield },
 ];
 
 const proNavItems = [

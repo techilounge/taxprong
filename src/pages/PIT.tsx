@@ -13,14 +13,15 @@ const PIT = () => {
   const [rentPaid, setRentPaid] = useState("");
   const [result, setResult] = useState<any>(null);
 
-  // Nigeria PIT bands (2025)
+  // Nigeria PIT bands (2025 - Updated under Nigeria Tax Act 2025)
   const pitBands = [
-    { min: 0, max: 300000, rate: 7 },
-    { min: 300001, max: 600000, rate: 11 },
-    { min: 600001, max: 1100000, rate: 15 },
-    { min: 1100001, max: 1600000, rate: 19 },
-    { min: 1600001, max: 3200000, rate: 21 },
-    { min: 3200001, max: Infinity, rate: 24 },
+    { min: 0, max: 800000, rate: 0 },        // NEW: Tax-free threshold increased to ₦800,000
+    { min: 800001, max: 1600000, rate: 7 },   // Adjusted bands
+    { min: 1600001, max: 3200000, rate: 11 },
+    { min: 3200001, max: 6400000, rate: 15 },
+    { min: 6400001, max: 12800000, rate: 19 },
+    { min: 12800001, max: 25600000, rate: 21 },
+    { min: 25600001, max: Infinity, rate: 25 }, // NEW: Maximum rate increased to 25%
   ];
 
   const calculatePIT = () => {
@@ -105,7 +106,7 @@ const PIT = () => {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Personal Income Tax (PIT)</h1>
             <p className="text-muted-foreground">
-              Calculate your PIT with rent relief
+              Calculate your PIT with ₦800K tax-free threshold (2025)
             </p>
           </div>
         </div>

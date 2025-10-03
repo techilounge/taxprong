@@ -9,6 +9,8 @@ import Expenses from "./pages/Expenses";
 import VATConsole from "./pages/VATConsole";
 import PIT from "./pages/PIT";
 import CIT from "./pages/CIT";
+import CGT from "./pages/CGT";
+import Compliance from "./pages/Compliance";
 import ProConsole from "./pages/ProConsole";
 import ClientPortal from "./pages/ClientPortal";
 import Exceptions from "./pages/Exceptions";
@@ -38,6 +40,8 @@ function App() {
           <Route path="/vat" element={<VATConsole />} />
           <Route path="/pit" element={<PIT />} />
           <Route path="/cit" element={<CIT />} />
+          <Route path="/cgt" element={<CGT />} />
+          <Route path="/compliance" element={<Compliance />} />
           <Route path="/pro-console" element={<ProConsole />} />
           <Route path="/client-portal" element={<ClientPortal />} />
           <Route path="/exceptions" element={<Exceptions />} />
