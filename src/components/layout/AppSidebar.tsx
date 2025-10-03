@@ -11,6 +11,8 @@ import {
   DollarSign,
   FileBarChart,
   Building2,
+  UserCog,
+  Presentation,
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,8 +36,8 @@ const mainNavItems = [
 ];
 
 const proNavItems = [
-  { title: "Clients", url: "/pro/clients", icon: Users },
-  { title: "Engagements", url: "/pro/engagements", icon: Briefcase },
+  { title: "Pro Console", url: "/pro-console", icon: UserCog },
+  { title: "Client Portal", url: "/client-portal", icon: Presentation },
   { title: "Marketplace", url: "/marketplace", icon: Building2 },
 ];
 

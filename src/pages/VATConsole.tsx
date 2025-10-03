@@ -20,12 +20,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Plus, FileText, Calendar, AlertCircle, Download } from "lucide-react";
+import { Plus, FileText, Calendar, AlertCircle, Download, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useOrganization } from "@/hooks/useOrganization";
 import { InvoiceForm } from "@/components/vat/InvoiceForm";
 import { format } from "date-fns";
+import { logAudit } from "@/lib/auditLog";
 
 interface Invoice {
   id: string;
@@ -141,8 +142,77 @@ const VATConsole = () => {
     }
   };
 
-  const exportVATReturn = () => {
-    toast.info("VAT return export functionality will be implemented");
+  const exportVATReturn = async () => {
+    if (!businessId || !organization) return;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Log the export action
+      await logAudit("vat_return", businessId, "export", session.user.id, {
+        outputVAT: vatSummary.outputVAT,
+        inputVAT: vatSummary.inputVAT,
+        payable: vatSummary.payable,
+      });
+
+      toast.success("VAT return exported successfully");
+    } catch (error) {
+      console.error("Error exporting VAT return:", error);
+      toast.error("Failed to export VAT return");
+    }
+  };
+
+  const submitVATReturn = async () => {
+    if (!businessId || !organization) return;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Check for active engagement with authority to file
+      const { data: engagements, error: engError } = await supabase
+        .from("engagements")
+        .select("*, pro_id")
+        .eq("business_id", businessId)
+        .eq("authority_to_file", true)
+        .eq("escrow_status", "funded");
+
+      if (engError) throw engError;
+
+      if (!engagements || engagements.length === 0) {
+        toast.error(
+          "Cannot submit return: You need an active engagement with signed Authority to File and funded escrow"
+        );
+        return;
+      }
+
+      // Log the submission
+      await logAudit("vat_return", businessId, "submit", session.user.id, {
+        outputVAT: vatSummary.outputVAT,
+        inputVAT: vatSummary.inputVAT,
+        payable: vatSummary.payable,
+        engagement_id: engagements[0].id,
+      });
+
+      // Create VAT return record
+      const currentPeriod = format(new Date(), "yyyy-MM");
+      const { error: returnError } = await supabase.from("vat_returns").insert({
+        business_id: businessId,
+        period: currentPeriod,
+        output_vat: vatSummary.outputVAT,
+        input_vat: vatSummary.inputVAT,
+        payable: vatSummary.payable,
+        efs_batch_status: "submitted",
+      });
+
+      if (returnError) throw returnError;
+
+      toast.success("VAT return submitted successfully");
+    } catch (error: any) {
+      console.error("Error submitting VAT return:", error);
+      toast.error("Failed to submit VAT return");
+    }
   };
   return (
     <DashboardLayout>
@@ -185,6 +255,10 @@ const VATConsole = () => {
             <Button variant="outline" onClick={exportVATReturn} disabled={!businessId}>
               <Download className="mr-2 h-4 w-4" />
               Export Return
+            </Button>
+            <Button onClick={submitVATReturn} disabled={!businessId}>
+              <Send className="mr-2 h-4 w-4" />
+              Submit Return
             </Button>
           </div>
         </div>

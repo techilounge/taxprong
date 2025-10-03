@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import VATConsole from "./pages/VATConsole";
 import PIT from "./pages/PIT";
+import ProConsole from "./pages/ProConsole";
+import ClientPortal from "./pages/ClientPortal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/vat" element={<VATConsole />} />
           <Route path="/pit" element={<PIT />} />
+          <Route path="/pro-console" element={<ProConsole />} />
+          <Route path="/client-portal" element={<ClientPortal />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
