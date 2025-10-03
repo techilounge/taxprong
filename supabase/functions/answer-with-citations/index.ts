@@ -38,7 +38,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        input: query,
+        prompt: query,
+        model: 'text-embedding-3-small',
       }),
     });
 
