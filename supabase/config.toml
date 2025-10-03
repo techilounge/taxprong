@@ -6,5 +6,8 @@ verify_jwt = false
 [functions.transmit-einvoice]
 verify_jwt = true
 
+[functions.ingest-kb-doc]
+verify_jwt = true
+
 [functions.ingest-pdf]
 verify_jwt = true

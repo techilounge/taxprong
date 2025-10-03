@@ -34,7 +34,6 @@ const mainNavItems = [
   { title: "VAT Console", url: "/vat", icon: FileText },
   { title: "PIT & PAYE", url: "/pit", icon: Calculator },
   { title: "CIT & Levy", url: "/cit", icon: DollarSign },
-  { title: "Knowledge", url: "/knowledge", icon: BookOpen },
   { title: "Stamp Duty", url: "/stamp", icon: Stamp },
 ];
 
@@ -43,6 +42,7 @@ const proNavItems = [
   { title: "Pro Console", url: "/pro-console", icon: UserCog },
   { title: "Client Portal", url: "/client-portal", icon: Presentation },
   { title: "Exceptions", url: "/exceptions", icon: AlertTriangle },
+  { title: "Knowledge Base", url: "/knowledge", icon: BookOpen },
 ];
 
 export function AppSidebar() {
