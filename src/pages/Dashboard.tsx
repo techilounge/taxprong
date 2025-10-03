@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ interface DashboardStats {
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
     pendingTasks: 0,
     vatDueThisMonth: 0,
@@ -151,15 +153,15 @@ const Dashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start" onClick={() => navigate('/expenses')}>
               <Receipt className="mr-2 h-4 w-4" />
               Add Expense
             </Button>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start" onClick={() => navigate('/vat')}>
               <FileText className="mr-2 h-4 w-4" />
               Create Invoice
             </Button>
-            <Button variant="outline" className="justify-start">
+            <Button variant="outline" className="justify-start" onClick={() => navigate('/vat')}>
               <Calendar className="mr-2 h-4 w-4" />
               File VAT Return
             </Button>
