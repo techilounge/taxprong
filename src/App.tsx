@@ -19,6 +19,7 @@ import TaxQA from "./pages/TaxQA";
 import Admin from "./pages/Admin";
 import Analytics from "./pages/Analytics";
 import FilingEvents from "./pages/FilingEvents";
+import Stamp from "./pages/Stamp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/filing-events" element={<FilingEvents />} />
+          <Route path="/stamp" element={<Stamp />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
