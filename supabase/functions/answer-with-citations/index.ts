@@ -25,20 +25,22 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY')!;
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     console.log('Generating embedding for query:', query);
 
-    // Step 1: Generate embedding for the query
-    const embeddingResponse = await fetch('https://ai.gateway.lovable.dev/v1/embeddings', {
+    // Step 1: Generate embedding for the query using OpenAI
+    const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${openaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt: query,
+        input: query,
+        model: 'text-embedding-3-small',
       }),
     });
 
@@ -49,7 +51,7 @@ serve(async (req) => {
     }
 
     const embeddingData = await embeddingResponse.json();
-    console.log('Embedding API response:', JSON.stringify(embeddingData));
+    console.log('Embedding generated successfully');
     
     if (!embeddingData || !embeddingData.data || !embeddingData.data[0]) {
       console.error('Invalid embedding response format:', embeddingData);
