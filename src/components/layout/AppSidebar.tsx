@@ -20,6 +20,7 @@ import {
   BarChart3,
   HelpCircle,
   TrendingUp,
+  Globe,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,6 +45,9 @@ const mainNavItems = [
   { title: "CGT", url: "/cgt", icon: TrendingUp },
   { title: "Stamp Duty", url: "/stamp", icon: Stamp },
   { title: "Compliance", url: "/compliance", icon: Shield },
+  { title: "Free Zones & EDI", url: "/free-zone", icon: Building2 },
+  { title: "Non-Resident Tax", url: "/non-resident", icon: Globe },
+  { title: "Industry Modules", url: "/industry", icon: Briefcase },
 ];
 
 const proNavItems = [
