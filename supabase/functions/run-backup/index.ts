@@ -334,6 +334,17 @@ Deno.serve(async (req) => {
           })
           .eq('id', runId);
         
+        // Log to audit logs
+        await supabase
+          .from('audit_logs')
+          .insert({
+            entity: 'backup',
+            entity_id: runId,
+            action: 'create',
+            user_id: orgSettings.org_id,
+            payload_hash: `${exportedTables} tables, ${totalRows} rows, ${(zipBuffer.byteLength / 1024 / 1024).toFixed(2)}MB`,
+          });
+        
         results.push({
           org_id: orgSettings.org_id,
           status: 'ok',
