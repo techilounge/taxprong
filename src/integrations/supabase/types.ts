@@ -335,6 +335,47 @@ export type Database = {
           },
         ]
       }
+      data_export_requests: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          file_url: string | null
+          finished_at: string | null
+          id: string
+          org_id: string
+          requested_by: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          file_url?: string | null
+          finished_at?: string | null
+          id?: string
+          org_id: string
+          requested_by: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          file_url?: string | null
+          finished_at?: string | null
+          id?: string
+          org_id?: string
+          requested_by?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_export_requests_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       docs: {
         Row: {
           created_at: string

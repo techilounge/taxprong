@@ -14,3 +14,6 @@ verify_jwt = true
 
 [functions.answer-with-citations]
 verify_jwt = false
+
+[functions.export-org-data]
+verify_jwt = false

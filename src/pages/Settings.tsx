@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
+import { DataExport } from "@/components/settings/DataExport";
 
 const PRICING_PLANS = [
   {
@@ -208,6 +209,8 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
+
+        <DataExport />
       </div>
     </DashboardLayout>
   );
