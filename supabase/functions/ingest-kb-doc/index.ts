@@ -49,14 +49,108 @@ async function generateEmbedding(text: string): Promise<number[]> {
   return data.data[0].embedding;
 }
 
-// Parse PDF text (simplified - in production use a proper PDF parser)
+// Extract text from PDF using pdf-parse
 async function extractTextFromPDF(fileUrl: string): Promise<string> {
-  // For now, return placeholder text
-  // In production, use a PDF parsing library or service
-  console.log('Extracting text from PDF:', fileUrl);
+  console.log('Fetching PDF from:', fileUrl);
   
-  // This is a stub - in production you'd actually parse the PDF
-  return `Nigeria Tax Law Document\n\nThis is extracted text from the PDF at ${fileUrl}.\n\nIn a production system, this would contain the actual parsed content from the PDF file, including information about VAT regulations, CIT requirements, stamp duty procedures, and other Nigerian tax compliance matters.`;
+  try {
+    // Fetch the PDF file
+    const pdfResponse = await fetch(fileUrl);
+    if (!pdfResponse.ok) {
+      throw new Error(`Failed to fetch PDF: ${pdfResponse.status}`);
+    }
+
+    const pdfBuffer = await pdfResponse.arrayBuffer();
+    console.log(`PDF downloaded, size: ${pdfBuffer.byteLength} bytes`);
+
+    // Use pdf-parse library to extract text
+    const pdfParse = await import('https://esm.sh/pdf-parse@1.1.1');
+    const data = await pdfParse.default(new Uint8Array(pdfBuffer));
+    
+    console.log(`Extracted ${data.text.length} characters from ${data.numpages} pages`);
+    return data.text;
+  } catch (error) {
+    console.error('Error extracting PDF text:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`PDF extraction failed: ${errorMessage}`);
+  }
+}
+
+// Background processing function
+async function processDocument(docId: string, supabase: any) {
+  console.log(`Starting background processing for document: ${docId}`);
+  
+  try {
+    // Get document details
+    const { data: doc, error: docError } = await supabase
+      .from('kb_docs')
+      .select('*')
+      .eq('id', docId)
+      .single();
+
+    if (docError) throw docError;
+
+    // Extract text from PDF
+    const fullText = await extractTextFromPDF(doc.file_url);
+
+    // Chunk the text
+    const chunks = chunkText(fullText);
+    console.log(`Created ${chunks.length} chunks`);
+
+    // Process chunks with embeddings in batches to manage memory
+    const batchSize = 5;
+    for (let i = 0; i < chunks.length; i += batchSize) {
+      const batch = chunks.slice(i, Math.min(i + batchSize, chunks.length));
+      
+      for (let j = 0; j < batch.length; j++) {
+        const chunkIndex = i + j;
+        const chunkText = batch[j];
+        
+        // Generate embedding
+        const embedding = await generateEmbedding(chunkText);
+
+        // Insert chunk
+        const { error: chunkError } = await supabase
+          .from('kb_chunks')
+          .insert({
+            doc_id: docId,
+            chunk_index: chunkIndex,
+            text: chunkText,
+            embedding: embedding,
+          });
+
+        if (chunkError) {
+          console.error('Error inserting chunk:', chunkError);
+          throw chunkError;
+        }
+
+        console.log(`Processed chunk ${chunkIndex + 1}/${chunks.length}`);
+      }
+    }
+
+    // Update job status to completed
+    await supabase
+      .from('kb_ingest_jobs')
+      .update({
+        status: 'completed',
+        finished_at: new Date().toISOString(),
+      })
+      .eq('doc_id', docId);
+
+    console.log(`Ingestion completed for document: ${docId}`);
+  } catch (error) {
+    console.error('Error in background processing:', error);
+    
+    // Update job with error
+    await supabase
+      .from('kb_ingest_jobs')
+      .update({
+        status: 'failed',
+        error_message: error instanceof Error ? error.message : 'Unknown error',
+        finished_at: new Date().toISOString(),
+      })
+      .eq('doc_id', docId);
+  }
 }
 
 Deno.serve(async (req) => {
@@ -75,9 +169,9 @@ Deno.serve(async (req) => {
       throw new Error('Document ID is required');
     }
 
-    console.log(`Starting ingestion for document: ${docId}`);
+    console.log(`Received ingestion request for document: ${docId}`);
 
-    // Create ingest job
+    // Create ingest job with processing status
     const { data: job, error: jobError } = await supabase
       .from('kb_ingest_jobs')
       .insert({
@@ -90,81 +184,21 @@ Deno.serve(async (req) => {
 
     if (jobError) throw jobError;
 
-    try {
-      // Get document details
-      const { data: doc, error: docError } = await supabase
-        .from('kb_docs')
-        .select('*')
-        .eq('id', docId)
-        .single();
+    // Start background processing
+    // @ts-ignore - EdgeRuntime is available in Supabase Edge Functions
+    EdgeRuntime.waitUntil(processDocument(docId, supabase));
 
-      if (docError) throw docError;
-
-      // Extract text from PDF
-      const fullText = await extractTextFromPDF(doc.file_url);
-
-      // Chunk the text
-      const chunks = chunkText(fullText);
-      console.log(`Created ${chunks.length} chunks`);
-
-      // Process chunks with embeddings
-      for (let i = 0; i < chunks.length; i++) {
-        const chunkText = chunks[i];
-        
-        // Generate embedding
-        const embedding = await generateEmbedding(chunkText);
-
-        // Insert chunk
-        const { error: chunkError } = await supabase
-          .from('kb_chunks')
-          .insert({
-            doc_id: docId,
-            chunk_index: i,
-            text: chunkText,
-            embedding: embedding,
-          });
-
-        if (chunkError) {
-          console.error('Error inserting chunk:', chunkError);
-          throw chunkError;
-        }
-
-        console.log(`Processed chunk ${i + 1}/${chunks.length}`);
+    // Return immediate response
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Document ingestion started',
+        jobId: job.id,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
-
-      // Update job status
-      await supabase
-        .from('kb_ingest_jobs')
-        .update({
-          status: 'completed',
-          finished_at: new Date().toISOString(),
-        })
-        .eq('id', job.id);
-
-      console.log(`Ingestion completed for document: ${docId}`);
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          chunksCreated: chunks.length,
-        }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    } catch (error) {
-      // Update job with error
-      await supabase
-        .from('kb_ingest_jobs')
-        .update({
-          status: 'failed',
-          error_message: error instanceof Error ? error.message : 'Unknown error',
-          finished_at: new Date().toISOString(),
-        })
-        .eq('id', job.id);
-
-      throw error;
-    }
+    );
   } catch (error) {
     console.error('Error in ingest-kb-doc:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
