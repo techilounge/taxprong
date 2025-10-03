@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useOrganization } from "@/hooks/useOrganization";
 import { ExpenseForm } from "@/components/expenses/ExpenseForm";
+import { BankImport } from "@/components/bank/BankImport";
 import { format } from "date-fns";
 
 interface Expense {
@@ -156,6 +157,14 @@ const Expenses = () => {
             </Button>
           </div>
         </div>
+
+        {/* Bank Import */}
+        {organization && (
+          <BankImport 
+            orgId={organization.id} 
+            onSuccess={loadExpenses}
+          />
+        )}
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-3">

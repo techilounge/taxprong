@@ -10,6 +10,7 @@ import VATConsole from "./pages/VATConsole";
 import PIT from "./pages/PIT";
 import ProConsole from "./pages/ProConsole";
 import ClientPortal from "./pages/ClientPortal";
+import Exceptions from "./pages/Exceptions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/pit" element={<PIT />} />
           <Route path="/pro-console" element={<ProConsole />} />
           <Route path="/client-portal" element={<ClientPortal />} />
+          <Route path="/exceptions" element={<Exceptions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

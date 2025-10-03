@@ -13,6 +13,7 @@ import {
   Building2,
   UserCog,
   Presentation,
+  AlertTriangle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ const mainNavItems = [
 const proNavItems = [
   { title: "Pro Console", url: "/pro-console", icon: UserCog },
   { title: "Client Portal", url: "/client-portal", icon: Presentation },
+  { title: "Exceptions", url: "/exceptions", icon: AlertTriangle },
   { title: "Marketplace", url: "/marketplace", icon: Building2 },
 ];
 
