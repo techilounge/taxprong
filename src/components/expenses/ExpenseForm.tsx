@@ -77,9 +77,15 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
 
   const handleFileSelect = (file: File) => {
     // Validate file type
-    const validTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const validTypes = [
+      'application/pdf', 
+      'image/png', 
+      'image/jpeg', 
+      'image/jpg',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // DOCX
+    ];
     if (!validTypes.includes(file.type)) {
-      toast.error("Please upload PDF, PNG, or JPG files only");
+      toast.error("Please upload PDF, PNG, JPG, JPEG, or DOCX files only");
       return;
     }
 
@@ -91,6 +97,14 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
 
     setReceiptFile(file);
     toast.success(`File selected: ${file.name}`);
+  };
+
+  const handleRemoveFile = () => {
+    setReceiptFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success("File removed");
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -116,18 +130,21 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
   const uploadReceipt = async (expenseId: string): Promise<string | null> => {
     if (!receiptFile) return null;
 
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Not authenticated");
+
     const fileExt = receiptFile.name.split('.').pop();
     const fileName = `${expenseId}.${fileExt}`;
-    const filePath = `receipts/${orgId}/${fileName}`;
+    const filePath = `${session.user.id}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('data-exports')
+      .from('receipts')
       .upload(filePath, receiptFile, { upsert: true });
 
     if (uploadError) throw uploadError;
 
     const { data: { publicUrl } } = supabase.storage
-      .from('data-exports')
+      .from('receipts')
       .getPublicUrl(filePath);
 
     return publicUrl;
@@ -323,13 +340,13 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
               Click to upload or drag and drop
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              PDF, PNG, JPG up to 10MB
+              PDF, PNG, JPG, JPEG, DOCX up to 10MB
             </p>
             <Input
               ref={fileInputRef}
               type="file"
               className="hidden"
-              accept=".pdf,.png,.jpg,.jpeg"
+              accept=".pdf,.png,.jpg,.jpeg,.docx"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleFileSelect(file);
@@ -337,9 +354,21 @@ export function ExpenseForm({ orgId, businessId, onSuccess, onCancel }: ExpenseF
             />
           </div>
           {receiptFile && (
-            <p className="text-sm text-green-600 dark:text-green-400">
-              ✓ Selected: {receiptFile.name}
-            </p>
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <p className="text-sm text-foreground flex items-center gap-2">
+                <span className="text-green-600 dark:text-green-400">✓</span>
+                {receiptFile.name}
+              </p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleRemoveFile}
+                className="h-8 w-8 p-0"
+              >
+                ✕
+              </Button>
+            </div>
           )}
         </div>
 
