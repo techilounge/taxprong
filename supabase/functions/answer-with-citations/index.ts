@@ -39,7 +39,6 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         prompt: query,
-        model: 'text-embedding-3-small',
       }),
     });
 
