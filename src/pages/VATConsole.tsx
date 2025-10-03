@@ -36,6 +36,10 @@ interface Invoice {
   net: number;
   vat: number;
   issue_date: string;
+  efs_status?: string;
+  efs_rejection_reason?: string;
+  einvoice_id?: string;
+  locked?: boolean;
 }
 
 const VATConsole = () => {
@@ -214,6 +218,29 @@ const VATConsole = () => {
       toast.error("Failed to submit VAT return");
     }
   };
+
+  const transmitInvoice = async (invoiceId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke("transmit-einvoice", {
+        body: { invoiceId },
+      });
+
+      if (error) throw error;
+
+      if (data.status === "accepted") {
+        toast.success(`Invoice accepted! E-Invoice ID: ${data.einvoiceId}`);
+      } else if (data.status === "queued") {
+        toast.info("Invoice queued for processing");
+      } else if (data.status === "rejected") {
+        toast.error(`Invoice rejected: ${data.rejectionReason}`);
+      }
+
+      loadInvoices();
+    } catch (error: any) {
+      console.error("Error transmitting invoice:", error);
+      toast.error("Failed to transmit invoice");
+    }
+  };
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -347,18 +374,20 @@ const VATConsole = () => {
                       <TableHead className="text-right">Net</TableHead>
                       <TableHead className="text-right">VAT</TableHead>
                       <TableHead className="text-right">Total</TableHead>
+                      <TableHead>E-Invoice</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                           Loading invoices...
                         </TableCell>
                       </TableRow>
                     ) : salesInvoices.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                           No sales invoices recorded. Create your first invoice to get started.
                         </TableCell>
                       </TableRow>
@@ -382,6 +411,42 @@ const VATConsole = () => {
                           </TableCell>
                           <TableCell className="text-right font-medium">
                             ₦{(Number(invoice.net) + Number(invoice.vat)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.efs_status === "accepted" && (
+                              <Badge className="bg-green-500">Accepted</Badge>
+                            )}
+                            {invoice.efs_status === "queued" && (
+                              <Badge variant="secondary">Queued</Badge>
+                            )}
+                            {invoice.efs_status === "rejected" && (
+                              <Badge variant="destructive">Rejected</Badge>
+                            )}
+                            {(!invoice.efs_status || invoice.efs_status === "draft") && (
+                              <Badge variant="outline">Draft</Badge>
+                            )}
+                            {invoice.locked && <span className="text-xs ml-1">🔒</span>}
+                          </TableCell>
+                          <TableCell>
+                            {invoice.locked ? (
+                              <span className="text-xs text-muted-foreground">Locked</span>
+                            ) : invoice.efs_status === "rejected" ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => transmitInvoice(invoice.id)}
+                              >
+                                Retry
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                onClick={() => transmitInvoice(invoice.id)}
+                                disabled={invoice.efs_status === "queued"}
+                              >
+                                {invoice.efs_status === "queued" ? "Processing" : "Transmit"}
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))

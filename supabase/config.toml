@@ -2,3 +2,6 @@ project_id = "gpfejdkzisvconkryrgb"
 
 [functions.ocr-webhook]
 verify_jwt = false
+
+[functions.transmit-einvoice]
+verify_jwt = true

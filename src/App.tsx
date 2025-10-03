@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import VATConsole from "./pages/VATConsole";
 import PIT from "./pages/PIT";
+import CIT from "./pages/CIT";
 import ProConsole from "./pages/ProConsole";
 import ClientPortal from "./pages/ClientPortal";
 import Exceptions from "./pages/Exceptions";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/vat" element={<VATConsole />} />
           <Route path="/pit" element={<PIT />} />
+          <Route path="/cit" element={<CIT />} />
           <Route path="/pro-console" element={<ProConsole />} />
           <Route path="/client-portal" element={<ClientPortal />} />
           <Route path="/exceptions" element={<Exceptions />} />

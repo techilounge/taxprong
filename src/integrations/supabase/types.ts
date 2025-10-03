@@ -540,10 +540,12 @@ export type Database = {
           created_at: string
           description: string | null
           due_date: string | null
-          efs_status: string | null
+          efs_rejection_reason: string | null
+          efs_status: Database["public"]["Enums"]["efs_status"] | null
           einvoice_id: string | null
           id: string
           issue_date: string
+          locked: boolean | null
           net: number
           supply_type: Database["public"]["Enums"]["supply_type"]
           type: Database["public"]["Enums"]["invoice_type"]
@@ -557,10 +559,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
-          efs_status?: string | null
+          efs_rejection_reason?: string | null
+          efs_status?: Database["public"]["Enums"]["efs_status"] | null
           einvoice_id?: string | null
           id?: string
           issue_date: string
+          locked?: boolean | null
           net: number
           supply_type: Database["public"]["Enums"]["supply_type"]
           type: Database["public"]["Enums"]["invoice_type"]
@@ -574,10 +578,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
-          efs_status?: string | null
+          efs_rejection_reason?: string | null
+          efs_status?: Database["public"]["Enums"]["efs_status"] | null
           einvoice_id?: string | null
           id?: string
           issue_date?: string
+          locked?: boolean | null
           net?: number
           supply_type?: Database["public"]["Enums"]["supply_type"]
           type?: Database["public"]["Enums"]["invoice_type"]
@@ -1035,6 +1041,7 @@ export type Database = {
       app_role: "owner" | "staff" | "viewer"
       audit_action: "create" | "update" | "delete" | "export" | "submit"
       direction: "debit" | "credit"
+      efs_status: "draft" | "queued" | "accepted" | "rejected"
       engagement_fee_type: "fixed" | "hourly" | "milestone"
       escrow_status: "unfunded" | "funded" | "released" | "refunded"
       invoice_type: "sale" | "purchase"
@@ -1172,6 +1179,7 @@ export const Constants = {
       app_role: ["owner", "staff", "viewer"],
       audit_action: ["create", "update", "delete", "export", "submit"],
       direction: ["debit", "credit"],
+      efs_status: ["draft", "queued", "accepted", "rejected"],
       engagement_fee_type: ["fixed", "hourly", "milestone"],
       escrow_status: ["unfunded", "funded", "released", "refunded"],
       invoice_type: ["sale", "purchase"],
