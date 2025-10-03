@@ -7,15 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Database, FileText, Receipt, Calendar, Building2, DollarSign, Loader2 } from "lucide-react";
 import { logAudit } from "@/lib/auditLog";
 
-interface SeedStats {
-  businesses?: number;
-  expenses?: number;
-  invoices?: number;
-  tasks?: number;
-  filingEvents?: number;
-  bankTxns?: number;
-}
-
 export function TestDataGenerator() {
   const { organization } = useOrganization();
   const { toast } = useToast();
@@ -26,9 +17,9 @@ export function TestDataGenerator() {
     setLoading('businesses');
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
-      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
       const businesses = [
         { name: "Tech Solutions Ltd", tin: "12345678-0001", sector: "Technology", turnover_band: "50M-100M", vat_registered: true },
         { name: "Retail Ventures", tin: "12345678-0002", sector: "Retail", turnover_band: "10M-50M", vat_registered: true },
@@ -37,11 +28,7 @@ export function TestDataGenerator() {
 
       const { data, error } = await supabase
         .from('businesses')
-        .insert(businesses.map(b => ({ 
-          ...b, 
-          org_id: organization.id, 
-          owner_id: user.id 
-        })))
+        .insert(businesses.map(b => ({ ...b, org_id: organization.id, owner_id: session.user.id })))
         .select();
 
       if (error) throw error;
