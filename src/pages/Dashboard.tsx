@@ -14,6 +14,7 @@ import {
   Clock
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { TaxDocumentGenerator } from "@/components/documents/TaxDocumentGenerator";
 import { toast } from "sonner";
 
 interface DashboardStats {
@@ -187,23 +188,23 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-accent" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-2 w-2 rounded-full bg-accent" />
-                  <p className="text-sm">No recent activity</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <TaxDocumentGenerator />
         </div>
+
+        {/* Tax Reform Alert */}
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="pt-6">
+            <div className="flex gap-3">
+              <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-blue-900">Nigeria Tax Act 2025 in Effect</p>
+                <p className="text-sm text-blue-800 mt-1">
+                  Major reforms: ₦800K PIT threshold, 30% CGT rate, 4% Development Levy, mandatory e-invoicing from 2026
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

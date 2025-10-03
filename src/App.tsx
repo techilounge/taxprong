@@ -14,6 +14,7 @@ import Compliance from "./pages/Compliance";
 import FreeZone from "./pages/FreeZone";
 import NonResidentTax from "./pages/NonResidentTax";
 import IndustryModules from "./pages/IndustryModules";
+import AIAdvisor from "./pages/AIAdvisor";
 import ProConsole from "./pages/ProConsole";
 import ClientPortal from "./pages/ClientPortal";
 import Exceptions from "./pages/Exceptions";
@@ -48,6 +49,7 @@ function App() {
           <Route path="/free-zone" element={<FreeZone />} />
           <Route path="/non-resident" element={<NonResidentTax />} />
           <Route path="/industry" element={<IndustryModules />} />
+          <Route path="/ai-advisor" element={<AIAdvisor />} />
           <Route path="/pro-console" element={<ProConsole />} />
           <Route path="/client-portal" element={<ClientPortal />} />
           <Route path="/exceptions" element={<Exceptions />} />

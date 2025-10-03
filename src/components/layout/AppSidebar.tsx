@@ -21,6 +21,7 @@ import {
   HelpCircle,
   TrendingUp,
   Globe,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
@@ -57,6 +58,7 @@ const proNavItems = [
   { title: "Exceptions", url: "/exceptions", icon: AlertTriangle },
   { title: "Knowledge Base", url: "/knowledge", icon: BookOpen },
   { title: "Tax Q&A", url: "/tax-qa", icon: Search },
+  { title: "AI Tax Advisor", url: "/ai-advisor", icon: Sparkles },
 ];
 
 export function AppSidebar() {

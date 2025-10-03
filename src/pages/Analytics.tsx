@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ExpensesByCategoryWidget } from "@/components/analytics/ExpensesByCategoryWidget";
 import { InputVATTrendWidget } from "@/components/analytics/InputVATTrendWidget";
 import { OnTimeFilingWidget } from "@/components/analytics/OnTimeFilingWidget";
+import { ComplianceScore } from "@/components/analytics/ComplianceScore";
 import { SaveReportDialog } from "@/components/analytics/SaveReportDialog";
 import { SavedReportsList } from "@/components/analytics/SavedReportsList";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,9 @@ export default function Analytics() {
         />
 
         <div className="grid gap-6">
+          {/* Compliance Score - Full width */}
+          <ComplianceScore />
+
           {/* On-Time Filing KPI - Full width */}
           <OnTimeFilingWidget orgId={organization.id} />
 
