@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Receipt,
@@ -18,6 +18,7 @@ import {
   Search,
   Shield,
   BarChart3,
+  HelpCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -54,6 +55,12 @@ const proNavItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const { isAdmin } = useAdmin();
+  const location = useLocation();
+  const isExpensesPage = location.pathname === '/expenses';
+
+  const handleOpenGuide = () => {
+    window.dispatchEvent(new CustomEvent('open-expense-guide'));
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -114,6 +121,14 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              {isExpensesPage && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton onClick={handleOpenGuide}>
+                    <HelpCircle className="h-4 w-4" />
+                    <span>Expenses Guide</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               {isAdmin && (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>

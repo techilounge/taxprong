@@ -80,6 +80,14 @@ const Expenses = () => {
     if (!hasSeenGuide) {
       setGuideOpen(true);
     }
+
+    // Listen for custom event from sidebar
+    const handleOpenGuideEvent = () => setGuideOpen(true);
+    window.addEventListener('open-expense-guide', handleOpenGuideEvent);
+
+    return () => {
+      window.removeEventListener('open-expense-guide', handleOpenGuideEvent);
+    };
   }, []);
 
   const handleCloseGuide = () => {
