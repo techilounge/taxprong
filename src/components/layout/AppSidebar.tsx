@@ -17,6 +17,7 @@ import {
   BookOpen,
   Search,
   Shield,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +34,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 
 const mainNavItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Expenses", url: "/expenses", icon: Receipt },
   { title: "VAT Console", url: "/vat", icon: FileText },
   { title: "PIT & PAYE", url: "/pit", icon: Calculator },

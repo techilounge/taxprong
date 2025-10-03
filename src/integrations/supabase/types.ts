@@ -618,6 +618,44 @@ export type Database = {
           },
         ]
       }
+      filing_events: {
+        Row: {
+          created_at: string
+          due_date: string
+          filed_at: string | null
+          filing_type: string
+          id: string
+          org_id: string
+          period: string
+        }
+        Insert: {
+          created_at?: string
+          due_date: string
+          filed_at?: string | null
+          filing_type: string
+          id?: string
+          org_id: string
+          period: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string
+          filed_at?: string | null
+          filing_type?: string
+          id?: string
+          org_id?: string
+          period?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filing_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           business_id: string

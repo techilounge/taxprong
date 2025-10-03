@@ -17,6 +17,7 @@ import Settings from "./pages/Settings";
 import Knowledge from "./pages/Knowledge";
 import TaxQA from "./pages/TaxQA";
 import Admin from "./pages/Admin";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/tax-qa" element={<TaxQA />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/analytics" element={<Analytics />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
