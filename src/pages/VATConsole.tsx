@@ -27,6 +27,7 @@ import { useOrganization } from "@/hooks/useOrganization";
 import { InvoiceForm } from "@/components/vat/InvoiceForm";
 import { format } from "date-fns";
 import { logAudit } from "@/lib/auditLog";
+import { TaxQAPanel } from "@/components/tax/TaxQAPanel";
 
 interface Invoice {
   id: string;
@@ -241,9 +242,17 @@ const VATConsole = () => {
       toast.error("Failed to transmit invoice");
     }
   };
+  const handleInsertVATNote = async (answer: string, citations: any[]) => {
+    // Q&A is already logged in qa_citations table by the edge function
+    // Additional note storage logic can be added here if needed
+    toast.success("Q&A saved to VAT return notes");
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Main Content */}
+        <div className="flex-1 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -533,6 +542,18 @@ const VATConsole = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Right Side Q&A Panel */}
+      <div className="lg:w-96 lg:shrink-0">
+        <div className="lg:sticky lg:top-6">
+          <TaxQAPanel
+            orgId={organization?.id || null}
+            returnType="vat"
+            onInsertNote={handleInsertVATNote}
+          />
+        </div>
+      </div>
+    </div>
     </DashboardLayout>
   );
 };

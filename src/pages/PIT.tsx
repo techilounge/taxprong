@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calculator, FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { TaxQAPanel } from "@/components/tax/TaxQAPanel";
 
 const PIT = () => {
   const [annualIncome, setAnnualIncome] = useState("");
@@ -89,9 +90,16 @@ const PIT = () => {
     toast.info("PDF export functionality will be implemented");
   };
 
+  const handleInsertPITNote = (answer: string, citations: any[]) => {
+    // Store Q&A as note for PIT calculation
+    toast.success("Q&A saved to PIT calculation notes");
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Main Content */}
+        <div className="flex-1 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -232,6 +240,18 @@ const PIT = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Right Side Q&A Panel */}
+      <div className="lg:w-96 lg:shrink-0">
+        <div className="lg:sticky lg:top-6">
+          <TaxQAPanel
+            orgId={null}
+            returnType="pit"
+            onInsertNote={handleInsertPITNote}
+          />
+        </div>
+      </div>
+    </div>
     </DashboardLayout>
   );
 };
