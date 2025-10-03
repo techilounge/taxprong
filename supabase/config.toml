@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.export-org-data]
 verify_jwt = false
+
+[functions.process-delete-request]
+verify_jwt = true

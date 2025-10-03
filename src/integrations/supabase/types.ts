@@ -116,6 +116,7 @@ export type Database = {
       businesses: {
         Row: {
           created_at: string
+          deleted_at: string | null
           epz: boolean | null
           id: string
           mne_member: boolean | null
@@ -131,6 +132,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           epz?: boolean | null
           id?: string
           mne_member?: boolean | null
@@ -146,6 +148,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           epz?: boolean | null
           id?: string
           mne_member?: boolean | null
@@ -376,6 +379,45 @@ export type Database = {
           },
         ]
       }
+      delete_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          reason: string | null
+          requested_by: string
+          scope: Database["public"]["Enums"]["delete_scope"]
+          scope_ref: string
+          status: Database["public"]["Enums"]["delete_request_status"]
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          requested_by: string
+          scope: Database["public"]["Enums"]["delete_scope"]
+          scope_ref: string
+          status?: Database["public"]["Enums"]["delete_request_status"]
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          requested_by?: string
+          scope?: Database["public"]["Enums"]["delete_scope"]
+          scope_ref?: string
+          status?: Database["public"]["Enums"]["delete_request_status"]
+        }
+        Relationships: []
+      }
       docs: {
         Row: {
           created_at: string
@@ -421,6 +463,7 @@ export type Database = {
           business_id: string | null
           client_id: string
           created_at: string
+          deleted_at: string | null
           due_dates_json: Json | null
           escrow_status: Database["public"]["Enums"]["escrow_status"] | null
           fee_type: Database["public"]["Enums"]["engagement_fee_type"] | null
@@ -437,6 +480,7 @@ export type Database = {
           business_id?: string | null
           client_id: string
           created_at?: string
+          deleted_at?: string | null
           due_dates_json?: Json | null
           escrow_status?: Database["public"]["Enums"]["escrow_status"] | null
           fee_type?: Database["public"]["Enums"]["engagement_fee_type"] | null
@@ -453,6 +497,7 @@ export type Database = {
           business_id?: string | null
           client_id?: string
           created_at?: string
+          deleted_at?: string | null
           due_dates_json?: Json | null
           escrow_status?: Database["public"]["Enums"]["escrow_status"] | null
           fee_type?: Database["public"]["Enums"]["engagement_fee_type"] | null
@@ -833,6 +878,7 @@ export type Database = {
       orgs: {
         Row: {
           created_at: string
+          deleted_at: string | null
           id: string
           name: string
           owner_id: string
@@ -840,6 +886,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           id?: string
           name: string
           owner_id: string
@@ -847,6 +894,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           id?: string
           name?: string
           owner_id?: string
@@ -1275,6 +1323,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       vat_returns: {
         Row: {
           business_id: string
@@ -1347,6 +1416,13 @@ export type Database = {
       halfvec_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
       }
       hnsw_bit_support: {
         Args: { "": unknown }
@@ -1444,6 +1520,8 @@ export type Database = {
     Enums: {
       app_role: "owner" | "staff" | "viewer" | "admin"
       audit_action: "create" | "update" | "delete" | "export" | "submit"
+      delete_request_status: "pending" | "approved" | "denied" | "processed"
+      delete_scope: "user" | "org" | "engagement"
       direction: "debit" | "credit"
       efs_status: "draft" | "queued" | "accepted" | "rejected"
       engagement_fee_type: "fixed" | "hourly" | "milestone"
@@ -1582,6 +1660,8 @@ export const Constants = {
     Enums: {
       app_role: ["owner", "staff", "viewer", "admin"],
       audit_action: ["create", "update", "delete", "export", "submit"],
+      delete_request_status: ["pending", "approved", "denied", "processed"],
+      delete_scope: ["user", "org", "engagement"],
       direction: ["debit", "credit"],
       efs_status: ["draft", "queued", "accepted", "rejected"],
       engagement_fee_type: ["fixed", "hourly", "milestone"],

@@ -6,7 +6,7 @@ interface Organization {
   id: string;
   name: string;
   type: "business" | "practice";
-  role: "owner" | "staff" | "viewer";
+  role: "owner" | "staff" | "viewer" | "admin";
 }
 
 export function useOrganization() {
