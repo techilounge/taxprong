@@ -600,6 +600,117 @@ export type Database = {
           },
         ]
       }
+      kb_chunks: {
+        Row: {
+          chunk_index: number
+          created_at: string
+          doc_id: string
+          embedding: string | null
+          id: string
+          text: string
+        }
+        Insert: {
+          chunk_index: number
+          created_at?: string
+          doc_id: string
+          embedding?: string | null
+          id?: string
+          text: string
+        }
+        Update: {
+          chunk_index?: number
+          created_at?: string
+          doc_id?: string
+          embedding?: string | null
+          id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_chunks_doc_id_fkey"
+            columns: ["doc_id"]
+            isOneToOne: false
+            referencedRelation: "kb_docs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_docs: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          org_id: string | null
+          source_url: string | null
+          title: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          org_id?: string | null
+          source_url?: string | null
+          title: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          org_id?: string | null
+          source_url?: string | null
+          title?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_docs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_ingest_jobs: {
+        Row: {
+          created_at: string
+          doc_id: string | null
+          error_message: string | null
+          file_url: string
+          finished_at: string | null
+          id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          doc_id?: string | null
+          error_message?: string | null
+          file_url: string
+          finished_at?: string | null
+          id?: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          doc_id?: string | null
+          error_message?: string | null
+          file_url?: string
+          finished_at?: string | null
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_ingest_jobs_doc_id_fkey"
+            columns: ["doc_id"]
+            isOneToOne: false
+            referencedRelation: "kb_docs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body: string
@@ -1118,13 +1229,105 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
       create_monthly_vat_tasks: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: string
+      }
       send_task_reminders: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
       }
     }
     Enums: {
