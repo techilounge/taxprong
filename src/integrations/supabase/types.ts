@@ -640,7 +640,7 @@ export type Database = {
           merchant: string | null
           ocr_json: Json | null
           org_id: string
-          receipt_url: string | null
+          receipt_url: string[] | null
           user_id: string | null
           vat_amount: number | null
           vat_recoverable_pct: number | null
@@ -658,7 +658,7 @@ export type Database = {
           merchant?: string | null
           ocr_json?: Json | null
           org_id: string
-          receipt_url?: string | null
+          receipt_url?: string[] | null
           user_id?: string | null
           vat_amount?: number | null
           vat_recoverable_pct?: number | null
@@ -676,7 +676,7 @@ export type Database = {
           merchant?: string | null
           ocr_json?: Json | null
           org_id?: string
-          receipt_url?: string | null
+          receipt_url?: string[] | null
           user_id?: string | null
           vat_amount?: number | null
           vat_recoverable_pct?: number | null

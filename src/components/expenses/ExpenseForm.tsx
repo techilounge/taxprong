@@ -49,7 +49,7 @@ interface ExpenseFormProps {
     vat_amount?: number;
     category: string;
     vat_recoverable_pct?: number;
-    receipt_url?: string;
+    receipt_url?: string[];
   } | null;
   onSuccess: () => void;
   onCancel: () => void;
@@ -69,7 +69,7 @@ const categories = [
 
 export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }: ExpenseFormProps) {
   const [uploading, setUploading] = useState(false);
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptFiles, setReceiptFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,8 +94,10 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
     },
   });
 
-  const handleFileSelect = (file: File) => {
-    // Validate file type
+  const handleFileSelect = (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    
+    // Validate file types
     const validTypes = [
       'application/pdf', 
       'image/png', 
@@ -103,23 +105,28 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
       'image/jpg',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // DOCX
     ];
-    if (!validTypes.includes(file.type)) {
+    
+    const invalidFiles = fileArray.filter(file => !validTypes.includes(file.type));
+    if (invalidFiles.length > 0) {
       toast.error("Please upload PDF, PNG, JPG, JPEG, or DOCX files only");
       return;
     }
 
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File size must be less than 10MB");
+    // Calculate total size including existing files
+    const currentTotalSize = receiptFiles.reduce((sum, file) => sum + file.size, 0);
+    const newTotalSize = fileArray.reduce((sum, file) => sum + file.size, currentTotalSize);
+    
+    if (newTotalSize > 10 * 1024 * 1024) {
+      toast.error("Total file size must be less than 10MB");
       return;
     }
 
-    setReceiptFile(file);
-    toast.success(`File selected: ${file.name}`);
+    setReceiptFiles(prev => [...prev, ...fileArray]);
+    toast.success(`${fileArray.length} file(s) added`);
   };
 
-  const handleRemoveFile = () => {
-    setReceiptFile(null);
+  const handleRemoveFile = (index: number) => {
+    setReceiptFiles(prev => prev.filter((_, i) => i !== index));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -140,33 +147,40 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
     e.preventDefault();
     setIsDragging(false);
     
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileSelect(file);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleFileSelect(files);
     }
   };
 
-  const uploadReceipt = async (expenseId: string): Promise<string | null> => {
-    if (!receiptFile) return null;
+  const uploadReceipts = async (expenseId: string): Promise<string[]> => {
+    if (receiptFiles.length === 0) return [];
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Not authenticated");
 
-    const fileExt = receiptFile.name.split('.').pop();
-    const fileName = `${expenseId}.${fileExt}`;
-    const filePath = `${session.user.id}/${fileName}`;
+    const uploadedUrls: string[] = [];
 
-    const { error: uploadError } = await supabase.storage
-      .from('receipts')
-      .upload(filePath, receiptFile, { upsert: true });
+    for (let i = 0; i < receiptFiles.length; i++) {
+      const file = receiptFiles[i];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${expenseId}_${i}_${Date.now()}.${fileExt}`;
+      const filePath = `${session.user.id}/${fileName}`;
 
-    if (uploadError) throw uploadError;
+      const { error: uploadError } = await supabase.storage
+        .from('receipts')
+        .upload(filePath, file, { upsert: true });
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('receipts')
-      .getPublicUrl(filePath);
+      if (uploadError) throw uploadError;
 
-    return publicUrl;
+      const { data: { publicUrl } } = supabase.storage
+        .from('receipts')
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(publicUrl);
+    }
+
+    return uploadedUrls;
   };
 
   const onSubmit = async (data: ExpenseFormData) => {
@@ -208,13 +222,16 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
 
         if (error) throw error;
 
-        // Upload receipt if new file is selected
-        if (receiptFile) {
-          const receiptUrl = await uploadReceipt(expense.id);
-          if (receiptUrl) {
+        // Upload receipts if new files are selected
+        if (receiptFiles.length > 0) {
+          const receiptUrls = await uploadReceipts(expense.id);
+          if (receiptUrls.length > 0) {
+            // Merge with existing receipt URLs if any
+            const existingUrls = expense.receipt_url || [];
+            const allUrls = [...existingUrls, ...receiptUrls];
             await supabase
               .from("expenses")
-              .update({ receipt_url: receiptUrl })
+              .update({ receipt_url: allUrls })
               .eq("id", expense.id);
           }
         }
@@ -230,13 +247,13 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
 
         if (error) throw error;
 
-        // Upload receipt if file is selected
-        if (receiptFile && newExpense) {
-          const receiptUrl = await uploadReceipt(newExpense.id);
-          if (receiptUrl) {
+        // Upload receipts if files are selected
+        if (receiptFiles.length > 0 && newExpense) {
+          const receiptUrls = await uploadReceipts(newExpense.id);
+          if (receiptUrls.length > 0) {
             await supabase
               .from("expenses")
-              .update({ receipt_url: receiptUrl })
+              .update({ receipt_url: receiptUrls })
               .eq("id", newExpense.id);
           }
         }
@@ -391,27 +408,35 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
               type="file"
               className="hidden"
               accept=".pdf,.png,.jpg,.jpeg,.docx"
+              multiple
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFileSelect(file);
+                const files = e.target.files;
+                if (files && files.length > 0) handleFileSelect(files);
               }}
             />
           </div>
-          {receiptFile && (
-            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-              <p className="text-sm text-foreground flex items-center gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
-                {receiptFile.name}
+          {receiptFiles.length > 0 && (
+            <div className="space-y-2">
+              {receiptFiles.map((file, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <p className="text-sm text-foreground flex items-center gap-2">
+                    <span className="text-green-600 dark:text-green-400">✓</span>
+                    {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveFile(index)}
+                    className="h-8 w-8 p-0"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              ))}
+              <p className="text-xs text-muted-foreground">
+                Total: {(receiptFiles.reduce((sum, f) => sum + f.size, 0) / 1024).toFixed(1)} KB / 10 MB
               </p>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleRemoveFile}
-                className="h-8 w-8 p-0"
-              >
-                ✕
-              </Button>
             </div>
           )}
         </div>
@@ -421,7 +446,7 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
             Cancel
           </Button>
           <Button type="submit" disabled={uploading}>
-            {uploading ? "Saving..." : expense ? "Update Expense" : "Save Expense"}
+            {uploading ? "Uploading..." : expense ? "Update Expense" : "Save Expense"}
           </Button>
         </div>
       </form>
