@@ -52,6 +52,53 @@ export type Database = {
           },
         ]
       }
+      backup_runs: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          finished_at: string | null
+          id: string
+          notes: string | null
+          org_id: string
+          rows_count: number | null
+          started_at: string
+          status: string
+          tables_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          finished_at?: string | null
+          id?: string
+          notes?: string | null
+          org_id: string
+          rows_count?: number | null
+          started_at?: string
+          status: string
+          tables_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          finished_at?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string
+          rows_count?: number | null
+          started_at?: string
+          status?: string
+          tables_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_runs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       backup_settings: {
         Row: {
           access_key: string
