@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +45,7 @@ interface Invoice {
 }
 
 const VATConsole = () => {
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [salesInvoices, setSalesInvoices] = useState<Invoice[]>([]);
@@ -355,7 +357,7 @@ const VATConsole = () => {
                 File your November 2025 return by 14th December 2025
               </p>
             </div>
-            <Button variant="outline">View Details</Button>
+            <Button variant="outline" onClick={() => navigate('/compliance')}>View Details</Button>
           </CardContent>
         </Card>
 
