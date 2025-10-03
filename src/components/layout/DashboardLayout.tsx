@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ConsentBanner } from "@/components/privacy/ConsentBanner";
+import { PrivacyModal } from "@/components/privacy/PrivacyModal";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -23,6 +25,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
   const [userName, setUserName] = useState<string>("");
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
 
   useEffect(() => {
     // Check authentication
@@ -123,8 +126,35 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <main className="flex-1 p-6 bg-muted/30">
             {children}
           </main>
+
+          {/* Footer */}
+          <footer className="border-t bg-background py-4 px-6">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <p>© 2025 Nigeria Tax Platform. All rights reserved.</p>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setPrivacyModalOpen(true)}
+                  className="hover:text-foreground transition-colors hover:underline"
+                >
+                  Privacy & NDPA
+                </button>
+                <a href="#" className="hover:text-foreground transition-colors hover:underline">
+                  Terms of Service
+                </a>
+                <a href="#" className="hover:text-foreground transition-colors hover:underline">
+                  Contact Support
+                </a>
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
+
+      {/* Privacy Modal */}
+      <PrivacyModal open={privacyModalOpen} onOpenChange={setPrivacyModalOpen} />
+
+      {/* Consent Banner */}
+      <ConsentBanner />
     </SidebarProvider>
   );
 }

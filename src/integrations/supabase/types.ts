@@ -851,6 +851,33 @@ export type Database = {
           },
         ]
       }
+      privacy_consents: {
+        Row: {
+          accepted: boolean
+          accepted_at: string | null
+          created_at: string
+          id: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted?: boolean
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          user_id: string
+          version?: string
+        }
+        Update: {
+          accepted?: boolean
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
       pro_invoices: {
         Row: {
           amount: number
