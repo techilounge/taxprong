@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, FileText, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Upload, FileText, Clock, CheckCircle, XCircle, Loader2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
@@ -40,6 +41,7 @@ export default function Knowledge() {
   const [title, setTitle] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [deletingDocId, setDeletingDocId] = useState<string | null>(null);
   const { toast } = useToast();
   const { organization } = useOrganization();
 
@@ -146,6 +148,44 @@ export default function Knowledge() {
     }
   };
 
+  const handleDelete = async (docId: string, fileUrl: string) => {
+    try {
+      setDeletingDocId(docId);
+
+      // Extract file path from URL
+      const urlParts = fileUrl.split("/kb-documents/");
+      if (urlParts.length === 2) {
+        const filePath = urlParts[1].split("?")[0]; // Remove query params
+        
+        // Delete from storage
+        const { error: storageError } = await supabase.storage
+          .from("kb-documents")
+          .remove([filePath]);
+
+        if (storageError) {
+          console.error("Storage deletion error:", storageError);
+          // Continue with DB deletion even if storage fails
+        }
+      }
+
+      // Delete from database (cascades to chunks and ingest jobs)
+      const { error: dbError } = await supabase
+        .from("kb_docs")
+        .delete()
+        .eq("id", docId);
+
+      if (dbError) throw dbError;
+
+      toast({ title: "Success", description: "Document deleted successfully" });
+      loadData();
+    } catch (error: any) {
+      console.error("Error deleting document:", error);
+      toast({ title: "Error", description: "Failed to delete document", variant: "destructive" });
+    } finally {
+      setDeletingDocId(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
@@ -218,6 +258,7 @@ export default function Knowledge() {
                     <TableHead>Chunks</TableHead>
                     <TableHead>Uploaded</TableHead>
                     <TableHead>Source</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -227,6 +268,33 @@ export default function Knowledge() {
                       <TableCell><Badge variant="secondary">{doc.chunk_count || 0} chunks</Badge></TableCell>
                       <TableCell>{format(new Date(doc.created_at), "MMM dd, yyyy")}</TableCell>
                       <TableCell>{doc.source_url ? <a href={doc.source_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">View</a> : "-"}</TableCell>
+                      <TableCell className="text-right">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" disabled={deletingDocId === doc.id}>
+                              {deletingDocId === doc.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Document?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete "{doc.title}" and all its chunks from the knowledge base. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(doc.id, doc.file_url)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
