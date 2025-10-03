@@ -1022,7 +1022,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_monthly_vat_tasks: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      send_task_reminders: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "owner" | "staff" | "viewer"
