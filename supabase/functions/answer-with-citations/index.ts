@@ -49,6 +49,13 @@ serve(async (req) => {
     }
 
     const embeddingData = await embeddingResponse.json();
+    console.log('Embedding API response:', JSON.stringify(embeddingData));
+    
+    if (!embeddingData || !embeddingData.data || !embeddingData.data[0]) {
+      console.error('Invalid embedding response format:', embeddingData);
+      throw new Error('Invalid response from embedding API');
+    }
+    
     const queryEmbedding = embeddingData.data[0].embedding;
 
     console.log('Query embedding generated, performing vector search');
