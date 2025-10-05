@@ -13,6 +13,15 @@ serve(async (req) => {
   }
 
   try {
+    // Get auth token from request
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { org_id, request_id } = await req.json();
 
     if (!org_id || !request_id) {
@@ -25,6 +34,46 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Verify the user has access to this org
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if user is an owner or staff member of the org
+    const { data: orgUser, error: orgError } = await supabase
+      .from('org_users')
+      .select('role')
+      .eq('org_id', org_id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (orgError || !orgUser || !['owner', 'staff'].includes(orgUser.role)) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: You must be an org owner or staff member to export data' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify the export request belongs to this org
+    const { data: exportRequestData, error: requestError } = await supabase
+      .from('data_export_requests')
+      .select('org_id, requested_by')
+      .eq('id', request_id)
+      .single();
+
+    if (requestError || !exportRequestData || exportRequestData.org_id !== org_id) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid export request' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     console.log(`Starting export for org: ${org_id}, request: ${request_id}`);
 

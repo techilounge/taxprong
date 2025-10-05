@@ -1648,6 +1648,13 @@ export type Database = {
       }
     }
     Functions: {
+      assign_user_role: {
+        Args: {
+          role_name: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       binary_quantize: {
         Args: { "": string } | { "": unknown }
         Returns: unknown
@@ -1757,6 +1764,13 @@ export type Database = {
           score: number
           text: string
         }[]
+      }
+      revoke_user_role: {
+        Args: {
+          role_name: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+        }
+        Returns: undefined
       }
       send_task_reminders: {
         Args: Record<PropertyKey, never>
