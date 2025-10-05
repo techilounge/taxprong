@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
+import { extractText } from 'https://esm.sh/unpdf@0.12.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -49,7 +50,7 @@ async function generateEmbeddingsBatch(texts: string[]): Promise<number[][]> {
   return data.data.map((item: any) => item.embedding);
 }
 
-// Extract text from PDF using pdf-parse
+// Extract text from PDF using unpdf (Deno-compatible)
 async function extractTextFromPDF(fileUrl: string): Promise<string> {
   console.log('Fetching PDF from:', fileUrl);
   
@@ -63,12 +64,19 @@ async function extractTextFromPDF(fileUrl: string): Promise<string> {
     const pdfBuffer = await pdfResponse.arrayBuffer();
     console.log(`PDF downloaded, size: ${pdfBuffer.byteLength} bytes`);
 
-    // Use pdf-parse library to extract text
-    const pdfParse = await import('https://esm.sh/pdf-parse@1.1.1');
-    const data = await pdfParse.default(new Uint8Array(pdfBuffer));
+    // Use unpdf to extract text (Deno-compatible, based on Mozilla PDF.js)
+    const data = await extractText(new Uint8Array(pdfBuffer), {
+      mergePages: true // Merge all pages into single text
+    });
     
-    console.log(`Extracted ${data.text.length} characters from ${data.numpages} pages`);
-    return data.text;
+    const fullText = data.text;
+    console.log(`Extracted ${fullText.length} characters from PDF`);
+    
+    if (!fullText || fullText.trim().length < 50) {
+      throw new Error('PDF appears to be empty or contains only images. Ensure PDF has searchable text.');
+    }
+    
+    return fullText;
   } catch (error) {
     console.error('Error extracting PDF text:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
