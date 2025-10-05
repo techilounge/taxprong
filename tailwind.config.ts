@@ -81,7 +81,8 @@ export default {
         'sm': 'var(--shadow-sm)',
         'md': 'var(--shadow-md)',
         'lg': 'var(--shadow-lg)',
-        'emerald': 'var(--shadow-emerald)',
+        'brand': 'var(--shadow-brand)',
+        'emerald': 'var(--shadow-brand)', // legacy alias
       },
       borderRadius: {
         lg: "var(--radius)",

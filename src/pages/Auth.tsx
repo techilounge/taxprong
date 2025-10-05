@@ -78,8 +78,10 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="bg-white p-3 rounded-xl shadow-emerald">
-              <FileText className="h-8 w-8 text-primary" />
+            <div className="bg-white p-3 rounded-xl shadow-brand">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-primary text-white font-bold text-xl">
+                TP
+              </div>
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">TaxProNG</h1>

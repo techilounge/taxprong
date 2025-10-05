@@ -8,31 +8,31 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Nigeria Tax Theme - Emerald Green & Professional */
+    /* TaxProNG Theme - Professional Teal & Navy */
     --background: 0 0% 100%;
-    --foreground: 158 64% 12%;
+    --foreground: 210 24% 16%;
 
     --card: 0 0% 100%;
-    --card-foreground: 158 64% 12%;
+    --card-foreground: 210 24% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 158 64% 12%;
+    --popover-foreground: 210 24% 16%;
 
-    /* Primary: Emerald Green (Nigeria theme) */
-    --primary: 158 64% 52%;
+    /* Primary: Professional Teal (Trust & Growth) */
+    --primary: 174 62% 47%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 158 64% 42%;
+    --primary-hover: 174 62% 37%;
     
-    /* Secondary: Teal accent */
-    --secondary: 174 44% 49%;
+    /* Secondary: Deep Navy (Authority) */
+    --secondary: 210 29% 24%;
     --secondary-foreground: 0 0% 100%;
 
     /* Muted: Soft gray backgrounds */
-    --muted: 156 8% 95%;
-    --muted-foreground: 158 12% 45%;
+    --muted: 210 10% 96%;
+    --muted-foreground: 210 10% 46%;
 
-    /* Accent: Success green */
-    --accent: 142 71% 45%;
+    /* Accent: Success teal */
+    --accent: 158 64% 52%;
     --accent-foreground: 0 0% 100%;
 
     /* Destructive: Red for errors */
@@ -43,84 +43,84 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    /* Info: Blue */
-    --info: 217 91% 60%;
+    /* Info: Professional Blue */
+    --info: 210 100% 56%;
     --info-foreground: 0 0% 100%;
 
-    --border: 158 12% 88%;
-    --input: 158 12% 90%;
-    --ring: 158 64% 52%;
+    --border: 210 10% 90%;
+    --input: 210 10% 92%;
+    --ring: 174 62% 47%;
 
     --radius: 0.5rem;
 
-    /* Sidebar: Clean white with emerald accents */
+    /* Sidebar: Clean white with teal accents */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 158 24% 25%;
-    --sidebar-primary: 158 64% 52%;
+    --sidebar-foreground: 210 24% 20%;
+    --sidebar-primary: 174 62% 47%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 156 8% 96%;
-    --sidebar-accent-foreground: 158 64% 52%;
-    --sidebar-border: 158 12% 92%;
-    --sidebar-ring: 158 64% 52%;
+    --sidebar-accent: 210 10% 97%;
+    --sidebar-accent-foreground: 174 62% 47%;
+    --sidebar-border: 210 10% 93%;
+    --sidebar-ring: 174 62% 47%;
 
     /* Status colors */
     --status-pending: 38 92% 50%;
-    --status-paid: 142 71% 45%;
+    --status-paid: 158 64% 52%;
     --status-overdue: 0 72% 51%;
     --status-draft: 220 13% 69%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(158 64% 52%), hsl(174 44% 49%));
-    --gradient-hero: linear-gradient(135deg, hsl(158 64% 45%), hsl(158 84% 35%));
+    --gradient-primary: linear-gradient(135deg, hsl(174 62% 47%), hsl(210 29% 24%));
+    --gradient-hero: linear-gradient(135deg, hsl(174 62% 40%), hsl(174 72% 30%));
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-emerald: 0 4px 14px 0 hsla(158, 64%, 52%, 0.25);
+    --shadow-brand: 0 4px 14px 0 hsla(174, 62%, 47%, 0.25);
 
     /* Animation */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 158 24% 8%;
-    --foreground: 156 8% 95%;
+    --background: 210 24% 10%;
+    --foreground: 210 10% 95%;
 
-    --card: 158 20% 12%;
-    --card-foreground: 156 8% 95%;
+    --card: 210 20% 14%;
+    --card-foreground: 210 10% 95%;
 
-    --popover: 158 20% 12%;
-    --popover-foreground: 156 8% 95%;
+    --popover: 210 20% 14%;
+    --popover-foreground: 210 10% 95%;
 
-    --primary: 158 64% 52%;
+    --primary: 174 62% 47%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 158 64% 62%;
+    --primary-hover: 174 62% 57%;
 
-    --secondary: 174 44% 49%;
+    --secondary: 210 29% 24%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 158 16% 16%;
-    --muted-foreground: 156 8% 65%;
+    --muted: 210 16% 18%;
+    --muted-foreground: 210 10% 65%;
 
-    --accent: 142 71% 45%;
+    --accent: 158 64% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 158 16% 20%;
-    --input: 158 16% 20%;
-    --ring: 158 64% 52%;
+    --border: 210 16% 22%;
+    --input: 210 16% 22%;
+    --ring: 174 62% 47%;
 
-    --sidebar-background: 158 20% 10%;
-    --sidebar-foreground: 156 8% 85%;
-    --sidebar-primary: 158 64% 52%;
+    --sidebar-background: 210 20% 12%;
+    --sidebar-foreground: 210 10% 85%;
+    --sidebar-primary: 174 62% 47%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 158 16% 16%;
-    --sidebar-accent-foreground: 158 64% 52%;
-    --sidebar-border: 158 16% 18%;
-    --sidebar-ring: 158 64% 52%;
+    --sidebar-accent: 210 16% 18%;
+    --sidebar-accent-foreground: 174 62% 47%;
+    --sidebar-border: 210 16% 20%;
+    --sidebar-ring: 174 62% 47%;
   }
 }
 
