@@ -86,8 +86,8 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) =>
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary pl-3"
-                          : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <item.icon className="h-4 w-4" />
@@ -112,8 +112,8 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) =>
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary pl-3"
-                          : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <item.icon className="h-4 w-4" />
@@ -145,8 +145,8 @@ export function AppSidebar() {
                       to="/admin"
                       className={({ isActive }) =>
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary pl-3"
-                          : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <Shield className="h-4 w-4" />
@@ -161,8 +161,8 @@ export function AppSidebar() {
                     to="/settings"
                     className={({ isActive }) =>
                       isActive
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary pl-3"
-                        : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                        : "hover:bg-sidebar-accent/50"
                     }
                   >
                     <Settings className="h-4 w-4" />
