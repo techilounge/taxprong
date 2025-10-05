@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { DeleteRequestReview } from "@/components/admin/DeleteRequestReview";
+import { SecurityMonitor } from "@/components/admin/SecurityMonitor";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Loader2 } from "lucide-react";
 
@@ -35,11 +37,24 @@ export default function Admin() {
         <div>
           <h1 className="text-3xl font-bold">Admin Panel</h1>
           <p className="text-muted-foreground">
-            Review and manage data deletion requests
+            System administration, security monitoring, and data management
           </p>
         </div>
 
-        <DeleteRequestReview />
+        <Tabs defaultValue="security" className="w-full">
+          <TabsList>
+            <TabsTrigger value="security">Security Monitor</TabsTrigger>
+            <TabsTrigger value="delete-requests">Delete Requests</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="security" className="space-y-6">
+            <SecurityMonitor />
+          </TabsContent>
+
+          <TabsContent value="delete-requests" className="space-y-6">
+            <DeleteRequestReview />
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );

@@ -187,7 +187,7 @@ Provide a clear, accurate answer with citations.`;
 
       console.log('Generated answer with citations:', citations);
 
-      // Step 5: Save to qa_citations
+      // Step 5: Save to qa_citations with user tracking
       const { error: insertError } = await supabase
         .from('qa_citations')
         .insert({
@@ -195,6 +195,7 @@ Provide a clear, accurate answer with citations.`;
           question: query,
           answer: answer,
           citations: citations,
+          user_id: user.id, // Track which user asked the question
         });
 
       if (insertError) {
@@ -288,7 +289,7 @@ Provide a clear, accurate answer with citations.`;
 
     console.log('Generated answer with citations:', citations);
 
-    // Step 5: Save to qa_citations
+    // Step 5: Save to qa_citations with user tracking
     const { error: insertError } = await supabase
       .from('qa_citations')
       .insert({
@@ -296,6 +297,7 @@ Provide a clear, accurate answer with citations.`;
         question: query,
         answer: answer,
         citations: citations,
+        user_id: user.id, // Track which user asked the question
       });
 
     if (insertError) {
