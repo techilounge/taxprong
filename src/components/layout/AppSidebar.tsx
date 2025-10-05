@@ -87,7 +87,7 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary"
-                          : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <item.icon className="h-4 w-4" />
@@ -113,7 +113,7 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary"
-                          : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <item.icon className="h-4 w-4" />
@@ -146,7 +146,7 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary"
-                          : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                          : "hover:bg-sidebar-accent/50"
                       }
                     >
                       <Shield className="h-4 w-4" />
@@ -162,7 +162,7 @@ export function AppSidebar() {
                     className={({ isActive }) =>
                       isActive
                         ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border-l-4 border-primary"
-                        : "hover:bg-sidebar-accent/50 border-l-4 border-transparent"
+                        : "hover:bg-sidebar-accent/50"
                     }
                   >
                     <Settings className="h-4 w-4" />

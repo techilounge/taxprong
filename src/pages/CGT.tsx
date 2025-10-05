@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TrendingUp, Plus, Trash2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { TaxQAPanel } from "@/components/tax/TaxQAPanel";
+import { FloatingTaxQA } from "@/components/tax/FloatingTaxQA";
 
 interface CGTEvent {
   id?: string;
@@ -165,9 +165,7 @@ export default function CGT() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Main Content */}
-        <div className="flex-1 container mx-auto py-6 space-y-6">
+      <div className="container mx-auto py-6 space-y-6">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold">Capital Gains Tax (CGT)</h1>
@@ -387,18 +385,12 @@ export default function CGT() {
               </CardContent>
             </Card>
           )}
-        </div>
 
-        {/* Right Side Q&A Panel */}
-        <div className="lg:w-96 lg:shrink-0">
-          <div className="lg:sticky lg:top-6">
-          <TaxQAPanel
-            orgId={organization?.id || null}
-            returnType="cit"
-            onInsertNote={() => toast.success("Note saved")}
-          />
-          </div>
-        </div>
+        <FloatingTaxQA
+          orgId={organization?.id || ""}
+          returnType="cit"
+          onInsertNote={() => { toast.success("Note saved"); }}
+        />
       </div>
     </DashboardLayout>
   );

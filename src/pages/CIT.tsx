@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { TaxQAPanel } from "@/components/tax/TaxQAPanel";
+import { FloatingTaxQA } from "@/components/tax/FloatingTaxQA";
 
 export default function CIT() {
   const { organization, loading: orgLoading } = useOrganization();
@@ -170,9 +170,7 @@ export default function CIT() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Main Content */}
-        <div className="flex-1 container mx-auto py-6 space-y-6">
+      <div className="container mx-auto py-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">CIT & Development Levy</h1>
@@ -335,19 +333,13 @@ export default function CIT() {
             </Card>
           </div>
         )}
-      </div>
 
-      {/* Right Side Q&A Panel */}
-      <div className="lg:w-96 lg:shrink-0">
-        <div className="lg:sticky lg:top-6 lg:mt-6">
-          <TaxQAPanel
-            orgId={organization?.id || null}
-            returnType="cit"
-            onInsertNote={handleInsertCITNote}
-          />
-        </div>
+        <FloatingTaxQA
+          orgId={organization?.id || ""}
+          returnType="cit"
+          onInsertNote={handleInsertCITNote}
+        />
       </div>
-    </div>
     </DashboardLayout>
   );
 }

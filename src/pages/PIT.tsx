@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calculator, FileDown } from "lucide-react";
 import { toast } from "sonner";
-import { TaxQAPanel } from "@/components/tax/TaxQAPanel";
+import { FloatingTaxQA } from "@/components/tax/FloatingTaxQA";
 
 const PIT = () => {
   const [annualIncome, setAnnualIncome] = useState("");
@@ -98,9 +98,7 @@ const PIT = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Main Content */}
-        <div className="flex-1 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -242,17 +240,11 @@ const PIT = () => {
         </Card>
       </div>
 
-      {/* Right Side Q&A Panel */}
-      <div className="lg:w-96 lg:shrink-0">
-        <div className="lg:sticky lg:top-6">
-          <TaxQAPanel
-            orgId={null}
-            returnType="pit"
-            onInsertNote={handleInsertPITNote}
-          />
-        </div>
-      </div>
-    </div>
+      <FloatingTaxQA
+        orgId=""
+        returnType="pit"
+        onInsertNote={handleInsertPITNote}
+      />
     </DashboardLayout>
   );
 };
