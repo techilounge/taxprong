@@ -1034,6 +1034,7 @@ export type Database = {
           file_url: string
           finished_at: string | null
           id: string
+          progress: number | null
           status: string
         }
         Insert: {
@@ -1043,6 +1044,7 @@ export type Database = {
           file_url: string
           finished_at?: string | null
           id?: string
+          progress?: number | null
           status: string
         }
         Update: {
@@ -1052,6 +1054,7 @@ export type Database = {
           file_url?: string
           finished_at?: string | null
           id?: string
+          progress?: number | null
           status?: string
         }
         Relationships: [

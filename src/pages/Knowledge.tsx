@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Upload, FileText, Clock, CheckCircle, XCircle, Loader2, Trash2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
@@ -30,6 +31,7 @@ interface IngestJob {
   created_at: string;
   finished_at: string | null;
   doc_id: string;
+  progress: number | null;
 }
 
 export default function Knowledge() {
@@ -186,12 +188,22 @@ export default function Knowledge() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, progress: number | null) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Completed</Badge>;
+        return (
+          <div className="space-y-1">
+            <Badge className="bg-green-500"><CheckCircle className="h-3 w-3 mr-1" />Completed</Badge>
+            <Progress value={100} className="h-1.5 w-24" />
+          </div>
+        );
       case "processing":
-        return <Badge variant="secondary"><Loader2 className="h-3 w-3 mr-1 animate-spin" />Processing</Badge>;
+        return (
+          <div className="space-y-1">
+            <Badge variant="secondary"><Loader2 className="h-3 w-3 mr-1 animate-spin" />Processing {progress || 0}%</Badge>
+            <Progress value={progress || 0} className="h-1.5 w-24" />
+          </div>
+        );
       case "failed":
         return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>;
       default:
@@ -324,7 +336,7 @@ export default function Knowledge() {
                 <TableBody>
                   {jobs.map((job) => (
                     <TableRow key={job.id}>
-                      <TableCell>{getStatusBadge(job.status)}</TableCell>
+                      <TableCell>{getStatusBadge(job.status, job.progress)}</TableCell>
                       <TableCell>{format(new Date(job.created_at), "MMM dd, HH:mm")}</TableCell>
                       <TableCell>{job.finished_at ? format(new Date(job.finished_at), "MMM dd, HH:mm") : "-"}</TableCell>
                       <TableCell className="text-destructive">{job.error_message || "-"}</TableCell>

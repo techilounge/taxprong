@@ -163,13 +163,14 @@ async function processDocument(docId: string, supabase: any) {
         }
 
         processedCount += batch.length;
-        console.log(`✓ Batch complete: ${processedCount}/${chunks.length} chunks processed (${Math.round(processedCount / chunks.length * 100)}%)`);
+        const progressPercent = Math.round(processedCount / chunks.length * 100);
+        console.log(`✓ Batch complete: ${processedCount}/${chunks.length} chunks processed (${progressPercent}%)`);
 
-        // Update progress in job table (optional, helps with debugging)
+        // Update progress in job table
         await supabase
           .from('kb_ingest_jobs')
           .update({
-            error_message: `Processing: ${processedCount}/${chunks.length} chunks (${Math.round(processedCount / chunks.length * 100)}%)`,
+            progress: progressPercent,
           })
           .eq('doc_id', docId);
 
@@ -185,7 +186,8 @@ async function processDocument(docId: string, supabase: any) {
       .from('kb_ingest_jobs')
       .update({
         status: 'completed',
-        error_message: null, // Clear progress message
+        progress: 100,
+        error_message: null,
         finished_at: new Date().toISOString(),
       })
       .eq('doc_id', docId);
