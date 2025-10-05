@@ -10,6 +10,7 @@ interface Subscription {
   status: string;
   started_at: string;
   expires_at: string | null;
+  trial_ends_at?: string | null;
 }
 
 const PLAN_FEATURES = {
@@ -140,6 +141,28 @@ export function useSubscription() {
     return limit === -1; // unlimited
   };
 
+  const isTrialActive = (): boolean => {
+    if (!subscription?.trial_ends_at) return false;
+    return new Date(subscription.trial_ends_at) > new Date();
+  };
+
+  const trialDaysRemaining = (): number => {
+    if (!subscription?.trial_ends_at) return 0;
+    const now = new Date();
+    const trialEnd = new Date(subscription.trial_ends_at);
+    const diff = trialEnd.getTime() - now.getTime();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const isExpired = (): boolean => {
+    if (!subscription) return false;
+    if (subscription.status !== "active") return true;
+    if (subscription.expires_at) {
+      return new Date(subscription.expires_at) < new Date();
+    }
+    return false;
+  };
+
   return {
     subscription,
     loading,
@@ -147,5 +170,8 @@ export function useSubscription() {
     hasFeature,
     canCreate,
     reload: loadSubscription,
+    isTrialActive,
+    trialDaysRemaining,
+    isExpired,
   };
 }

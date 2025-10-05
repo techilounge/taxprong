@@ -27,6 +27,7 @@ import Admin from "./pages/Admin";
 import Analytics from "./pages/Analytics";
 import FilingEvents from "./pages/FilingEvents";
 import Stamp from "./pages/Stamp";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ function App() {
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/filing-events" element={<FilingEvents />} />
           <Route path="/stamp" element={<Stamp />} />
+          <Route path="/support" element={<Support />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

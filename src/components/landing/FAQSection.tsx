@@ -19,12 +19,12 @@ const faqs = [
   {
     question: "How long does it take to get started?",
     answer:
-      "You can get started in less than 10 minutes. Simply sign up, add your business information, and you're ready to go. Our onboarding wizard guides you through the process step-by-step.",
+      "You can get started in less than 10 minutes. Simply sign up, add your business information, and you're ready to go.",
   },
   {
     question: "Can I import my existing tax data?",
     answer:
-      "Yes! TaxProNG supports importing data from Excel, CSV files, and direct bank connections. We also offer migration assistance for customers moving from other systems.",
+      "Yes! TaxProNG supports importing data from Excel and CSV files. Our platform makes it easy to migrate your existing records.",
   },
   {
     question: "What types of taxes does TaxProNG support?",
@@ -34,22 +34,22 @@ const faqs = [
   {
     question: "Is my data secure?",
     answer:
-      "Absolutely. We use bank-level 256-bit encryption, SOC 2 compliance, and regular security audits. Your data is stored on secure servers with automated backups. We never share your data with third parties.",
+      "Absolutely. We use bank-level 256-bit encryption and regular security audits. Your data is stored on secure servers with automated backups. We never share your data with third parties.",
   },
   {
     question: "Do you offer training and support?",
     answer:
-      "Yes! We provide comprehensive onboarding, video tutorials, knowledge base, email support, and priority phone support for Professional and Enterprise plans. Enterprise customers get dedicated account managers.",
+      "Yes! We provide comprehensive tutorials, knowledge base articles, and email support. Contact us through the support form for assistance.",
   },
   {
     question: "Can I use TaxProNG for multiple businesses?",
     answer:
-      "Yes. Our Professional plan supports up to 10 business profiles, and Enterprise plans support unlimited profiles. Perfect for tax consultants managing multiple clients.",
+      "Yes. Our Professional plan supports up to 3 business profiles, Business plan supports 10, and Enterprise plans support unlimited profiles. Perfect for tax consultants managing multiple clients.",
   },
   {
     question: "What happens after my free trial?",
     answer:
-      "After your 14-day free trial, you can choose to subscribe to a paid plan. If you don't subscribe, your account will remain active in read-only mode for 30 days, allowing you to export your data.",
+      "You can continue with our free plan which includes basic features, or upgrade to a paid plan for additional capabilities like CIT calculations, bank import, and advanced reporting.",
   },
   {
     question: "Can I cancel anytime?",
@@ -57,29 +57,24 @@ const faqs = [
       "Yes, you can cancel your subscription anytime. No long-term contracts or cancellation fees. If you cancel, you'll have access until the end of your billing period.",
   },
   {
-    question: "Do you offer refunds?",
-    answer:
-      "Yes, we offer a 30-day money-back guarantee. If you're not satisfied within the first 30 days, we'll refund your payment in full, no questions asked.",
-  },
-  {
     question: "Is there a mobile app?",
     answer:
-      "Yes! TaxProNG is available on iOS and Android. Access your tax information, receive deadline reminders, and use the AI advisor on the go.",
+      "TaxProNG is fully responsive and works on all devices. Access your tax information from any smartphone or tablet browser.",
   },
   {
-    question: "Can TaxProNG integrate with my accounting software?",
+    question: "Can I export my data?",
     answer:
-      "Yes, we integrate with popular accounting software including QuickBooks, Sage, and Xero. We also offer API access for custom integrations on Enterprise plans.",
+      "Yes, you can export your data in CSV and JSON formats at any time. We support standard accounting software formats for easy integration with your existing tools.",
   },
   {
     question: "What about e-invoicing requirements?",
     answer:
-      "TaxProNG is ready for Nigeria's upcoming e-invoicing mandate (2026). We're working with FIRS to ensure seamless compliance when the system goes live.",
+      "TaxProNG is preparing for Nigeria's upcoming e-invoicing mandate (2026). We're monitoring FIRS guidelines to ensure seamless compliance when the system goes live.",
   },
   {
-    question: "Do you offer professional services?",
+    question: "How do I get help?",
     answer:
-      "Yes, we offer professional services including setup assistance, data migration, custom reporting, and tax advisory services. Contact our sales team for details.",
+      "Use our email support form to reach our team. We also have comprehensive documentation and tutorials available in the knowledge base.",
   },
   {
     question: "How accurate is the AI Tax Advisor?",
@@ -150,10 +145,12 @@ export const FAQSection = () => {
                 Our support team is here to help you 24/7
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" onClick={() => window.location.href = '/knowledge'}>
                   Visit Help Center
                 </Button>
-                <Button size="lg">Contact Support</Button>
+                <Button size="lg" onClick={() => window.location.href = '/support'}>
+                  Contact Support
+                </Button>
               </div>
             </CardContent>
           </Card>
