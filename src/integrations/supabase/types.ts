@@ -101,7 +101,6 @@ export type Database = {
       }
       backup_settings: {
         Row: {
-          access_key: string | null
           access_key_encrypted: string | null
           access_key_nonce: string | null
           bucket: string
@@ -111,13 +110,11 @@ export type Database = {
           prefix: string
           provider: string
           region: string | null
-          secret_key: string | null
           secret_key_encrypted: string | null
           secret_key_nonce: string | null
           updated_at: string
         }
         Insert: {
-          access_key?: string | null
           access_key_encrypted?: string | null
           access_key_nonce?: string | null
           bucket: string
@@ -127,13 +124,11 @@ export type Database = {
           prefix?: string
           provider: string
           region?: string | null
-          secret_key?: string | null
           secret_key_encrypted?: string | null
           secret_key_nonce?: string | null
           updated_at?: string
         }
         Update: {
-          access_key?: string | null
           access_key_encrypted?: string | null
           access_key_nonce?: string | null
           bucket?: string
@@ -143,7 +138,6 @@ export type Database = {
           prefix?: string
           provider?: string
           region?: string | null
-          secret_key?: string | null
           secret_key_encrypted?: string | null
           secret_key_nonce?: string | null
           updated_at?: string
