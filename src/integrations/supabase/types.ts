@@ -161,6 +161,66 @@ export type Database = {
           },
         ]
       }
+      bank_import_history: {
+        Row: {
+          bank_name: string | null
+          business_id: string | null
+          created_at: string
+          error_details: Json | null
+          failed_rows: number
+          file_name: string
+          id: string
+          import_batch_id: string | null
+          imported_by: string
+          org_id: string
+          successful_rows: number
+          total_rows: number
+        }
+        Insert: {
+          bank_name?: string | null
+          business_id?: string | null
+          created_at?: string
+          error_details?: Json | null
+          failed_rows?: number
+          file_name: string
+          id?: string
+          import_batch_id?: string | null
+          imported_by: string
+          org_id: string
+          successful_rows?: number
+          total_rows?: number
+        }
+        Update: {
+          bank_name?: string | null
+          business_id?: string | null
+          created_at?: string
+          error_details?: Json | null
+          failed_rows?: number
+          file_name?: string
+          id?: string
+          import_batch_id?: string | null
+          imported_by?: string
+          org_id?: string
+          successful_rows?: number
+          total_rows?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_import_history_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_import_history_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bank_txns: {
         Row: {
           amount: number
@@ -986,6 +1046,42 @@ export type Database = {
           },
         ]
       }
+      onboarding_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          completed_steps: Json
+          created_at: string
+          current_step: number
+          id: string
+          skipped: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_steps?: Json
+          created_at?: string
+          current_step?: number
+          id?: string
+          skipped?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_steps?: Json
+          created_at?: string
+          current_step?: number
+          id?: string
+          skipped?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       org_users: {
         Row: {
           created_at: string
@@ -1199,6 +1295,71 @@ export type Database = {
             columns: ["pro_id"]
             isOneToOne: false
             referencedRelation: "pros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_services_requests: {
+        Row: {
+          admin_notes: string | null
+          assigned_to: string | null
+          budget_range: string | null
+          company_name: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          description: string
+          id: string
+          org_id: string | null
+          preferred_date: string | null
+          service_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          budget_range?: string | null
+          company_name?: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          org_id?: string | null
+          preferred_date?: string | null
+          service_type: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          budget_range?: string | null
+          company_name?: string | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          org_id?: string | null
+          preferred_date?: string | null
+          service_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_services_requests_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
             referencedColumns: ["id"]
           },
         ]

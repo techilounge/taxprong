@@ -15,6 +15,8 @@ import {
   Clock
 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
+import { TrialBanner } from "@/components/dashboard/TrialBanner";
 import { TaxDocumentGenerator } from "@/components/documents/TaxDocumentGenerator";
 import { toast } from "sonner";
 
@@ -113,7 +115,9 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
+      <OnboardingWizard />
       <div className="space-y-6">
+        <TrialBanner />
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
