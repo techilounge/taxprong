@@ -13,7 +13,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.answer-with-citations]
-verify_jwt = false
+verify_jwt = true
 
 [functions.export-org-data]
 verify_jwt = true
@@ -22,4 +22,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.tax-advisor-chat]
-verify_jwt = false
+verify_jwt = true
