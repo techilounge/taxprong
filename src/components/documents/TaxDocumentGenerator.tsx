@@ -379,10 +379,9 @@ export function TaxDocumentGenerator() {
         {/* Info */}
         <div className="bg-muted/50 p-3 rounded-lg text-xs space-y-1">
           <p>💡 <strong>Coming Soon:</strong></p>
-          <p>• Automated PDF generation with official templates</p>
           <p>• Digital signature integration</p>
-          <p>• Bulk document generation</p>
           <p>• Direct submission to NRS portal</p>
+          <p>• Enhanced PDF formatting with official NRS templates</p>
         </div>
       </CardContent>
     </Card>
