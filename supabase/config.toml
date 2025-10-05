@@ -23,3 +23,6 @@ verify_jwt = true
 
 [functions.tax-advisor-chat]
 verify_jwt = true
+
+[functions.generate-tax-document]
+verify_jwt = true

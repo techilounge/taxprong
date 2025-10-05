@@ -825,6 +825,66 @@ export type Database = {
           },
         ]
       }
+      generated_documents: {
+        Row: {
+          business_id: string | null
+          created_at: string | null
+          created_by: string
+          document_metadata: Json | null
+          downloaded_at: string | null
+          file_size: number | null
+          file_url: string
+          id: string
+          org_id: string
+          period: string
+          status: string
+          template_id: string
+        }
+        Insert: {
+          business_id?: string | null
+          created_at?: string | null
+          created_by: string
+          document_metadata?: Json | null
+          downloaded_at?: string | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          org_id: string
+          period: string
+          status?: string
+          template_id: string
+        }
+        Update: {
+          business_id?: string | null
+          created_at?: string | null
+          created_by?: string
+          document_metadata?: Json | null
+          downloaded_at?: string | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          org_id?: string
+          period?: string
+          status?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_documents_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_documents_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           business_id: string

@@ -80,30 +80,54 @@ export function TaxDocumentGenerator() {
       return;
     }
 
+    if (!period) {
+      toast.error("Please select a period");
+      return;
+    }
+
     setIsGenerating(true);
 
     try {
       const template = DOCUMENT_TEMPLATES.find((t) => t.id === selectedTemplate);
       
-      // Simulate document generation
-      // In production, this would call an edge function to generate actual PDFs
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Call edge function to generate PDF
+      const { data, error } = await supabase.functions.invoke('generate-tax-document', {
+        body: {
+          templateId: selectedTemplate,
+          period: period,
+          businessId: organization.businesses?.[0]?.id, // Use first business if available
+          orgId: organization.id,
+        },
+      });
+
+      if (error) throw error;
 
       // Log audit
       await supabase.from("audit_logs").insert({
         entity: "document",
-        entity_id: selectedTemplate,
+        entity_id: data.document.id,
         action: "export",
         user_id: (await supabase.auth.getUser()).data.user?.id,
       });
 
       toast.success(`${template?.name} generated successfully!`);
       
-      // In production, this would trigger a download
-      // For now, just show success message
+      // Trigger download
+      if (data.downloadUrl) {
+        const link = document.createElement('a');
+        link.href = data.downloadUrl;
+        link.download = `${selectedTemplate}-${period}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Reset form
+      setSelectedTemplate("");
+      setPeriod("");
     } catch (error) {
       console.error("Document generation error:", error);
-      toast.error("Failed to generate document");
+      toast.error("Failed to generate document. Please try again.");
     } finally {
       setIsGenerating(false);
     }
