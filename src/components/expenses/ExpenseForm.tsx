@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,6 +75,7 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
   const [receiptFiles, setReceiptFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { canCreate } = useSubscription();
 
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(expenseSchema),
@@ -240,7 +242,14 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
 
         toast.success("Expense updated successfully!");
       } else {
-        // Create new expense
+        // Create new expense - check plan limits first
+        const limitCheck = await canCreate("expense", orgId);
+        if (!limitCheck.allowed) {
+          toast.error(limitCheck.message || "Plan limit reached. Upgrade to add more expenses.");
+          setUploading(false);
+          return;
+        }
+
         const { data: newExpense, error } = await supabase
           .from("expenses")
           .insert(expenseData)

@@ -11,6 +11,7 @@ import { BackupSettings } from "@/components/settings/BackupSettings";
 import { BackupRuns } from "@/components/settings/BackupRuns";
 import { TestDataGenerator } from "@/components/dev/TestDataGenerator";
 import { OnboardingControl } from "@/components/settings/OnboardingControl";
+import { PlanUsage } from "@/components/settings/PlanUsage";
 
 const PRICING_PLANS = [
   {
@@ -136,6 +137,8 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
+
+        <PlanUsage />
 
         <div>
           <h2 className="text-2xl font-bold mb-4">Available Plans</h2>

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -26,6 +27,7 @@ interface BusinessStepProps {
 export const BusinessStep = ({ onNext }: BusinessStepProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { canCreate } = useSubscription();
 
   const form = useForm<BusinessFormData>({
     resolver: zodResolver(businessSchema),
@@ -41,6 +43,18 @@ export const BusinessStep = ({ onNext }: BusinessStepProps) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
+
+      // Check plan limits before creating
+      const limitCheck = await canCreate("business");
+      if (!limitCheck.allowed) {
+        toast({
+          title: "Plan Limit Reached",
+          description: limitCheck.message || "Upgrade your plan to add more businesses",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
 
       // Create or get organization
       let orgId;

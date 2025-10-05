@@ -1634,6 +1634,7 @@ export type Database = {
           plan: string
           started_at: string
           status: string
+          trial_ends_at: string | null
           user_id: string
         }
         Insert: {
@@ -1643,6 +1644,7 @@ export type Database = {
           plan: string
           started_at?: string
           status?: string
+          trial_ends_at?: string | null
           user_id: string
         }
         Update: {
@@ -1652,6 +1654,7 @@ export type Database = {
           plan?: string
           started_at?: string
           status?: string
+          trial_ends_at?: string | null
           user_id?: string
         }
         Relationships: []

@@ -132,13 +132,69 @@ export function useSubscription() {
     return PLAN_FEATURES[plan][feature] as boolean;
   };
 
-  const canCreate = (type: "business" | "expense"): boolean => {
-    if (!subscription) return true;
+  const canCreate = async (type: "business" | "expense", orgId?: string): Promise<{ allowed: boolean; current: number; limit: number; message?: string }> => {
+    if (!subscription) {
+      return { allowed: true, current: 0, limit: -1 };
+    }
+
     const plan = subscription.plan as SubscriptionPlan;
     const limit = type === "business" 
       ? PLAN_FEATURES[plan].maxBusinesses 
       : PLAN_FEATURES[plan].maxExpenses;
-    return limit === -1; // unlimited
+
+    // Unlimited plan
+    if (limit === -1) {
+      return { allowed: true, current: 0, limit: -1 };
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        return { allowed: false, current: 0, limit, message: "User not authenticated" };
+      }
+
+      let current = 0;
+
+      if (type === "business") {
+        // Count non-deleted businesses for the org
+        const { count, error } = await supabase
+          .from("businesses")
+          .select("*", { count: "exact", head: true })
+          .is("deleted_at", null);
+        
+        if (error) throw error;
+        current = count || 0;
+      } else {
+        // Count expenses for current month
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
+        let query = supabase
+          .from("expenses")
+          .select("*", { count: "exact", head: true })
+          .gte("created_at", startOfMonth.toISOString());
+
+        if (orgId) {
+          query = query.eq("org_id", orgId);
+        }
+
+        const { count, error } = await query;
+        
+        if (error) throw error;
+        current = count || 0;
+      }
+
+      const allowed = current < limit;
+      const message = allowed 
+        ? undefined 
+        : `You've reached your plan limit of ${limit} ${type === "business" ? "businesses" : "expenses per month"}. Please upgrade your plan to add more.`;
+
+      return { allowed, current, limit, message };
+    } catch (error) {
+      console.error("Error checking limits:", error);
+      return { allowed: false, current: 0, limit, message: "Error checking plan limits" };
+    }
   };
 
   const isTrialActive = (): boolean => {
