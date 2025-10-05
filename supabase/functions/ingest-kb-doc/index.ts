@@ -20,8 +20,8 @@ function chunkText(text: string, chunkSize = 900, overlap = 150): string[] {
   return chunks;
 }
 
-// Generate embeddings using Lovable AI
-async function generateEmbedding(text: string): Promise<number[]> {
+// Generate embeddings in batch for efficiency
+async function generateEmbeddingsBatch(texts: string[]): Promise<number[][]> {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   if (!LOVABLE_API_KEY) {
     throw new Error('LOVABLE_API_KEY not configured');
@@ -35,18 +35,18 @@ async function generateEmbedding(text: string): Promise<number[]> {
     },
     body: JSON.stringify({
       model: 'text-embedding-3-small',
-      input: text,
+      input: texts,
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Embedding API error:', response.status, errorText);
-    throw new Error(`Failed to generate embedding: ${response.status}`);
+    console.error('Batch embedding API error:', response.status, errorText);
+    throw new Error(`Failed to generate embeddings: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
-  return data.data[0].embedding;
+  return data.data.map((item: any) => item.embedding);
 }
 
 // Extract text from PDF using pdf-parse
@@ -76,8 +76,11 @@ async function extractTextFromPDF(fileUrl: string): Promise<string> {
   }
 }
 
-// Background processing function
+// Background processing function with timeout and progress tracking
 async function processDocument(docId: string, supabase: any) {
+  const startTime = Date.now();
+  const TIMEOUT_MS = 4 * 60 * 1000; // 4 minutes (leaving 1 min buffer for 5 min function limit)
+  
   console.log(`Starting background processing for document: ${docId}`);
   
   try {
@@ -88,68 +91,123 @@ async function processDocument(docId: string, supabase: any) {
       .eq('id', docId)
       .single();
 
-    if (docError) throw docError;
+    if (docError) {
+      throw new Error(`Failed to fetch document: ${docError.message}`);
+    }
 
-    // Extract text from PDF
-    const fullText = await extractTextFromPDF(doc.file_url);
+    console.log(`Processing document: ${doc.title}, URL: ${doc.file_url}`);
+
+    // Check for API key early
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured - contact support');
+    }
+
+    // Extract text from PDF with better error handling
+    let fullText: string;
+    try {
+      fullText = await extractTextFromPDF(doc.file_url);
+      
+      if (!fullText || fullText.trim().length < 50) {
+        throw new Error('PDF appears to be empty or text extraction failed. Ensure PDF contains searchable text, not just images.');
+      }
+      
+      console.log(`Successfully extracted ${fullText.length} characters from PDF`);
+    } catch (error) {
+      const errMsg = error instanceof Error ? error.message : 'Unknown PDF error';
+      throw new Error(`PDF extraction failed: ${errMsg}`);
+    }
 
     // Chunk the text
     const chunks = chunkText(fullText);
-    console.log(`Created ${chunks.length} chunks`);
+    console.log(`Created ${chunks.length} chunks to process`);
 
-    // Process chunks with embeddings in batches to manage memory
-    const batchSize = 5;
+    if (chunks.length === 0) {
+      throw new Error('No text chunks created from document');
+    }
+
+    // Process chunks in batches with progress tracking
+    const batchSize = 10; // Process 10 chunks at a time for efficiency
+    let processedCount = 0;
+    
     for (let i = 0; i < chunks.length; i += batchSize) {
+      // Check timeout
+      if (Date.now() - startTime > TIMEOUT_MS) {
+        throw new Error(`Processing timeout after ${Math.floor((Date.now() - startTime) / 1000)}s. Try uploading a smaller document or splitting it into parts.`);
+      }
+
       const batch = chunks.slice(i, Math.min(i + batchSize, chunks.length));
+      const batchStartIndex = i;
       
-      for (let j = 0; j < batch.length; j++) {
-        const chunkIndex = i + j;
-        const chunkText = batch[j];
-        
-        // Generate embedding
-        const embedding = await generateEmbedding(chunkText);
+      console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(chunks.length / batchSize)} (chunks ${i + 1}-${i + batch.length})`);
 
-        // Insert chunk
-        const { error: chunkError } = await supabase
+      try {
+        // Generate embeddings for entire batch at once (much faster)
+        const embeddings = await generateEmbeddingsBatch(batch);
+
+        // Insert all chunks from this batch
+        const chunkRecords = batch.map((text, idx) => ({
+          doc_id: docId,
+          chunk_index: batchStartIndex + idx,
+          text: text,
+          embedding: embeddings[idx],
+        }));
+
+        const { error: insertError } = await supabase
           .from('kb_chunks')
-          .insert({
-            doc_id: docId,
-            chunk_index: chunkIndex,
-            text: chunkText,
-            embedding: embedding,
-          });
+          .insert(chunkRecords);
 
-        if (chunkError) {
-          console.error('Error inserting chunk:', chunkError);
-          throw chunkError;
+        if (insertError) {
+          console.error('Batch insert error:', insertError);
+          throw new Error(`Failed to insert chunks: ${insertError.message}`);
         }
 
-        console.log(`Processed chunk ${chunkIndex + 1}/${chunks.length}`);
+        processedCount += batch.length;
+        console.log(`✓ Batch complete: ${processedCount}/${chunks.length} chunks processed (${Math.round(processedCount / chunks.length * 100)}%)`);
+
+        // Update progress in job table (optional, helps with debugging)
+        await supabase
+          .from('kb_ingest_jobs')
+          .update({
+            error_message: `Processing: ${processedCount}/${chunks.length} chunks (${Math.round(processedCount / chunks.length * 100)}%)`,
+          })
+          .eq('doc_id', docId);
+
+      } catch (batchError) {
+        console.error(`Batch ${Math.floor(i / batchSize) + 1} failed:`, batchError);
+        throw batchError;
       }
     }
 
     // Update job status to completed
+    const duration = Math.floor((Date.now() - startTime) / 1000);
     await supabase
       .from('kb_ingest_jobs')
       .update({
         status: 'completed',
+        error_message: null, // Clear progress message
         finished_at: new Date().toISOString(),
       })
       .eq('doc_id', docId);
 
-    console.log(`Ingestion completed for document: ${docId}`);
-  } catch (error) {
-    console.error('Error in background processing:', error);
+    console.log(`✓ Ingestion completed for document: ${docId} in ${duration}s (${processedCount} chunks)`);
     
-    // Update job with error
+  } catch (error) {
+    console.error('❌ Error in background processing:', error);
+    const duration = Math.floor((Date.now() - startTime) / 1000);
+    
+    // Update job with detailed error
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred during processing';
     await supabase
       .from('kb_ingest_jobs')
       .update({
         status: 'failed',
-        error_message: error instanceof Error ? error.message : 'Unknown error',
+        error_message: errorMessage,
         finished_at: new Date().toISOString(),
       })
       .eq('doc_id', docId);
+
+    console.log(`Processing failed after ${duration}s: ${errorMessage}`);
   }
 }
 
