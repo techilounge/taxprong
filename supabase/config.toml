@@ -9,9 +9,6 @@ verify_jwt = true
 [functions.ingest-kb-doc]
 verify_jwt = true
 
-[functions.ingest-pdf]
-verify_jwt = true
-
 [functions.answer-with-citations]
 verify_jwt = true
 
