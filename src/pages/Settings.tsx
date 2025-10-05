@@ -10,6 +10,7 @@ import { DeleteRequest } from "@/components/settings/DeleteRequest";
 import { BackupSettings } from "@/components/settings/BackupSettings";
 import { BackupRuns } from "@/components/settings/BackupRuns";
 import { TestDataGenerator } from "@/components/dev/TestDataGenerator";
+import { OnboardingControl } from "@/components/settings/OnboardingControl";
 
 const PRICING_PLANS = [
   {
@@ -214,6 +215,8 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        <OnboardingControl />
+        
         <TestDataGenerator />
         
         <BackupSettings />

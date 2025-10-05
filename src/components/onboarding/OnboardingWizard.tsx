@@ -20,7 +20,7 @@ const STEPS = [
   { id: 4, title: "Complete", icon: CheckCircle2 },
 ];
 
-export const OnboardingWizard = () => {
+export const OnboardingWizard = ({ onRestart }: { onRestart?: () => void } = {}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -72,6 +72,8 @@ export const OnboardingWizard = () => {
           completed,
           skipped,
           completed_at: completed ? new Date().toISOString() : null,
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) throw error;
@@ -83,6 +85,19 @@ export const OnboardingWizard = () => {
       console.error("Error updating progress:", error);
     }
   };
+
+  const restartOnboarding = () => {
+    setCurrentStep(0);
+    setCompletedSteps([]);
+    setIsOpen(true);
+  };
+
+  // Expose restart function to parent
+  useEffect(() => {
+    if (onRestart) {
+      (window as any).restartOnboarding = restartOnboarding;
+    }
+  }, [onRestart]);
 
   const handleNext = async () => {
     if (currentStep < STEPS.length - 1) {
