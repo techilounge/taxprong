@@ -24,15 +24,17 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload } from "lucide-react";
+import { dateField, nameField, descriptionField, currencyField, percentageField } from "@/lib/validation";
 
+// Enhanced expense validation schema with security best practices
 const expenseSchema = z.object({
-  date: z.string().min(1, "Date is required"),
-  merchant: z.string().min(1, "Merchant is required"),
-  description: z.string().optional(),
-  amount: z.string().min(1, "Amount is required"),
-  vat_amount: z.string().optional(),
+  date: dateField,
+  merchant: nameField,
+  description: descriptionField,
+  amount: currencyField(0.01, 999999999),
+  vat_amount: currencyField(0, 999999999).optional().or(z.literal("")),
   category: z.string().min(1, "Category is required"),
-  vat_recoverable_pct: z.string().optional(),
+  vat_recoverable_pct: percentageField.optional().or(z.literal("")),
 });
 
 type ExpenseFormData = z.infer<typeof expenseSchema>;

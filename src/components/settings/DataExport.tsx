@@ -7,6 +7,7 @@ import { Download, FileArchive, Loader2, Clock, CheckCircle, XCircle } from "luc
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
+import { useRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 import { format } from "date-fns";
 
 interface ExportRequest {
@@ -24,6 +25,7 @@ export function DataExport() {
   const [requesting, setRequesting] = useState(false);
   const { toast } = useToast();
   const { organization } = useOrganization();
+  const { executeWithRateLimit, isRateLimited } = useRateLimit();
 
   useEffect(() => {
     if (organization) {
@@ -58,54 +60,64 @@ export function DataExport() {
   const requestExport = async () => {
     if (!organization) return;
 
-    try {
-      setRequesting(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+    // Execute with rate limiting
+    const result = await executeWithRateLimit(
+      'data_export',
+      async () => {
+        try {
+          setRequesting(true);
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return null;
 
-      // Create export request
-      const { data: request, error: insertError } = await supabase
-        .from("data_export_requests")
-        .insert({
-          org_id: organization.id,
-          requested_by: session.user.id,
-          status: "pending",
-        })
-        .select()
-        .single();
+          // Create export request
+          const { data: request, error: insertError } = await supabase
+            .from("data_export_requests")
+            .insert({
+              org_id: organization.id,
+              requested_by: session.user.id,
+              status: "pending",
+            })
+            .select()
+            .single();
 
-      if (insertError) throw insertError;
+          if (insertError) throw insertError;
 
-      // Trigger export edge function
-      const { error: functionError } = await supabase.functions.invoke("export-org-data", {
-        body: {
-          org_id: organization.id,
-          request_id: request.id,
-        },
-      });
+          // Trigger export edge function
+          const { error: functionError } = await supabase.functions.invoke("export-org-data", {
+            body: {
+              org_id: organization.id,
+              request_id: request.id,
+            },
+          });
 
-      if (functionError) throw functionError;
+          if (functionError) throw functionError;
 
-      toast({
-        title: "Export Started",
-        description: "Your data export is being processed. This may take a few moments.",
-      });
+          toast({
+            title: "Export Started",
+            description: "Your data export is being processed. This may take a few moments.",
+          });
 
-      // Reload exports after a short delay
-      setTimeout(() => {
-        loadExports();
-      }, 2000);
+          // Reload exports after a short delay
+          setTimeout(() => {
+            loadExports();
+          }, 2000);
 
-    } catch (error: any) {
-      console.error("Error requesting export:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to request export",
-        variant: "destructive",
-      });
-    } finally {
-      setRequesting(false);
-    }
+          return true;
+        } catch (error: any) {
+          console.error("Error requesting export:", error);
+          toast({
+            title: "Export Failed",
+            description: error.message || "Failed to request data export",
+            variant: "destructive",
+          });
+          return null;
+        } finally {
+          setRequesting(false);
+        }
+      },
+      RATE_LIMITS.DATA_EXPORT.maxRequests,
+      RATE_LIMITS.DATA_EXPORT.timeWindow
+    );
   };
 
   const downloadExport = async (fileUrl: string) => {

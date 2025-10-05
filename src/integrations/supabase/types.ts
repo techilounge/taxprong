@@ -1580,6 +1580,15 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      check_rate_limit: {
+        Args: {
+          _action: string
+          _max_requests: number
+          _time_window_seconds: number
+          _user_id: string
+        }
+        Returns: boolean
+      }
       create_monthly_vat_tasks: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1692,6 +1701,14 @@ export type Database = {
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
+      }
+      log_and_check_rate_limit: {
+        Args: {
+          _action: string
+          _max_requests?: number
+          _time_window_seconds?: number
+        }
+        Returns: boolean
       }
       match_kb_chunks: {
         Args: {

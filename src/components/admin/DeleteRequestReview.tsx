@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { CheckCircle, XCircle, Clock, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 import { format } from "date-fns";
 
 interface DeleteRequest {
@@ -33,6 +34,7 @@ export function DeleteRequestReview() {
   const [adminNotes, setAdminNotes] = useState("");
   const [processing, setProcessing] = useState(false);
   const { toast } = useToast();
+  const { executeWithRateLimit, isRateLimited } = useRateLimit();
 
   useEffect(() => {
     loadRequests();
@@ -80,37 +82,48 @@ export function DeleteRequestReview() {
   const handleAction = async (action: 'approve' | 'deny') => {
     if (!selectedRequest) return;
 
-    try {
-      setProcessing(true);
+    // Execute with rate limiting for admin operations
+    const result = await executeWithRateLimit(
+      'admin_delete_request',
+      async () => {
+        try {
+          setProcessing(true);
 
-      const { error } = await supabase.functions.invoke("process-delete-request", {
-        body: {
-          request_id: selectedRequest.id,
-          action,
-          admin_notes: adminNotes,
-        },
-      });
+          const { error } = await supabase.functions.invoke("process-delete-request", {
+            body: {
+              request_id: selectedRequest.id,
+              action,
+              admin_notes: adminNotes,
+            },
+          });
 
-      if (error) throw error;
+          if (error) throw error;
 
-      toast({
-        title: action === 'approve' ? "Request Approved" : "Request Denied",
-        description: `Delete request has been ${action === 'approve' ? 'approved and processed' : 'denied'}`,
-      });
+          toast({
+            title: action === 'approve' ? "Request Approved" : "Request Denied",
+            description: `Delete request has been ${action === 'approve' ? 'approved and processed' : 'denied'}`,
+          });
 
-      setSelectedRequest(null);
-      setAdminNotes("");
-      loadRequests();
-    } catch (error: any) {
-      console.error("Error processing request:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to process delete request",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessing(false);
-    }
+          setSelectedRequest(null);
+          setAdminNotes("");
+          loadRequests();
+          
+          return true;
+        } catch (error: any) {
+          console.error("Error processing request:", error);
+          toast({
+            title: "Error",
+            description: error.message || "Failed to process delete request",
+            variant: "destructive",
+          });
+          return null;
+        } finally {
+          setProcessing(false);
+        }
+      },
+      RATE_LIMITS.ADMIN_OPERATION.maxRequests,
+      RATE_LIMITS.ADMIN_OPERATION.timeWindow
+    );
   };
 
   const getStatusBadge = (status: string) => {

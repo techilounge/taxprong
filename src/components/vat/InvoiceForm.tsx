@@ -22,17 +22,19 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { nameField, tinField, descriptionField, currencyField, percentageField, dateField } from "@/lib/validation";
 
+// Enhanced invoice validation schema with security best practices
 const invoiceSchema = z.object({
   type: z.enum(["sale", "purchase"]),
-  counterparty_name: z.string().min(1, "Counterparty name is required"),
-  counterparty_tin: z.string().optional(),
+  counterparty_name: nameField,
+  counterparty_tin: tinField,
   supply_type: z.enum(["standard", "zero", "exempt"]),
-  net: z.string().min(1, "Net amount is required"),
-  vat_rate: z.string().optional(),
-  issue_date: z.string().min(1, "Issue date is required"),
-  due_date: z.string().optional(),
-  description: z.string().optional(),
+  net: currencyField(0, 999999999999),
+  vat_rate: percentageField.optional().or(z.literal("")),
+  issue_date: dateField,
+  due_date: dateField.optional().or(z.literal("")),
+  description: descriptionField,
 });
 
 type InvoiceFormData = z.infer<typeof invoiceSchema>;
