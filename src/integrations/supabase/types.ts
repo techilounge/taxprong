@@ -101,7 +101,9 @@ export type Database = {
       }
       backup_settings: {
         Row: {
-          access_key: string
+          access_key: string | null
+          access_key_encrypted: string | null
+          access_key_nonce: string | null
           bucket: string
           created_at: string
           enabled: boolean
@@ -109,11 +111,15 @@ export type Database = {
           prefix: string
           provider: string
           region: string | null
-          secret_key: string
+          secret_key: string | null
+          secret_key_encrypted: string | null
+          secret_key_nonce: string | null
           updated_at: string
         }
         Insert: {
-          access_key: string
+          access_key?: string | null
+          access_key_encrypted?: string | null
+          access_key_nonce?: string | null
           bucket: string
           created_at?: string
           enabled?: boolean
@@ -121,11 +127,15 @@ export type Database = {
           prefix?: string
           provider: string
           region?: string | null
-          secret_key: string
+          secret_key?: string | null
+          secret_key_encrypted?: string | null
+          secret_key_nonce?: string | null
           updated_at?: string
         }
         Update: {
-          access_key?: string
+          access_key?: string | null
+          access_key_encrypted?: string | null
+          access_key_nonce?: string | null
           bucket?: string
           created_at?: string
           enabled?: boolean
@@ -133,7 +143,9 @@ export type Database = {
           prefix?: string
           provider?: string
           region?: string | null
-          secret_key?: string
+          secret_key?: string | null
+          secret_key_encrypted?: string | null
+          secret_key_nonce?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1571,6 +1583,25 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      decrypt_backup_credential: {
+        Args: { decryption_key: string; encrypted_credential: string }
+        Returns: string
+      }
+      encrypt_backup_credential: {
+        Args: { credential: string }
+        Returns: string
+      }
+      get_backup_credentials: {
+        Args: { _org_id: string }
+        Returns: {
+          access_key: string
+          bucket: string
+          prefix: string
+          provider: string
+          region: string
+          secret_key: string
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
@@ -1656,6 +1687,10 @@ export type Database = {
       }
       send_task_reminders: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      set_backup_credentials: {
+        Args: { _access_key: string; _org_id: string; _secret_key: string }
         Returns: undefined
       }
       sparsevec_out: {

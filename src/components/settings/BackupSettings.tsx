@@ -58,8 +58,8 @@ export function BackupSettings() {
           provider: data.provider as 's3' | 'gcs',
           bucket: data.bucket,
           prefix: data.prefix,
-          access_key: data.access_key,
-          secret_key: '********', // Mask the secret
+          access_key: data.access_key_encrypted ? '********' : (data.access_key || ''),
+          secret_key: '********', // Always mask the secret for security
           region: data.region || '',
           enabled: data.enabled,
         });
@@ -74,24 +74,37 @@ export function BackupSettings() {
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      // First, update non-sensitive settings
+      const { error: updateError } = await supabase
         .from('backup_settings')
         .upsert({
           org_id: organization.id,
           provider: settings.provider,
           bucket: settings.bucket,
           prefix: settings.prefix,
-          access_key: settings.access_key,
-          secret_key: settings.secret_key === '********' ? undefined : settings.secret_key,
           region: settings.region,
           enabled: settings.enabled,
+        }, {
+          onConflict: 'org_id'
         });
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // If credentials were changed (not masked), encrypt and store them securely
+      if (settings.access_key && settings.secret_key !== '********') {
+        const { error: credError } = await supabase
+          .rpc('set_backup_credentials', {
+            _org_id: organization.id,
+            _access_key: settings.access_key,
+            _secret_key: settings.secret_key
+          });
+
+        if (credError) throw credError;
+      }
 
       toast({
         title: "Settings Saved",
-        description: "Backup settings have been saved successfully.",
+        description: "Backup settings have been saved securely with encrypted credentials.",
       });
 
       loadSettings(); // Reload to mask the secret

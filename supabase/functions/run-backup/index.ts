@@ -247,10 +247,10 @@ Deno.serve(async (req) => {
     
     console.log('Starting backup process...');
     
-    // Get all orgs with backup enabled
+    // Get all orgs with backup enabled (fetch only non-sensitive fields)
     const { data: settings, error: settingsError } = await supabase
       .from('backup_settings')
-      .select('*')
+      .select('org_id, provider, bucket, prefix, region, enabled')
       .eq('enabled', true);
     
     if (settingsError) {
@@ -267,12 +267,26 @@ Deno.serve(async (req) => {
     
     const results = [];
     
-    for (const orgSettings of settings as BackupSettings[]) {
+    for (const orgSettings of settings as any[]) {
       const runId = crypto.randomUUID();
       const startedAt = new Date().toISOString();
       
       try {
         console.log(`Processing backup for org: ${orgSettings.org_id}`);
+        
+        // Get decrypted credentials using the secure RPC function
+        const { data: credentials, error: credError } = await supabase
+          .rpc('get_backup_credentials', { _org_id: orgSettings.org_id });
+        
+        if (credError || !credentials || credentials.length === 0) {
+          throw new Error('Failed to fetch backup credentials');
+        }
+        
+        const { access_key, secret_key } = credentials[0];
+        
+        if (!access_key || !secret_key) {
+          throw new Error('Backup credentials are missing or incomplete');
+        }
         
         // Create backup run record
         await supabase.from('backup_runs').insert({
@@ -315,10 +329,18 @@ Deno.serve(async (req) => {
         
         let fileUrl: string;
         
+        // Create settings object with decrypted credentials
+        const settingsWithCreds: BackupSettings = {
+          ...orgSettings,
+          access_key,
+          secret_key,
+          enabled: true
+        };
+        
         if (orgSettings.provider === 's3') {
-          fileUrl = await uploadToS3(zipBuffer, key, orgSettings);
+          fileUrl = await uploadToS3(zipBuffer, key, settingsWithCreds);
         } else {
-          fileUrl = await uploadToGCS(zipBuffer, key, orgSettings);
+          fileUrl = await uploadToGCS(zipBuffer, key, settingsWithCreds);
         }
         
         // Update backup run

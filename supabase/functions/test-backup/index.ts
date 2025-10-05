@@ -54,10 +54,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch backup settings
+    // Fetch backup settings (non-sensitive fields only)
     const { data: settings, error: settingsError } = await supabaseClient
       .from('backup_settings')
-      .select('*')
+      .select('provider, bucket, prefix, region, org_id')
       .eq('org_id', org_id)
       .single();
 
@@ -68,7 +68,38 @@ Deno.serve(async (req) => {
       );
     }
 
-    const backupSettings = settings as BackupSettings;
+    // Get decrypted credentials using service role
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    
+    const { data: credentials, error: credError } = await supabaseAdmin
+      .rpc('get_backup_credentials', { _org_id: org_id });
+    
+    if (credError || !credentials || credentials.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch backup credentials' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const { access_key, secret_key } = credentials[0];
+    
+    if (!access_key || !secret_key) {
+      return new Response(
+        JSON.stringify({ error: 'Backup credentials are missing or incomplete' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Construct settings with decrypted credentials
+    const backupSettings: BackupSettings = {
+      ...settings,
+      access_key,
+      secret_key,
+      enabled: true
+    };
+    
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fileName = `test-${timestamp}.txt`;
     const filePath = backupSettings.prefix
@@ -76,7 +107,7 @@ Deno.serve(async (req) => {
       : fileName;
     const testContent = `Backup test successful at ${new Date().toISOString()}\nOrg: ${org_id}`;
 
-    // Test write based on provider
+    // Test write based on provider using decrypted credentials
     if (backupSettings.provider === 's3') {
       await writeToS3(backupSettings, filePath, testContent);
     } else {
