@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +9,12 @@ import { FileText, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useOrganization } from "@/hooks/useOrganization";
 import { supabase } from "@/integrations/supabase/client";
+
+interface Business {
+  id: string;
+  name: string;
+  tin: string | null;
+}
 
 interface DocumentTemplate {
   id: string;
@@ -70,9 +76,44 @@ const DOCUMENT_TEMPLATES: DocumentTemplate[] = [
 
 export function TaxDocumentGenerator() {
   const { organization } = useOrganization();
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [selectedBusiness, setSelectedBusiness] = useState<string>("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [period, setPeriod] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [loadingBusinesses, setLoadingBusinesses] = useState(false);
+
+  useEffect(() => {
+    if (organization?.id) {
+      loadBusinesses();
+    }
+  }, [organization?.id]);
+
+  const loadBusinesses = async () => {
+    if (!organization?.id) return;
+    
+    setLoadingBusinesses(true);
+    try {
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('id, name, tin')
+        .eq('org_id', organization.id)
+        .order('name');
+
+      if (error) throw error;
+      setBusinesses(data || []);
+      
+      // Auto-select first business if available
+      if (data && data.length > 0) {
+        setSelectedBusiness(data[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading businesses:', error);
+      toast.error('Failed to load businesses');
+    } finally {
+      setLoadingBusinesses(false);
+    }
+  };
 
   const generateDocument = async () => {
     if (!selectedTemplate || !organization) {
@@ -85,17 +126,24 @@ export function TaxDocumentGenerator() {
       return;
     }
 
+    // Check if template requires a business
+    const template = DOCUMENT_TEMPLATES.find((t) => t.id === selectedTemplate);
+    const requiresBusiness = ['vat-return', 'cit-return', 'cgt-return', 'stamp-duty'].includes(selectedTemplate);
+    
+    if (requiresBusiness && !selectedBusiness) {
+      toast.error("Please select a business for this document type");
+      return;
+    }
+
     setIsGenerating(true);
 
     try {
-      const template = DOCUMENT_TEMPLATES.find((t) => t.id === selectedTemplate);
-      
       // Call edge function to generate PDF
       const { data, error } = await supabase.functions.invoke('generate-tax-document', {
         body: {
           templateId: selectedTemplate,
           period: period,
-          businessId: organization.businesses?.[0]?.id, // Use first business if available
+          businessId: selectedBusiness || undefined,
           orgId: organization.id,
         },
       });
@@ -125,9 +173,9 @@ export function TaxDocumentGenerator() {
       // Reset form
       setSelectedTemplate("");
       setPeriod("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Document generation error:", error);
-      toast.error("Failed to generate document. Please try again.");
+      toast.error(error.message || "Failed to generate document. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -151,6 +199,24 @@ export function TaxDocumentGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {businesses.length > 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="business">Business</Label>
+            <Select value={selectedBusiness} onValueChange={setSelectedBusiness} disabled={loadingBusinesses}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select business" />
+              </SelectTrigger>
+              <SelectContent>
+                {businesses.map((business) => (
+                  <SelectItem key={business.id} value={business.id}>
+                    {business.name} {business.tin ? `(${business.tin})` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label htmlFor="template">Document Template</Label>
           <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
