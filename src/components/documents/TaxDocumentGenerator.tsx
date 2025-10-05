@@ -82,6 +82,8 @@ export function TaxDocumentGenerator() {
   const [period, setPeriod] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadingBusinesses, setLoadingBusinesses] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState<{ current: number; total: number } | null>(null);
 
   useEffect(() => {
     if (organization?.id) {
@@ -130,54 +132,115 @@ export function TaxDocumentGenerator() {
     const template = DOCUMENT_TEMPLATES.find((t) => t.id === selectedTemplate);
     const requiresBusiness = ['vat-return', 'cit-return', 'cgt-return', 'stamp-duty'].includes(selectedTemplate);
     
-    if (requiresBusiness && !selectedBusiness) {
+    if (requiresBusiness && !bulkMode && !selectedBusiness) {
       toast.error("Please select a business for this document type");
+      return;
+    }
+
+    if (bulkMode && requiresBusiness && businesses.length === 0) {
+      toast.error("No businesses available for bulk generation");
       return;
     }
 
     setIsGenerating(true);
 
     try {
-      // Call edge function to generate PDF
-      const { data, error } = await supabase.functions.invoke('generate-tax-document', {
-        body: {
-          templateId: selectedTemplate,
-          period: period,
-          businessId: selectedBusiness || undefined,
-          orgId: organization.id,
-        },
-      });
+      // Bulk generation mode
+      if (bulkMode && requiresBusiness) {
+        const successfulDocs: any[] = [];
+        const failedDocs: string[] = [];
+        
+        setGenerationProgress({ current: 0, total: businesses.length });
+        
+        for (let i = 0; i < businesses.length; i++) {
+          const business = businesses[i];
+          setGenerationProgress({ current: i + 1, total: businesses.length });
+          
+          try {
+            const { data, error } = await supabase.functions.invoke('generate-tax-document', {
+              body: {
+                templateId: selectedTemplate,
+                period: period,
+                businessId: business.id,
+                orgId: organization.id,
+              },
+            });
 
-      if (error) throw error;
+            if (error) throw error;
+            
+            successfulDocs.push({ business: business.name, data });
+            
+            // Log audit
+            await supabase.from("audit_logs").insert({
+              entity: "document",
+              entity_id: data.document.id,
+              action: "export",
+              user_id: (await supabase.auth.getUser()).data.user?.id,
+            });
+          } catch (error: any) {
+            console.error(`Failed to generate for ${business.name}:`, error);
+            failedDocs.push(business.name);
+          }
+        }
+        
+        setGenerationProgress(null);
+        
+        // Show summary
+        if (successfulDocs.length > 0) {
+          toast.success(`Generated ${successfulDocs.length} document(s) successfully!${failedDocs.length > 0 ? ` (${failedDocs.length} failed)` : ''}`);
+        }
+        
+        if (failedDocs.length > 0) {
+          toast.error(`Failed to generate for: ${failedDocs.join(', ')}`);
+        }
+        
+        // Reset form
+        setSelectedTemplate("");
+        setPeriod("");
+        setBulkMode(false);
+      } else {
+        // Single document generation
+        const { data, error } = await supabase.functions.invoke('generate-tax-document', {
+          body: {
+            templateId: selectedTemplate,
+            period: period,
+            businessId: selectedBusiness || undefined,
+            orgId: organization.id,
+          },
+        });
 
-      // Log audit
-      await supabase.from("audit_logs").insert({
-        entity: "document",
-        entity_id: data.document.id,
-        action: "export",
-        user_id: (await supabase.auth.getUser()).data.user?.id,
-      });
+        if (error) throw error;
 
-      toast.success(`${template?.name} generated successfully!`);
-      
-      // Trigger download
-      if (data.downloadUrl) {
-        const link = document.createElement('a');
-        link.href = data.downloadUrl;
-        link.download = `${selectedTemplate}-${period}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Log audit
+        await supabase.from("audit_logs").insert({
+          entity: "document",
+          entity_id: data.document.id,
+          action: "export",
+          user_id: (await supabase.auth.getUser()).data.user?.id,
+        });
+
+        toast.success(`${template?.name} generated successfully!`);
+        
+        // Trigger download
+        if (data.downloadUrl) {
+          const link = document.createElement('a');
+          link.href = data.downloadUrl;
+          link.download = `${selectedTemplate}-${period}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+
+        // Reset form
+        setSelectedTemplate("");
+        setPeriod("");
       }
-
-      // Reset form
-      setSelectedTemplate("");
-      setPeriod("");
     } catch (error: any) {
       console.error("Document generation error:", error);
       toast.error(error.message || "Failed to generate document. Please try again.");
     } finally {
       setIsGenerating(false);
+      setGenerationProgress(null);
     }
   };
 
@@ -201,19 +264,42 @@ export function TaxDocumentGenerator() {
       <CardContent className="space-y-4">
         {businesses.length > 0 && (
           <div className="space-y-2">
-            <Label htmlFor="business">Business</Label>
-            <Select value={selectedBusiness} onValueChange={setSelectedBusiness} disabled={loadingBusinesses}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select business" />
-              </SelectTrigger>
-              <SelectContent>
-                {businesses.map((business) => (
-                  <SelectItem key={business.id} value={business.id}>
-                    {business.name} {business.tin ? `(${business.tin})` : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="business">Business</Label>
+              {businesses.length > 1 && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="bulkMode"
+                    checked={bulkMode}
+                    onChange={(e) => setBulkMode(e.target.checked)}
+                    className="rounded border-gray-300"
+                  />
+                  <Label htmlFor="bulkMode" className="text-sm font-normal cursor-pointer">
+                    Generate for all businesses
+                  </Label>
+                </div>
+              )}
+            </div>
+            {!bulkMode && (
+              <Select value={selectedBusiness} onValueChange={setSelectedBusiness} disabled={loadingBusinesses}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select business" />
+                </SelectTrigger>
+                <SelectContent>
+                  {businesses.map((business) => (
+                    <SelectItem key={business.id} value={business.id}>
+                      {business.name} {business.tin ? `(${business.tin})` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {bulkMode && (
+              <div className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-md">
+                Will generate for all {businesses.length} businesses: {businesses.map(b => b.name).join(', ')}
+              </div>
+            )}
           </div>
         )}
 
@@ -265,12 +351,15 @@ export function TaxDocumentGenerator() {
           {isGenerating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
+              {generationProgress 
+                ? `Generating ${generationProgress.current} of ${generationProgress.total}...`
+                : 'Generating...'
+              }
             </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
-              Generate Document
+              {bulkMode ? `Generate ${businesses.length} Documents` : 'Generate Document'}
             </>
           )}
         </Button>
