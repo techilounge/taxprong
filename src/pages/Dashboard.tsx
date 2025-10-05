@@ -118,7 +118,7 @@ const Dashboard = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome to your Nigeria Tax Advisor workspace
+            Welcome to your TaxProNG workspace
           </p>
         </div>
 

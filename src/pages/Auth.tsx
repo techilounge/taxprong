@@ -82,8 +82,8 @@ const Auth = () => {
               <FileText className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Nigeria Tax Advisor</h1>
-          <p className="text-white/90">Self-file or connect with tax professionals</p>
+          <h1 className="text-3xl font-bold text-white mb-2">TaxProNG</h1>
+          <p className="text-white/90">Professional Tax Management for Nigeria</p>
         </div>
 
         <Card>
