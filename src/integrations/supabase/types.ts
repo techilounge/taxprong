@@ -20,8 +20,11 @@ export type Database = {
           entity: string
           entity_id: string
           id: string
+          ip_address: unknown | null
           payload_hash: string | null
+          severity: string | null
           time: string
+          user_agent: string | null
           user_id: string
         }
         Insert: {
@@ -29,8 +32,11 @@ export type Database = {
           entity: string
           entity_id: string
           id?: string
+          ip_address?: unknown | null
           payload_hash?: string | null
+          severity?: string | null
           time?: string
+          user_agent?: string | null
           user_id: string
         }
         Update: {
@@ -38,8 +44,11 @@ export type Database = {
           entity?: string
           entity_id?: string
           id?: string
+          ip_address?: unknown | null
           payload_hash?: string | null
+          severity?: string | null
           time?: string
+          user_agent?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1289,6 +1298,7 @@ export type Database = {
           id: string
           question: string
           session_id: string | null
+          user_id: string | null
         }
         Insert: {
           answer: string
@@ -1297,6 +1307,7 @@ export type Database = {
           id?: string
           question: string
           session_id?: string | null
+          user_id?: string | null
         }
         Update: {
           answer?: string
@@ -1305,6 +1316,7 @@ export type Database = {
           id?: string
           question?: string
           session_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1566,13 +1578,35 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      security_events: {
+        Row: {
+          action: Database["public"]["Enums"]["audit_action"] | null
+          entity: string | null
+          event_type: string | null
+          id: string | null
+          ip_address: unknown | null
+          severity: string | null
+          time: string | null
+          user_email: string | null
+          user_name: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_user_role: {
         Args: {
           role_name: Database["public"]["Enums"]["app_role"]
           target_user_id: string
+        }
+        Returns: undefined
+      }
+      audit_sensitive_access: {
+        Args: {
+          _operation: string
+          _record_id: string
+          _severity?: string
+          _table_name: string
         }
         Returns: undefined
       }
@@ -1633,6 +1667,17 @@ export type Database = {
           id: string
           name: string
           phone: string
+        }[]
+      }
+      get_security_summary: {
+        Args: { _days_back?: number }
+        Returns: {
+          data_exports: number
+          failed_rate_limits: number
+          high_severity_events: number
+          tin_accesses: number
+          total_events: number
+          unique_users: number
         }[]
       }
       halfvec_avg: {
@@ -1752,6 +1797,10 @@ export type Database = {
       sparsevec_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      user_can_view_tin: {
+        Args: { _business_id: string }
+        Returns: boolean
       }
       vector_avg: {
         Args: { "": number[] }
