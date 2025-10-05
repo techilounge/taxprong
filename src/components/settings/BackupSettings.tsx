@@ -45,8 +45,9 @@ export function BackupSettings() {
     if (!organization?.id) return;
 
     try {
+      // Use the secure view that excludes all credential columns
       const { data, error } = await supabase
-        .from('backup_settings')
+        .from('backup_settings_view')
         .select('*')
         .eq('org_id', organization.id)
         .maybeSingle();
@@ -58,8 +59,8 @@ export function BackupSettings() {
           provider: data.provider as 's3' | 'gcs',
           bucket: data.bucket,
           prefix: data.prefix,
-          access_key: data.access_key_encrypted ? '********' : (data.access_key || ''),
-          secret_key: '********', // Always mask the secret for security
+          access_key: '********', // Always masked - credentials never exposed to UI
+          secret_key: '********', // Always masked - credentials never exposed to UI
           region: data.region || '',
           enabled: data.enabled,
         });

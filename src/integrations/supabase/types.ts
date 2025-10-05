@@ -1572,7 +1572,47 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      backup_settings_view: {
+        Row: {
+          bucket: string | null
+          created_at: string | null
+          enabled: boolean | null
+          org_id: string | null
+          prefix: string | null
+          provider: string | null
+          region: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bucket?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          org_id?: string | null
+          prefix?: string | null
+          provider?: string | null
+          region?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bucket?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          org_id?: string | null
+          prefix?: string | null
+          provider?: string | null
+          region?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_settings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       assign_user_role: {
