@@ -45,24 +45,22 @@ export function BackupSettings() {
     if (!organization?.id) return;
 
     try {
-      // Use the secure view that excludes all credential columns
+      // Use the secure function that excludes all credential columns
       const { data, error } = await supabase
-        .from('backup_settings_view')
-        .select('*')
-        .eq('org_id', organization.id)
-        .maybeSingle();
+        .rpc('get_backup_settings_metadata', { _org_id: organization.id });
 
       if (error) throw error;
 
-      if (data) {
+      if (data && data.length > 0) {
+        const settingsData = data[0];
         setSettings({
-          provider: data.provider as 's3' | 'gcs',
-          bucket: data.bucket,
-          prefix: data.prefix,
+          provider: settingsData.provider as 's3' | 'gcs',
+          bucket: settingsData.bucket,
+          prefix: settingsData.prefix,
           access_key: '********', // Always masked - credentials never exposed to UI
           secret_key: '********', // Always masked - credentials never exposed to UI
-          region: data.region || '',
-          enabled: data.enabled,
+          region: settingsData.region || '',
+          enabled: settingsData.enabled,
         });
       }
     } catch (error) {

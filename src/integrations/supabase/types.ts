@@ -1572,47 +1572,7 @@ export type Database = {
       }
     }
     Views: {
-      backup_settings_view: {
-        Row: {
-          bucket: string | null
-          created_at: string | null
-          enabled: boolean | null
-          org_id: string | null
-          prefix: string | null
-          provider: string | null
-          region: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          bucket?: string | null
-          created_at?: string | null
-          enabled?: boolean | null
-          org_id?: string | null
-          prefix?: string | null
-          provider?: string | null
-          region?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          bucket?: string | null
-          created_at?: string | null
-          enabled?: boolean | null
-          org_id?: string | null
-          prefix?: string | null
-          provider?: string | null
-          region?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "backup_settings_org_id_fkey"
-            columns: ["org_id"]
-            isOneToOne: true
-            referencedRelation: "orgs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       assign_user_role: {
@@ -1647,6 +1607,19 @@ export type Database = {
           provider: string
           region: string
           secret_key: string
+        }[]
+      }
+      get_backup_settings_metadata: {
+        Args: { _org_id: string }
+        Returns: {
+          bucket: string
+          created_at: string
+          enabled: boolean
+          org_id: string
+          prefix: string
+          provider: string
+          region: string
+          updated_at: string
         }[]
       }
       halfvec_avg: {
