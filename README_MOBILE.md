@@ -1,10 +1,10 @@
-# Nigeria Tax Hub - Mobile App Setup
+# TaxProNG - Mobile App Setup
 
 This project is now configured for mobile app development using Capacitor!
 
 ## Mobile App Features
 
-The Nigeria Tax Hub mobile app includes:
+The TaxProNG mobile app includes:
 - ✅ Quick tax calculators (PIT, CIT, CGT, VAT)
 - ✅ Expense capture with camera integration
 - ✅ Compliance deadline reminders
@@ -24,7 +24,7 @@ The Nigeria Tax Hub mobile app includes:
 1. **Clone the project from GitHub**
    - Click "Export to GitHub" in Lovable
    - Clone your repository: `git clone <your-repo-url>`
-   - Navigate to project: `cd nigeria-tax-hub`
+   - Navigate to project: `cd taxpro-ng`
 
 2. **Install dependencies**
    ```bash
@@ -86,8 +86,8 @@ The app is configured for hot reload during development. When you run the app, i
 ## Capacitor Configuration
 
 The app is configured with:
-- **App ID**: `app.lovable.904ea04ccdeb4da09856be580c3bfc2e`
-- **App Name**: Nigeria Tax Hub
+- **App ID**: `com.taxpro.ng`
+- **App Name**: TaxProNG
 - **Server URL**: Points to your Lovable sandbox for hot reload
 
 ## Recommended Plugins
@@ -131,7 +131,7 @@ npx cap sync
 
 - [Capacitor Documentation](https://capacitorjs.com/docs)
 - [Lovable Mobile Development Guide](https://docs.lovable.dev/features/mobile)
-- [Nigeria Tax Hub Documentation](./README.md)
+- [TaxProNG Documentation](./README.md)
 
 ## Support
 
