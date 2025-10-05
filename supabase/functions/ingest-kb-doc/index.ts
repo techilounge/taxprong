@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.58.0';
-import * as pdfjs from 'https://esm.sh/pdfjs-serverless@0.7.0';
+import { extractText } from 'https://esm.sh/unpdf@0.12.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -50,45 +50,27 @@ async function generateEmbeddingsBatch(texts: string[]): Promise<number[][]> {
   return data.data.map((item: any) => item.embedding);
 }
 
-// Extract text from PDF using pdfjs-serverless (Deno-compatible)
+// Extract text from PDF using unpdf (Deno-compatible)
 async function extractTextFromPDF(fileUrl: string): Promise<string> {
-  console.log('Fetching PDF from:', fileUrl);
-  
   try {
-    // Fetch the PDF file
+    console.log('Fetching PDF from:', fileUrl);
     const pdfResponse = await fetch(fileUrl);
     if (!pdfResponse.ok) {
-      throw new Error(`Failed to fetch PDF: ${pdfResponse.status}`);
-    }
-
-    const pdfBuffer = await pdfResponse.arrayBuffer();
-    console.log(`PDF downloaded, size: ${pdfBuffer.byteLength} bytes`);
-
-    // Load PDF document using pdfjs-serverless
-    const pdf = await pdfjs.getDocument(new Uint8Array(pdfBuffer)).promise;
-    console.log(`PDF loaded successfully, ${pdf.numPages} pages`);
-    
-    let fullText = '';
-    
-    // Extract text from each page
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items.map((item: any) => item.str).join(' ');
-      fullText += pageText + '\n';
-      
-      if (i % 10 === 0) {
-        console.log(`Processed ${i}/${pdf.numPages} pages`);
-      }
+      throw new Error(`Failed to fetch PDF: ${pdfResponse.statusText}`);
     }
     
-    console.log(`Extracted ${fullText.length} characters from ${pdf.numPages} pages`);
+    const arrayBuffer = await pdfResponse.arrayBuffer();
+    console.log('PDF downloaded, size:', arrayBuffer.byteLength, 'bytes');
     
-    if (!fullText || fullText.trim().length < 50) {
+    // Extract text using unpdf
+    const { text } = await extractText(new Uint8Array(arrayBuffer), { mergePages: true });
+    console.log('Text extracted, length:', text.length, 'characters');
+    
+    if (!text || text.trim().length < 50) {
       throw new Error('PDF appears to be empty or contains only images. Ensure PDF has searchable text.');
     }
     
-    return fullText;
+    return text.trim();
   } catch (error) {
     console.error('Error extracting PDF text:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
