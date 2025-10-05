@@ -221,14 +221,26 @@ export function TaxDocumentGenerator() {
 
         toast.success(`${template?.name} generated successfully!`);
         
-        // Trigger download
+        // Trigger download - fetch as blob to avoid popup blockers
         if (data.downloadUrl) {
-          const link = document.createElement('a');
-          link.href = data.downloadUrl;
-          link.download = `${selectedTemplate}-${period}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          try {
+            const response = await fetch(data.downloadUrl);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `${selectedTemplate}-${period}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Clean up blob URL
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+          } catch (downloadError) {
+            console.error('Download error:', downloadError);
+            toast.error('Failed to download document');
+          }
         }
 
         // Reset form
