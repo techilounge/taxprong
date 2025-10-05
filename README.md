@@ -1,8 +1,11 @@
-# Welcome to your Lovable project
+# TaxProNG - Nigeria Tax Management Platform
+
+Professional tax compliance and management platform for Nigerian businesses and tax consultants.
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/904ea04c-cdeb-4da0-9856-be580c3bfc2e
+**Domain**: https://taxprong.com (production)
 
 ## How can I edit this code?
 
