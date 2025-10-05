@@ -1616,6 +1616,16 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_profile_safely: {
+        Args: { _profile_id: string }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
