@@ -1896,6 +1896,20 @@ export type Database = {
           phone: string
         }[]
       }
+      get_security_events: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          action: Database["public"]["Enums"]["audit_action"]
+          entity: string
+          event_type: string
+          id: string
+          ip_address: unknown
+          severity: string
+          time: string
+          user_email: string
+          user_name: string
+        }[]
+      }
       get_security_summary: {
         Args: { _days_back?: number }
         Returns: {
