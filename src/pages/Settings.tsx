@@ -87,14 +87,32 @@ const PRICING_PLANS = [
 ];
 
 export default function Settings() {
-  const { subscription, plan, loading } = useSubscription();
+  const { subscription, plan, loading, switchPlan } = useSubscription();
   const { toast } = useToast();
 
-  const handleUpgrade = (selectedPlan: string) => {
-    toast({
-      title: "Payment Integration",
-      description: "Paystack/Flutterwave integration coming soon",
-    });
+  const handleUpgrade = async (selectedPlan: string) => {
+    if (selectedPlan === "enterprise") {
+      toast({
+        title: "Contact Sales",
+        description: "Please contact our sales team for Enterprise plans",
+      });
+      return;
+    }
+
+    const result = await switchPlan(selectedPlan as "free" | "pro" | "business" | "practice" | "enterprise");
+
+    if (result.success) {
+      toast({
+        title: "Plan Updated!",
+        description: `Successfully switched to ${selectedPlan} plan`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to switch plan",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -115,6 +133,9 @@ export default function Settings() {
           <p className="text-muted-foreground">
             Manage your subscription and account settings
           </p>
+          <Badge variant="outline" className="mt-2">
+            Testing Mode - Switch freely between plans
+          </Badge>
         </div>
 
         <Card>
@@ -184,7 +205,7 @@ export default function Settings() {
                       className="w-full"
                       onClick={() => handleUpgrade(pricingPlan.plan)}
                     >
-                      {pricingPlan.plan === "enterprise" ? "Contact Sales" : "Upgrade"}
+                      {pricingPlan.plan === "enterprise" ? "Contact Sales" : `Switch to ${pricingPlan.name}`}
                     </Button>
                   )}
                 </CardContent>

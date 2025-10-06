@@ -219,6 +219,36 @@ export function useSubscription() {
     return false;
   };
 
+  const switchPlan = async (newPlan: SubscriptionPlan): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        return { success: false, error: "User not authenticated" };
+      }
+
+      const { error } = await supabase
+        .from("subscriptions")
+        .update({ 
+          plan: newPlan, 
+          status: "active" 
+        })
+        .eq("user_id", session.user.id);
+
+      if (error) throw error;
+
+      // Reload subscription to get updated data
+      await loadSubscription();
+
+      return { success: true };
+    } catch (error: any) {
+      console.error("Error switching plan:", error);
+      return { 
+        success: false, 
+        error: error.message || "Failed to switch plan" 
+      };
+    }
+  };
+
   return {
     subscription,
     loading,
@@ -229,5 +259,6 @@ export function useSubscription() {
     isTrialActive,
     trialDaysRemaining,
     isExpired,
+    switchPlan,
   };
 }
