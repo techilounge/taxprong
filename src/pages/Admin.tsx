@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { DeleteRequestReview } from "@/components/admin/DeleteRequestReview";
 import { SecurityMonitor } from "@/components/admin/SecurityMonitor";
+import { SecurityAlerts } from "@/components/admin/SecurityAlerts";
+import { ProfileAccessAudit } from "@/components/admin/ProfileAccessAudit";
+import { MaintenanceMonitor } from "@/components/admin/MaintenanceMonitor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Loader2 } from "lucide-react";
@@ -42,13 +45,28 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="security" className="w-full">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="security">Security Monitor</TabsTrigger>
+            <TabsTrigger value="alerts">Security Alerts</TabsTrigger>
+            <TabsTrigger value="audit">Profile Access</TabsTrigger>
+            <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="delete-requests">Delete Requests</TabsTrigger>
           </TabsList>
 
           <TabsContent value="security" className="space-y-6">
             <SecurityMonitor />
+          </TabsContent>
+
+          <TabsContent value="alerts" className="space-y-6">
+            <SecurityAlerts />
+          </TabsContent>
+
+          <TabsContent value="audit" className="space-y-6">
+            <ProfileAccessAudit />
+          </TabsContent>
+
+          <TabsContent value="maintenance" className="space-y-6">
+            <MaintenanceMonitor />
           </TabsContent>
 
           <TabsContent value="delete-requests" className="space-y-6">

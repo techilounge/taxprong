@@ -1067,6 +1067,36 @@ export type Database = {
           },
         ]
       }
+      maintenance_task_runs: {
+        Row: {
+          details: Json | null
+          error_message: string | null
+          finished_at: string | null
+          id: string
+          started_at: string
+          status: string
+          task_name: string
+        }
+        Insert: {
+          details?: Json | null
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          task_name: string
+        }
+        Update: {
+          details?: Json | null
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          task_name?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string
@@ -2028,6 +2058,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_old_audit_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      cleanup_old_security_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       create_monthly_vat_tasks: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -2084,6 +2122,19 @@ export type Database = {
         Returns: {
           business_id: string
           tin: string
+        }[]
+      }
+      get_maintenance_task_history: {
+        Args: { _days?: number }
+        Returns: {
+          details: Json
+          duration_seconds: number
+          error_message: string
+          finished_at: string
+          id: string
+          started_at: string
+          status: string
+          task_name: string
         }[]
       }
       get_pro_reviews: {
@@ -2408,6 +2459,10 @@ export type Database = {
       vector_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      verify_backup_health: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
     }
     Enums: {
