@@ -240,14 +240,25 @@ export function useSubscription() {
 
       // Auto-register as Tax Professional for Practice plan
       if (newPlan === "practice") {
+        console.log("🔍 Checking for existing pro registration...");
+        
         // Check if already registered as pro
-        const { data: existingPro } = await supabase
+        const { data: existingPro, error: checkError } = await supabase
           .from("pros")
           .select("id")
           .eq("user_id", session.user.id)
           .maybeSingle();
 
+        if (checkError) {
+          console.error("❌ Error checking for existing pro:", checkError);
+          throw checkError;
+        }
+
+        console.log("📋 Existing pro record:", existingPro);
+
         if (!existingPro) {
+          console.log("🆕 No existing pro record, creating new one...");
+          
           // Get user's org_id
           const { data: orgUser, error: orgError } = await supabase
             .from("org_users")
@@ -255,8 +266,12 @@ export function useSubscription() {
             .eq("user_id", session.user.id)
             .single();
 
+          console.log("🏢 Org user data:", orgUser, "Error:", orgError);
+
           if (orgError || !orgUser) {
-            throw new Error("Could not find organization. Please ensure you have an organization set up.");
+            const errorMsg = "Could not find organization. Please ensure you have an organization set up.";
+            console.error("❌", errorMsg);
+            throw new Error(errorMsg);
           }
 
           // Get user's profile name for default practice name
@@ -266,17 +281,33 @@ export function useSubscription() {
             .eq("id", session.user.id)
             .single();
 
+          console.log("👤 Profile data:", profile);
+
+          const practiceName = profile?.name ? `${profile.name}'s Practice` : "My Practice";
+          console.log("📝 Creating pro record with practice name:", practiceName);
+
           // Create pro record
-          const { error: proError } = await supabase
+          const { data: newPro, error: proError } = await supabase
             .from("pros")
             .insert({
               user_id: session.user.id,
               org_id: orgUser.org_id,
-              practice_name: profile?.name ? `${profile.name}'s Practice` : "My Practice",
-            });
+              practice_name: practiceName,
+            })
+            .select()
+            .single();
 
-          if (proError) throw proError;
+          console.log("✅ Pro record created:", newPro, "Error:", proError);
+
+          if (proError) {
+            console.error("❌ Error creating pro record:", proError);
+            throw proError;
+          }
+          
           proRegistered = true;
+          console.log("🎉 Successfully registered as Tax Professional!");
+        } else {
+          console.log("✅ Already registered as pro, skipping creation");
         }
       }
 
