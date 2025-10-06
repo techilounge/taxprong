@@ -1805,6 +1805,18 @@ export type Database = {
       }
     }
     Views: {
+      security_dashboard_summary: {
+        Row: {
+          active_users_24h: number | null
+          critical_events_24h: number | null
+          events_24h: number | null
+          last_updated: string | null
+          orgs_with_backup: number | null
+          rate_limits_24h: number | null
+          total_admins: number | null
+        }
+        Relationships: []
+      }
       security_events: {
         Row: {
           action: Database["public"]["Enums"]["audit_action"] | null
@@ -1876,6 +1888,10 @@ export type Database = {
       encrypt_backup_credential: {
         Args: { credential: string }
         Returns: string
+      }
+      generate_security_report: {
+        Args: { _end_date: string; _start_date: string }
+        Returns: Json
       }
       get_backup_credentials: {
         Args: { _org_id: string }
@@ -1992,6 +2008,15 @@ export type Database = {
           user_name: string
         }[]
       }
+      get_security_metrics: {
+        Args: { _days?: number }
+        Returns: {
+          metric_name: string
+          metric_value: number
+          status: string
+          trend: string
+        }[]
+      }
       get_security_summary: {
         Args: { _days_back?: number }
         Returns: {
@@ -2100,6 +2125,16 @@ export type Database = {
           target_user_id: string
         }
         Returns: undefined
+      }
+      run_security_health_check: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          details: string
+          recommendation: string
+          severity: string
+          status: string
+        }[]
       }
       send_task_reminders: {
         Args: Record<PropertyKey, never>

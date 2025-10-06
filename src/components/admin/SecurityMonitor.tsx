@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Shield, AlertTriangle, Activity, Users, FileArchive, Lock, Search } from "lucide-react";
+import { Shield, AlertTriangle, Activity, Users, FileArchive, Lock, Search, CheckCircle2, XCircle, TrendingUp, FileText } from "lucide-react";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -18,6 +18,21 @@ interface SuspiciousPattern {
   first_request: string;
   last_request: string;
   severity: string;
+}
+
+interface HealthCheck {
+  check_name: string;
+  status: string;
+  severity: string;
+  details: string;
+  recommendation: string;
+}
+
+interface SecurityMetric {
+  metric_name: string;
+  metric_value: number;
+  trend: string;
+  status: string;
 }
 
 export function SecurityMonitor() {
@@ -35,6 +50,10 @@ export function SecurityMonitor() {
   const [selectedTimeRange, setSelectedTimeRange] = useState(7);
   const [suspiciousPatterns, setSuspiciousPatterns] = useState<SuspiciousPattern[]>([]);
   const [loadingPatterns, setLoadingPatterns] = useState(false);
+  const [healthChecks, setHealthChecks] = useState<HealthCheck[]>([]);
+  const [loadingHealth, setLoadingHealth] = useState(false);
+  const [securityMetrics, setSecurityMetrics] = useState<SecurityMetric[]>([]);
+  const [loadingMetrics, setLoadingMetrics] = useState(false);
 
   const fetchSuspiciousPatterns = async () => {
     try {
@@ -54,6 +73,75 @@ export function SecurityMonitor() {
       toast.error("Failed to load suspicious patterns");
     } finally {
       setLoadingPatterns(false);
+    }
+  };
+
+  const runHealthCheck = async () => {
+    try {
+      setLoadingHealth(true);
+      const { data, error } = await supabase.rpc("run_security_health_check");
+      
+      if (error) throw error;
+      
+      setHealthChecks(data || []);
+      const failedChecks = data?.filter((check: HealthCheck) => check.status === 'fail').length || 0;
+      if (failedChecks > 0) {
+        toast.error(`Security Health Check: ${failedChecks} issue(s) found`);
+      } else {
+        toast.success("Security Health Check passed!");
+      }
+    } catch (error: any) {
+      console.error("Error running health check:", error);
+      toast.error("Failed to run security health check");
+    } finally {
+      setLoadingHealth(false);
+    }
+  };
+
+  const fetchSecurityMetrics = async () => {
+    try {
+      setLoadingMetrics(true);
+      const { data, error } = await supabase.rpc("get_security_metrics", { _days: 30 });
+      
+      if (error) throw error;
+      
+      setSecurityMetrics(data || []);
+    } catch (error: any) {
+      console.error("Error fetching security metrics:", error);
+      toast.error("Failed to load security metrics");
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
+  const generateReport = async () => {
+    try {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      
+      const { data, error } = await supabase.rpc("generate_security_report", {
+        _start_date: startDate.toISOString(),
+        _end_date: endDate.toISOString(),
+      });
+      
+      if (error) throw error;
+      
+      // Download the report as JSON
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `security-report-${format(new Date(), 'yyyy-MM-dd')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Security report generated successfully");
+    } catch (error: any) {
+      console.error("Error generating report:", error);
+      toast.error("Failed to generate security report");
     }
   };
 
@@ -92,15 +180,110 @@ export function SecurityMonitor() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold flex items-center gap-2">
-          <Shield className="h-8 w-8" />
-          Security Monitor
-        </h2>
-        <p className="text-muted-foreground">
-          Real-time security events and threat monitoring
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold flex items-center gap-2">
+            <Shield className="h-8 w-8" />
+            Security Monitor
+          </h2>
+          <p className="text-muted-foreground">
+            Real-time security events and threat monitoring
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={runHealthCheck} disabled={loadingHealth} variant="outline" size="sm">
+            <CheckCircle2 className="h-4 w-4 mr-2" />
+            {loadingHealth ? "Checking..." : "Health Check"}
+          </Button>
+          <Button onClick={fetchSecurityMetrics} disabled={loadingMetrics} variant="outline" size="sm">
+            <TrendingUp className="h-4 w-4 mr-2" />
+            {loadingMetrics ? "Loading..." : "Metrics"}
+          </Button>
+          <Button onClick={generateReport} variant="outline" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Generate Report
+          </Button>
+        </div>
       </div>
+
+      {/* Security Health Check Results */}
+      {healthChecks.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              Security Health Check Results
+            </CardTitle>
+            <CardDescription>
+              Comprehensive security posture assessment
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {healthChecks.map((check, idx) => (
+                <div key={idx} className="flex items-start gap-3 p-3 border rounded-lg">
+                  {check.status === 'pass' ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  ) : check.status === 'warning' ? (
+                    <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-semibold">{check.check_name}</h4>
+                      <Badge 
+                        variant={
+                          check.severity === 'critical' ? 'destructive' :
+                          check.severity === 'high' ? 'destructive' :
+                          check.severity === 'medium' ? 'default' :
+                          'secondary'
+                        }
+                      >
+                        {check.severity}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-2">{check.details}</p>
+                    {check.status !== 'pass' && (
+                      <p className="text-sm font-medium text-blue-600">
+                        💡 {check.recommendation}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Security Metrics */}
+      {securityMetrics.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Metrics (30 Days)</CardTitle>
+            <CardDescription>Key performance indicators for security posture</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              {securityMetrics.map((metric, idx) => (
+                <div key={idx} className="p-4 border rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-muted-foreground">{metric.metric_name}</span>
+                    <Badge variant={
+                      metric.status === 'critical' ? 'destructive' :
+                      metric.status === 'warning' ? 'default' :
+                      'secondary'
+                    }>
+                      {metric.trend}
+                    </Badge>
+                  </div>
+                  <p className="text-3xl font-bold">{Math.round(metric.metric_value).toLocaleString()}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Threat Detection */}
       <Card>
