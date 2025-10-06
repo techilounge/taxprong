@@ -2345,6 +2345,16 @@ export type Database = {
           title: string
         }[]
       }
+      get_view_security_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          access_control_method: string
+          direct_access_allowed: boolean
+          is_secure: boolean
+          security_mode: string
+          view_name: string
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
