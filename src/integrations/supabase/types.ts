@@ -1862,6 +1862,17 @@ export type Database = {
         Args: { decryption_key: string; encrypted_credential: string }
         Returns: string
       }
+      detect_suspicious_access_patterns: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          action_type: string
+          first_request: string
+          last_request: string
+          request_count: number
+          severity: string
+          user_id: string
+        }[]
+      }
       encrypt_backup_credential: {
         Args: { credential: string }
         Returns: string
@@ -1890,6 +1901,56 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_pro_reviews: {
+        Args: { _limit?: number; _pro_id: string }
+        Returns: {
+          comment: string
+          created_at: string
+          engagement_id: string
+          id: string
+          pro_id: string
+          rating: number
+          reviewer_user_id: string
+        }[]
+      }
+      get_pro_safely: {
+        Args: { _pro_id: string }
+        Returns: {
+          avg_rating: number
+          badges: string[]
+          bio: string
+          created_at: string
+          hourly_rate: number
+          id: string
+          kyc_status: string
+          org_id: string
+          practice_name: string
+          review_count: number
+          services: string[]
+          user_id: string
+        }[]
+      }
+      get_professional_services_requests: {
+        Args: { _limit?: number }
+        Returns: {
+          admin_notes: string
+          assigned_to: string
+          budget_range: string
+          company_name: string
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          created_at: string
+          description: string
+          id: string
+          org_id: string
+          preferred_date: string
+          service_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       get_profile_safely: {
         Args: { _profile_id: string }
         Returns: {
@@ -1898,6 +1959,23 @@ export type Database = {
           id: string
           name: string
           phone: string
+        }[]
+      }
+      get_pros_list: {
+        Args: { _limit?: number; _offset?: number }
+        Returns: {
+          avg_rating: number
+          badges: string[]
+          bio: string
+          created_at: string
+          hourly_rate: number
+          id: string
+          kyc_status: string
+          org_id: string
+          practice_name: string
+          review_count: number
+          services: string[]
+          user_id: string
         }[]
       }
       get_security_events: {

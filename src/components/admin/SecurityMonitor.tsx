@@ -1,13 +1,24 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Shield, AlertTriangle, Activity, Users, FileArchive, Lock } from "lucide-react";
+import { Shield, AlertTriangle, Activity, Users, FileArchive, Lock, Search } from "lucide-react";
 import { useSecurityMonitor } from "@/hooks/useSecurityMonitor";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+interface SuspiciousPattern {
+  user_id: string;
+  action_type: string;
+  request_count: number;
+  first_request: string;
+  last_request: string;
+  severity: string;
+}
 
 export function SecurityMonitor() {
   const {
@@ -22,6 +33,29 @@ export function SecurityMonitor() {
   } = useSecurityMonitor();
 
   const [selectedTimeRange, setSelectedTimeRange] = useState(7);
+  const [suspiciousPatterns, setSuspiciousPatterns] = useState<SuspiciousPattern[]>([]);
+  const [loadingPatterns, setLoadingPatterns] = useState(false);
+
+  const fetchSuspiciousPatterns = async () => {
+    try {
+      setLoadingPatterns(true);
+      const { data, error } = await supabase.rpc("detect_suspicious_access_patterns");
+      
+      if (error) throw error;
+      
+      setSuspiciousPatterns(data || []);
+      if (data && data.length > 0) {
+        toast.warning(`Found ${data.length} suspicious access pattern(s)`);
+      } else {
+        toast.success("No suspicious patterns detected");
+      }
+    } catch (error: any) {
+      console.error("Error fetching suspicious patterns:", error);
+      toast.error("Failed to load suspicious patterns");
+    } finally {
+      setLoadingPatterns(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -67,6 +101,86 @@ export function SecurityMonitor() {
           Real-time security events and threat monitoring
         </p>
       </div>
+
+      {/* Threat Detection */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                Threat Detection
+              </CardTitle>
+              <CardDescription>
+                Scan for suspicious access patterns and potential security threats
+              </CardDescription>
+            </div>
+            <Button 
+              onClick={fetchSuspiciousPatterns}
+              disabled={loadingPatterns}
+              variant="outline"
+            >
+              {loadingPatterns ? "Scanning..." : "Scan Now"}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {suspiciousPatterns.length > 0 ? (
+            <div className="space-y-3">
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Suspicious Activity Detected</AlertTitle>
+                <AlertDescription>
+                  {suspiciousPatterns.length} user(s) with unusual access patterns in the last hour
+                </AlertDescription>
+              </Alert>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User ID</TableHead>
+                    <TableHead>Activity Type</TableHead>
+                    <TableHead>Request Count</TableHead>
+                    <TableHead>Time Range</TableHead>
+                    <TableHead>Severity</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {suspiciousPatterns.map((pattern, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell className="font-mono text-xs">
+                        {pattern.user_id}
+                      </TableCell>
+                      <TableCell>{pattern.action_type}</TableCell>
+                      <TableCell className="font-semibold">
+                        {pattern.request_count}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {format(new Date(pattern.first_request), "HH:mm")} - {format(new Date(pattern.last_request), "HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={
+                            pattern.severity === 'critical' ? 'destructive' : 
+                            pattern.severity === 'high' ? 'destructive' : 
+                            'default'
+                          }
+                        >
+                          {pattern.severity}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              {loadingPatterns ? "Scanning for threats..." : "No suspicious patterns detected. Click 'Scan Now' to check for threats."}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Security Summary Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
