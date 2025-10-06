@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import featureAiAdvisor from "@/assets/feature-ai-advisor.png";
+import featureCompliance from "@/assets/feature-compliance.png";
+import featureAnalytics from "@/assets/feature-analytics.png";
 
 const features = [
   {
@@ -25,7 +28,7 @@ const features = [
       "Context-aware recommendations",
       "No waiting for consultants",
     ],
-    mockup: "🤖",
+    mockup: <img src={featureAiAdvisor} alt="AI Tax Advisor interface" className="w-full h-auto" />,
   },
   {
     id: "automation",
@@ -53,7 +56,7 @@ const features = [
       "Email & SMS notifications",
       "Penalty avoidance alerts",
     ],
-    mockup: "📅",
+    mockup: <img src={featureCompliance} alt="Compliance calendar" className="w-full h-auto" />,
   },
   {
     id: "analytics",
@@ -67,7 +70,7 @@ const features = [
       "Tax savings opportunities",
       "Custom reports",
     ],
-    mockup: "📊",
+    mockup: <img src={featureAnalytics} alt="Advanced analytics dashboard" className="w-full h-auto" />,
   },
   {
     id: "documents",
@@ -183,8 +186,14 @@ export const FeatureShowcase = () => {
 
                         {/* Mockup */}
                         <div className="hidden lg:block">
-                          <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-border">
-                            <div className="text-9xl">{feature.mockup}</div>
+                          <div className="aspect-square rounded-2xl overflow-hidden border border-border">
+                            {typeof feature.mockup === 'string' ? (
+                              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                                <div className="text-9xl">{feature.mockup}</div>
+                              </div>
+                            ) : (
+                              feature.mockup
+                            )}
                           </div>
                         </div>
                       </div>

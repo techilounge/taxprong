@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoModal } from "@/components/ui/video-modal";
 import { StatsCounter } from "@/components/ui/stats-counter";
+import heroDashboard from "@/assets/hero-dashboard.png";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -120,14 +121,11 @@ export const HeroSection = () => {
             className="relative hidden lg:block"
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border bg-card">
-              <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="text-6xl mb-4">📊</div>
-                  <p className="text-lg font-medium text-foreground">
-                    Dashboard Preview Coming Soon
-                  </p>
-                </div>
-              </div>
+              <img 
+                src={heroDashboard} 
+                alt="TaxProNG Dashboard Preview - Modern tax management interface"
+                className="w-full h-auto aspect-[4/3] object-cover"
+              />
             </div>
 
             {/* Floating Cards */}
