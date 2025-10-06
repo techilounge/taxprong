@@ -21,15 +21,21 @@ export const useReceiptScanner = () => {
     try {
       setIsScanning(true);
 
-      // Request camera permission and capture image
-      // Use Camera for native platforms, Prompt for web (allows camera or gallery)
+      // Use native camera on mobile, file picker on web
       const isNative = Capacitor.isNativePlatform();
-      const image = await Camera.getPhoto({
+      
+      const cameraPromise = Camera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
-        source: isNative ? CameraSource.Camera : CameraSource.Prompt,
+        source: isNative ? CameraSource.Camera : CameraSource.Photos,
       });
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Camera request timed out')), 30000)
+      );
+
+      const image = await Promise.race([cameraPromise, timeoutPromise]);
 
       setIsScanning(false);
       setIsProcessing(true);
@@ -111,9 +117,22 @@ export const useReceiptScanner = () => {
       };
     } catch (error: any) {
       console.error('Scan error:', error);
+      
+      // Handle specific error cases
+      let errorMessage = "Could not scan receipt";
+      
+      if (error.message?.includes('timeout')) {
+        errorMessage = "Camera request timed out. Please try again or use the file upload option.";
+      } else if (error.message?.includes('permission')) {
+        errorMessage = "Camera permission denied. Please enable camera access in your browser settings.";
+      } else if (error.message?.includes('User cancelled')) {
+        // User cancelled - don't show error toast
+        return null;
+      }
+      
       toast({
         title: "Scan Failed",
-        description: error.message || "Could not scan receipt",
+        description: errorMessage,
         variant: "destructive",
       });
       return null;
