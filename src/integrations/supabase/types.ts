@@ -2370,6 +2370,17 @@ export type Database = {
         Args: { "": unknown[] }
         Returns: number
       }
+      update_backup_metadata: {
+        Args: {
+          _bucket: string
+          _enabled: boolean
+          _org_id: string
+          _prefix: string
+          _provider: string
+          _region: string
+        }
+        Returns: undefined
+      }
       user_can_view_tin: {
         Args: { _business_id: string }
         Returns: boolean

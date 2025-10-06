@@ -73,24 +73,21 @@ export function BackupSettings() {
 
     setLoading(true);
     try {
-      // First, update non-sensitive settings
-      const { error: updateError } = await supabase
-        .from('backup_settings')
-        .upsert({
-          org_id: organization.id,
-          provider: settings.provider,
-          bucket: settings.bucket,
-          prefix: settings.prefix,
-          region: settings.region,
-          enabled: settings.enabled,
-        }, {
-          onConflict: 'org_id'
+      // Update metadata using secure function (prevents credential manipulation)
+      const { error: metadataError } = await supabase
+        .rpc('update_backup_metadata', {
+          _org_id: organization.id,
+          _provider: settings.provider,
+          _bucket: settings.bucket,
+          _prefix: settings.prefix,
+          _region: settings.region,
+          _enabled: settings.enabled,
         });
 
-      if (updateError) throw updateError;
+      if (metadataError) throw metadataError;
 
       // If credentials were changed (not masked), encrypt and store them securely
-      if (settings.access_key && settings.secret_key !== '********') {
+      if (settings.access_key && settings.secret_key && settings.secret_key !== '********') {
         const { error: credError } = await supabase
           .rpc('set_backup_credentials', {
             _org_id: organization.id,
@@ -106,7 +103,7 @@ export function BackupSettings() {
         description: "Backup settings have been saved securely with encrypted credentials.",
       });
 
-      loadSettings(); // Reload to mask the secret
+      loadSettings(); // Reload to mask the secrets
     } catch (error: any) {
       toast({
         title: "Error",
