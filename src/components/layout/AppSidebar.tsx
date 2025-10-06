@@ -72,21 +72,25 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-[#2d9cb7]">
       <SidebarContent>
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-white/90 font-semibold">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNavItems.map((item) => {
                 const isActive = location.pathname === item.url;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={isActive}
+                      className="text-white hover:bg-white/10 hover:text-white data-[active=true]:bg-white/20 data-[active=true]:text-white"
+                    >
                       <NavLink to={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <item.icon className="h-4 w-4 text-white/80" />
+                        <span className="text-white">{item.title}</span>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -98,17 +102,21 @@ export function AppSidebar() {
 
         {/* Tax Professional */}
         <SidebarGroup>
-          <SidebarGroupLabel>Tax Professional</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-white/90 font-semibold">Tax Professional</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {proNavItems.map((item) => {
                 const isActive = location.pathname === item.url;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={isActive}
+                      className="text-white hover:bg-white/10 hover:text-white data-[active=true]:bg-white/20 data-[active=true]:text-white"
+                    >
                       <NavLink to={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <item.icon className="h-4 w-4 text-white/80" />
+                        <span className="text-white">{item.title}</span>
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -124,27 +132,38 @@ export function AppSidebar() {
             <SidebarMenu>
               {isExpensesPage && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton onClick={handleOpenGuide}>
-                    <HelpCircle className="h-4 w-4" />
-                    <span>Expenses Guide</span>
+                  <SidebarMenuButton 
+                    onClick={handleOpenGuide}
+                    className="text-white hover:bg-white/10 hover:text-white"
+                  >
+                    <HelpCircle className="h-4 w-4 text-white/80" />
+                    <span className="text-white">Expenses Guide</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={location.pathname === '/admin'}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === '/admin'}
+                    className="text-white hover:bg-white/10 hover:text-white data-[active=true]:bg-white/20 data-[active=true]:text-white"
+                  >
                     <NavLink to="/admin">
-                      <Shield className="h-4 w-4" />
-                      <span>Admin</span>
+                      <Shield className="h-4 w-4 text-white/80" />
+                      <span className="text-white">Admin</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === '/settings'}>
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={location.pathname === '/settings'}
+                  className="text-white hover:bg-white/10 hover:text-white data-[active=true]:bg-white/20 data-[active=true]:text-white"
+                >
                   <NavLink to="/settings">
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
+                    <Settings className="h-4 w-4 text-white/80" />
+                    <span className="text-white">Settings</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

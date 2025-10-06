@@ -123,7 +123,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 p-6 bg-muted/30">
+          <main className="flex-1 p-6 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
             {children}
           </main>
 
