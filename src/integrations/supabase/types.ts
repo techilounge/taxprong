@@ -66,6 +66,13 @@ export type Database = {
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       backup_runs: {
@@ -360,6 +367,13 @@ export type Database = {
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "businesses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       cgt_events: {
@@ -525,6 +539,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_person_user_id_fkey"
+            columns: ["person_user_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -812,6 +833,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1172,6 +1200,13 @@ export type Database = {
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       onboarding_progress: {
@@ -1251,6 +1286,13 @@ export type Database = {
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "org_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       orgs: {
@@ -1322,6 +1364,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pit_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1618,6 +1667,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pros_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_role_assignments"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2132,7 +2188,7 @@ export type Database = {
           email: string | null
           id: string | null
           name: string | null
-          role: Database["public"]["Enums"]["app_role"] | null
+          role: string | null
           user_created_at: string | null
           user_id: string | null
         }
