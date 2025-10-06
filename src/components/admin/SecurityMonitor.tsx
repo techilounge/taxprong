@@ -55,7 +55,7 @@ export function SecurityMonitor() {
   const [securityMetrics, setSecurityMetrics] = useState<SecurityMetric[]>([]);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
 
-  const fetchSuspiciousPatterns = async () => {
+  const fetchSuspiciousPatterns = async (showSuccessToast = false) => {
     try {
       setLoadingPatterns(true);
       const { data, error } = await supabase.rpc("detect_suspicious_access_patterns");
@@ -65,7 +65,7 @@ export function SecurityMonitor() {
       setSuspiciousPatterns(data || []);
       if (data && data.length > 0) {
         toast.warning(`Found ${data.length} suspicious access pattern(s)`);
-      } else {
+      } else if (showSuccessToast) {
         toast.success("No suspicious patterns detected");
       }
     } catch (error: any) {
@@ -148,8 +148,8 @@ export function SecurityMonitor() {
   useEffect(() => {
     if (!isAdmin) return;
 
-    // Load initial data
-    fetchSuspiciousPatterns();
+    // Load initial data (silent, no toast)
+    fetchSuspiciousPatterns(false);
     fetchSecurityMetrics();
 
     // Subscribe to high severity events for real-time alerts
@@ -163,7 +163,7 @@ export function SecurityMonitor() {
     });
 
     return unsubscribe;
-  }, [isAdmin, subscribeToHighSeverityEvents, formatEventType]);
+  }, [isAdmin, subscribeToHighSeverityEvents]);
 
   const handleTimeRangeChange = (days: number) => {
     setSelectedTimeRange(days);
@@ -303,7 +303,7 @@ export function SecurityMonitor() {
               </CardDescription>
             </div>
             <Button 
-              onClick={fetchSuspiciousPatterns}
+              onClick={() => fetchSuspiciousPatterns(true)}
               disabled={loadingPatterns}
               variant="outline"
             >
