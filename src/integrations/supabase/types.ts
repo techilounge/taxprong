@@ -2644,7 +2644,14 @@ export type Database = {
     }
     Enums: {
       app_role: "owner" | "staff" | "viewer" | "admin"
-      audit_action: "create" | "update" | "delete" | "export" | "submit"
+      audit_action:
+        | "create"
+        | "update"
+        | "delete"
+        | "export"
+        | "submit"
+        | "read"
+        | "access"
       delete_request_status: "pending" | "approved" | "denied" | "processed"
       delete_scope: "user" | "org" | "engagement"
       direction: "debit" | "credit"
@@ -2784,7 +2791,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["owner", "staff", "viewer", "admin"],
-      audit_action: ["create", "update", "delete", "export", "submit"],
+      audit_action: [
+        "create",
+        "update",
+        "delete",
+        "export",
+        "submit",
+        "read",
+        "access",
+      ],
       delete_request_status: ["pending", "approved", "denied", "processed"],
       delete_scope: ["user", "org", "engagement"],
       direction: ["debit", "credit"],
