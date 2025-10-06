@@ -2129,6 +2129,10 @@ export type Database = {
       }
     }
     Functions: {
+      alert_on_backup_security_breach: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       assign_user_role: {
         Args: {
           role_name: Database["public"]["Enums"]["app_role"]
@@ -2659,6 +2663,15 @@ export type Database = {
       verify_backup_health: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      verify_backup_security: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          details: string
+          severity: string
+          status: string
+        }[]
       }
       verify_profile_security: {
         Args: Record<PropertyKey, never>
