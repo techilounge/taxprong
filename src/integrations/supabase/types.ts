@@ -1711,6 +1711,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_view_documentation: {
+        Row: {
+          access_control: string
+          last_reviewed_at: string | null
+          purpose: string
+          security_notes: string | null
+          view_name: string
+        }
+        Insert: {
+          access_control: string
+          last_reviewed_at?: string | null
+          purpose: string
+          security_notes?: string | null
+          view_name: string
+        }
+        Update: {
+          access_control?: string
+          last_reviewed_at?: string | null
+          purpose?: string
+          security_notes?: string | null
+          view_name?: string
+        }
+        Relationships: []
+      }
       stamp_instruments: {
         Row: {
           attachment: string | null
@@ -1975,6 +1999,42 @@ export type Database = {
           },
         ]
       }
+      scheduled_jobs_status: {
+        Row: {
+          active: boolean | null
+          command: string | null
+          database: string | null
+          jobid: number | null
+          jobname: string | null
+          nodename: string | null
+          nodeport: number | null
+          schedule: string | null
+          username: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          command?: string | null
+          database?: string | null
+          jobid?: number | null
+          jobname?: string | null
+          nodename?: string | null
+          nodeport?: number | null
+          schedule?: string | null
+          username?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          command?: string | null
+          database?: string | null
+          jobid?: number | null
+          jobname?: string | null
+          nodename?: string | null
+          nodeport?: number | null
+          schedule?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       security_dashboard_enhanced: {
         Row: {
           active_users_24h: number | null
@@ -1990,10 +2050,10 @@ export type Database = {
       security_dashboard_summary: {
         Row: {
           active_users_24h: number | null
+          backups_enabled: number | null
           critical_events_24h: number | null
           events_24h: number | null
           last_updated: string | null
-          orgs_with_backup: number | null
           rate_limits_24h: number | null
           total_admins: number | null
         }
@@ -2463,6 +2523,16 @@ export type Database = {
       verify_backup_health: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      verify_view_security: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          access_method: string
+          has_rls_protection: boolean
+          has_security_barrier: boolean
+          security_status: string
+          view_name: string
+        }[]
       }
     }
     Enums: {
