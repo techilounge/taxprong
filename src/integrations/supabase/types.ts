@@ -2163,6 +2163,16 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      check_enumeration_attacks: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          first_query: string
+          last_query: string
+          query_count: number
+          severity: string
+          user_id: string
+        }[]
+      }
       check_rate_limit: {
         Args: {
           _action: string
@@ -2355,6 +2365,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_safe_profile_name: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       get_security_dashboard_enhanced: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2424,6 +2438,15 @@ export type Database = {
           id: string
           severity: string
           title: string
+        }[]
+      }
+      get_users_for_admin_dashboard: {
+        Args: { _limit?: number }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+          name: string
         }[]
       }
       get_view_security_status: {
