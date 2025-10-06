@@ -1828,6 +1828,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      audit_profile_enumeration: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       audit_sensitive_access: {
         Args: {
           _operation: string
