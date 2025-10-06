@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Shield, AlertTriangle, CheckCircle2, TrendingUp } from "lucide-react";
+import { Shield, AlertTriangle, CheckCircle2, TrendingUp, Clock, AlertCircle } from "lucide-react";
 import { useOrganization } from "@/hooks/useOrganization";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -124,6 +124,19 @@ export function ComplianceScore() {
     }
   };
 
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return "text-success";
+    if (score >= 75) return "text-info";
+    if (score >= 50) return "text-warning";
+    return "text-destructive";
+  };
+
+  const getRiskBadgeVariant = (level: "low" | "medium" | "high") => {
+    if (level === "low") return "default" as const;
+    if (level === "medium") return "secondary" as const;
+    return "destructive" as const;
+  };
+
   if (loading || !metrics) {
     return (
       <Card>
@@ -134,57 +147,83 @@ export function ComplianceScore() {
     );
   }
 
-  const getScoreColor = () => {
-    if (metrics.score >= 90) return "text-green-600";
-    if (metrics.score >= 75) return "text-blue-600";
-    if (metrics.score >= 50) return "text-orange-600";
-    return "text-red-600";
-  };
-
-  const getRiskBadgeVariant = () => {
-    if (metrics.riskLevel === "low") return "default";
-    if (metrics.riskLevel === "medium") return "secondary";
-    return "destructive";
-  };
-
   return (
-    <div className="space-y-6">
-      {/* Main Score Card */}
-      <Card>
+    <>
+      {/* Circular Gauge Card */}
+      <Card className="overflow-hidden hover-scale animate-fade-in">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Compliance Health Score
-          </CardTitle>
-          <CardDescription>
-            Your tax compliance rating based on filing history and deadlines
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Compliance Health
+            </CardTitle>
+            <Badge variant={getRiskBadgeVariant(metrics.riskLevel)}>
+              {metrics.riskLevel.toUpperCase()} RISK
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-5xl font-bold ${getScoreColor()}`}>{Math.round(metrics.score)}</p>
-                <p className="text-sm text-muted-foreground">out of 100</p>
+          <div className="space-y-6">
+            {/* Circular Progress Gauge */}
+            <div className="flex items-center justify-center">
+              <div className="relative w-48 h-48">
+                {/* Circular background */}
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    cx="96"
+                    cy="96"
+                    r="88"
+                    stroke="hsl(var(--muted))"
+                    strokeWidth="12"
+                    fill="none"
+                  />
+                  <circle
+                    cx="96"
+                    cy="96"
+                    r="88"
+                    stroke={`hsl(var(--${
+                      metrics.score >= 80 ? 'success' : 
+                      metrics.score >= 60 ? 'warning' : 
+                      'destructive'
+                    }))`}
+                    strokeWidth="12"
+                    fill="none"
+                    strokeDasharray={`${(metrics.score / 100) * 552.92} 552.92`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+                {/* Center content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className={`text-5xl font-bold ${getScoreColor(metrics.score)}`}>
+                    {Math.round(metrics.score)}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">Score</p>
+                </div>
               </div>
-              <Badge variant={getRiskBadgeVariant()} className="text-lg px-4 py-2">
-                {metrics.riskLevel.toUpperCase()} RISK
-              </Badge>
             </div>
 
-            <Progress value={metrics.score} className="h-3" />
-
-            <div className="grid grid-cols-3 gap-4 pt-2">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <p className="text-2xl font-bold">{metrics.onTimeFilings}</p>
-                <p className="text-xs text-muted-foreground">On-time filings</p>
+                <CheckCircle2 className="h-6 w-6 text-success mx-auto mb-1" />
+                <div className="text-xl font-bold">
+                  {metrics.onTimeFilings}
+                </div>
+                <p className="text-xs text-muted-foreground">On-Time</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-orange-600">{metrics.pendingReturns}</p>
-                <p className="text-xs text-muted-foreground">Due soon</p>
+                <Clock className="h-6 w-6 text-warning mx-auto mb-1" />
+                <div className="text-xl font-bold">
+                  {metrics.pendingReturns}
+                </div>
+                <p className="text-xs text-muted-foreground">Pending</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">{metrics.overdueReturns}</p>
+                <AlertCircle className="h-6 w-6 text-destructive mx-auto mb-1" />
+                <div className="text-xl font-bold">
+                  {metrics.overdueReturns}
+                </div>
                 <p className="text-xs text-muted-foreground">Overdue</p>
               </div>
             </div>
@@ -192,21 +231,21 @@ export function ComplianceScore() {
         </CardContent>
       </Card>
 
-      {/* Recommendations */}
+      {/* Recommendations - Compact */}
       {metrics.recommendations.length > 0 && (
-        <Card>
+        <Card className="animate-fade-in">
           <CardHeader>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Recommendations
+              Top Recommendations
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {metrics.recommendations.map((rec, idx) => (
+              {metrics.recommendations.slice(0, 2).map((rec, idx) => (
                 <li key={idx} className="flex gap-2 text-sm">
                   {metrics.riskLevel === "high" && idx === 0 ? (
-                    <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
                   ) : (
                     <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
                   )}
@@ -217,19 +256,6 @@ export function ComplianceScore() {
           </CardContent>
         </Card>
       )}
-
-      {/* Score Interpretation */}
-      <Card className="bg-muted/50">
-        <CardContent className="pt-6">
-          <h4 className="font-semibold text-sm mb-2">Score Interpretation</h4>
-          <div className="space-y-1 text-xs">
-            <p>• <strong>90-100:</strong> Excellent - Strong compliance history</p>
-            <p>• <strong>75-89:</strong> Good - Minor improvements needed</p>
-            <p>• <strong>50-74:</strong> Fair - Address pending/overdue returns</p>
-            <p>• <strong>Below 50:</strong> Poor - Immediate action required</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </>
   );
 }

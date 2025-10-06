@@ -18,6 +18,12 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 import { TrialBanner } from "@/components/dashboard/TrialBanner";
 import { TaxDocumentGenerator } from "@/components/documents/TaxDocumentGenerator";
+import { EnhancedStatCard } from "@/components/dashboard/EnhancedStatCard";
+import { FinancialOverviewWidget } from "@/components/dashboard/FinancialOverviewWidget";
+import { ComplianceScore } from "@/components/analytics/ComplianceScore";
+import { ExpensesByCategoryWidget } from "@/components/analytics/ExpensesByCategoryWidget";
+import { InputVATTrendWidget } from "@/components/analytics/InputVATTrendWidget";
+import { useOrganization } from "@/hooks/useOrganization";
 import { toast } from "sonner";
 
 interface DashboardStats {
@@ -29,6 +35,7 @@ interface DashboardStats {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { organization } = useOrganization();
   const [stats, setStats] = useState<DashboardStats>({
     pendingTasks: 0,
     vatDueThisMonth: 0,
@@ -66,9 +73,9 @@ const Dashboard = () => {
 
       setStats({
         pendingTasks: taskCount || 0,
-        vatDueThisMonth: 0, // Will be calculated from VAT returns
+        vatDueThisMonth: 0,
         expensesThisMonth: expenseTotal,
-        openEngagements: 0, // Will be calculated from engagements
+        openEngagements: 0,
       });
     } catch (error: any) {
       console.error("Error loading dashboard:", error);
@@ -126,27 +133,67 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Stats Grid */}
+        {/* Enhanced Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {statCards.map((stat, index) => (
-            <Card key={index}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stat.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          <EnhancedStatCard
+            title="Tasks Due"
+            value={stats.pendingTasks}
+            description="Open tasks requiring attention"
+            icon={Clock}
+            color="text-warning"
+            bgColor="bg-warning/10"
+            animated
+          />
+          <EnhancedStatCard
+            title="Expenses This Month"
+            value={stats.expensesThisMonth}
+            description="Total expenses recorded"
+            icon={Receipt}
+            color="text-primary"
+            bgColor="bg-primary/10"
+            prefix="₦"
+            animated
+          />
+          <EnhancedStatCard
+            title="VAT Due"
+            value={stats.vatDueThisMonth}
+            description="Due by 14th of next month"
+            icon={FileText}
+            color="text-info"
+            bgColor="bg-info/10"
+            prefix="₦"
+            animated
+          />
+          <EnhancedStatCard
+            title="Active Engagements"
+            value={stats.openEngagements}
+            description="Open client engagements"
+            icon={TrendingUp}
+            color="text-accent"
+            bgColor="bg-accent/10"
+            animated
+          />
         </div>
+
+        {/* Financial Overview & Compliance */}
+        {organization && (
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <FinancialOverviewWidget orgId={organization.id} />
+            </div>
+            <div>
+              <ComplianceScore />
+            </div>
+          </div>
+        )}
+
+        {/* Analytics Widgets */}
+        {organization && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <ExpensesByCategoryWidget orgId={organization.id} />
+            <InputVATTrendWidget orgId={organization.id} />
+          </div>
+        )}
 
         {/* Quick Actions */}
         <Card>
