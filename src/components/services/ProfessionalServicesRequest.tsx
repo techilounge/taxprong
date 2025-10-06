@@ -68,6 +68,21 @@ export const ProfessionalServicesRequest = () => {
 
       if (error) throw error;
 
+      // Send email notification via edge function
+      const { data: insertedData } = await supabase
+        .from("professional_services_requests")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (insertedData) {
+        await supabase.functions.invoke("notify-service-request", {
+          body: { request: insertedData },
+        });
+      }
+
       toast({
         title: "Request submitted!",
         description: "Our team will contact you within 24 hours.",

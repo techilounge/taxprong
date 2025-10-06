@@ -47,6 +47,35 @@ export function DeleteRequest() {
 
       if (error) throw error;
 
+      // Get user profile for email notification
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email, name")
+        .eq("id", session.user.id)
+        .single();
+
+      // Get the inserted request
+      const { data: insertedRequest } = await supabase
+        .from("delete_requests")
+        .select("*")
+        .eq("requested_by", session.user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      // Send email notification via edge function
+      if (insertedRequest && profile) {
+        await supabase.functions.invoke("notify-delete-request", {
+          body: {
+            request: {
+              ...insertedRequest,
+              user_email: profile.email,
+              user_name: profile.name,
+            },
+          },
+        });
+      }
+
       toast({
         title: "Request Submitted",
         description: "Your deletion request has been submitted for admin review",
