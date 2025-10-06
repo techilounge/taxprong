@@ -1582,6 +1582,30 @@ export type Database = {
           },
         ]
       }
+      security_definer_functions: {
+        Row: {
+          function_name: string
+          last_reviewed_at: string | null
+          purpose: string
+          required_role: Database["public"]["Enums"]["app_role"] | null
+          security_notes: string | null
+        }
+        Insert: {
+          function_name: string
+          last_reviewed_at?: string | null
+          purpose: string
+          required_role?: Database["public"]["Enums"]["app_role"] | null
+          security_notes?: string | null
+        }
+        Update: {
+          function_name?: string
+          last_reviewed_at?: string | null
+          purpose?: string
+          required_role?: Database["public"]["Enums"]["app_role"] | null
+          security_notes?: string | null
+        }
+        Relationships: []
+      }
       stamp_instruments: {
         Row: {
           attachment: string | null
@@ -1805,6 +1829,47 @@ export type Database = {
       }
     }
     Views: {
+      backup_settings_safe: {
+        Row: {
+          bucket: string | null
+          created_at: string | null
+          enabled: boolean | null
+          org_id: string | null
+          prefix: string | null
+          provider: string | null
+          region: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bucket?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          org_id?: string | null
+          prefix?: string | null
+          provider?: string | null
+          region?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bucket?: string | null
+          created_at?: string | null
+          enabled?: boolean | null
+          org_id?: string | null
+          prefix?: string | null
+          provider?: string | null
+          region?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_settings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_dashboard_summary: {
         Row: {
           active_users_24h: number | null
@@ -1917,6 +1982,13 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_business_tin: {
+        Args: { _business_id: string }
+        Returns: {
+          business_id: string
+          tin: string
+        }[]
+      }
       get_pro_reviews: {
         Args: { _limit?: number; _pro_id: string }
         Returns: {
@@ -1992,6 +2064,18 @@ export type Database = {
           review_count: number
           services: string[]
           user_id: string
+        }[]
+      }
+      get_security_dashboard_summary: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active_users_24h: number
+          backups_enabled: number
+          critical_events_24h: number
+          events_24h: number
+          last_updated: string
+          rate_limits_24h: number
+          total_admins: number
         }[]
       }
       get_security_events: {

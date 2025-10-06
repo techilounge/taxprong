@@ -148,6 +148,10 @@ export function SecurityMonitor() {
   useEffect(() => {
     if (!isAdmin) return;
 
+    // Load initial data
+    fetchSuspiciousPatterns();
+    fetchSecurityMetrics();
+
     // Subscribe to high severity events for real-time alerts
     const unsubscribe = subscribeToHighSeverityEvents((event) => {
       toast.error(
