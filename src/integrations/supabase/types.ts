@@ -2127,11 +2127,26 @@ export type Database = {
         }
         Relationships: []
       }
+      user_role_assignments: {
+        Row: {
+          email: string | null
+          id: string | null
+          name: string | null
+          role: Database["public"]["Enums"]["app_role"] | null
+          user_created_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       alert_on_backup_security_breach: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      assign_role_by_email: {
+        Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
+        Returns: Json
       }
       assign_user_role: {
         Args: {
@@ -2567,6 +2582,10 @@ export type Database = {
           score: number
           text: string
         }[]
+      }
+      remove_role_by_email: {
+        Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
+        Returns: Json
       }
       resolve_security_alert: {
         Args: { _alert_id: string; _resolution_notes?: string }

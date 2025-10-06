@@ -6,6 +6,7 @@ import { SecurityMonitor } from "@/components/admin/SecurityMonitor";
 import { SecurityAlerts } from "@/components/admin/SecurityAlerts";
 import { ProfileAccessAudit } from "@/components/admin/ProfileAccessAudit";
 import { MaintenanceMonitor } from "@/components/admin/MaintenanceMonitor";
+import { UserRoleManagement } from "@/components/admin/UserRoleManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Loader2 } from "lucide-react";
@@ -45,12 +46,13 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="security" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="security">Security Monitor</TabsTrigger>
             <TabsTrigger value="alerts">Security Alerts</TabsTrigger>
             <TabsTrigger value="audit">Profile Access</TabsTrigger>
             <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
             <TabsTrigger value="delete-requests">Delete Requests</TabsTrigger>
+            <TabsTrigger value="roles">User Roles</TabsTrigger>
           </TabsList>
 
           <TabsContent value="security" className="space-y-6">
@@ -71,6 +73,10 @@ export default function Admin() {
 
           <TabsContent value="delete-requests" className="space-y-6">
             <DeleteRequestReview />
+          </TabsContent>
+
+          <TabsContent value="roles" className="space-y-6">
+            <UserRoleManagement />
           </TabsContent>
         </Tabs>
       </div>
