@@ -26,6 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Upload } from "lucide-react";
 import { dateField, nameField, descriptionField, currencyField, percentageField } from "@/lib/validation";
+import { CameraScanButton } from "./CameraScanButton";
 
 // Enhanced expense validation schema with security best practices
 const expenseSchema = z.object({
@@ -135,6 +136,27 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
       fileInputRef.current.value = '';
     }
     toast.success("File removed");
+  };
+
+  const handleScanComplete = (data: {
+    merchant?: string;
+    amount?: number;
+    date?: string;
+    vatAmount?: number;
+    category?: string;
+    imageFile?: File;
+  }) => {
+    // Pre-fill form fields with scanned data
+    if (data.merchant) form.setValue('merchant', data.merchant);
+    if (data.amount) form.setValue('amount', data.amount.toString());
+    if (data.date) form.setValue('date', data.date);
+    if (data.vatAmount) form.setValue('vat_amount', data.vatAmount.toString());
+    if (data.category) form.setValue('category', data.category);
+    
+    // Add scanned image to receipt files
+    if (data.imageFile) {
+      setReceiptFiles(prev => [...prev, data.imageFile!]);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -398,7 +420,10 @@ export function ExpenseForm({ orgId, businessId, expense, onSuccess, onCancel }:
 
         <div className="space-y-2">
           <Label>Receipt Upload</Label>
-          <div 
+          
+          <CameraScanButton onScanComplete={handleScanComplete} />
+          
+          <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
               isDragging ? 'border-primary bg-primary/5' : 'hover:border-primary'
             }`}
