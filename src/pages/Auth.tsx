@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Chrome } from "lucide-react";
 import { toast } from "sonner";
 
 // Zod validation schemas for authentication
@@ -111,6 +113,21 @@ const Auth = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign in with Google");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-primary p-4">
       <div className="w-full max-w-md">
@@ -184,6 +201,23 @@ const Auth = () => {
                     >
                       {signInForm.formState.isSubmitting ? "Signing in..." : "Sign In"}
                     </Button>
+
+                    <div className="relative my-4">
+                      <Separator />
+                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+                        OR
+                      </span>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleGoogleSignIn}
+                    >
+                      <Chrome className="mr-2 h-4 w-4" />
+                      Continue with Google
+                    </Button>
                   </form>
                 </Form>
               </TabsContent>
@@ -248,6 +282,23 @@ const Auth = () => {
                       disabled={signUpForm.formState.isSubmitting}
                     >
                       {signUpForm.formState.isSubmitting ? "Creating account..." : "Sign Up"}
+                    </Button>
+
+                    <div className="relative my-4">
+                      <Separator />
+                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+                        OR
+                      </span>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleGoogleSignIn}
+                    >
+                      <Chrome className="mr-2 h-4 w-4" />
+                      Continue with Google
                     </Button>
                   </form>
                 </Form>
