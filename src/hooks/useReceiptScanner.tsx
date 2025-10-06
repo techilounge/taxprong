@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -21,11 +22,13 @@ export const useReceiptScanner = () => {
       setIsScanning(true);
 
       // Request camera permission and capture image
+      // Use Camera for native platforms, Prompt for web (allows camera or gallery)
+      const isNative = Capacitor.isNativePlatform();
       const image = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
+        source: isNative ? CameraSource.Camera : CameraSource.Prompt,
       });
 
       setIsScanning(false);
