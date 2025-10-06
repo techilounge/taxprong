@@ -1582,6 +1582,45 @@ export type Database = {
           },
         ]
       }
+      security_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          description: string
+          details: Json | null
+          id: string
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          description: string
+          details?: Json | null
+          id?: string
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          description?: string
+          details?: Json | null
+          id?: string
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
       security_definer_functions: {
         Row: {
           function_name: string
@@ -1603,6 +1642,42 @@ export type Database = {
           purpose?: string
           required_role?: Database["public"]["Enums"]["app_role"] | null
           security_notes?: string | null
+        }
+        Relationships: []
+      }
+      security_monitoring_config: {
+        Row: {
+          alert_threshold: number | null
+          check_type: string
+          created_at: string
+          enabled: boolean
+          id: string
+          last_run_at: string | null
+          next_run_at: string | null
+          schedule_cron: string | null
+          updated_at: string
+        }
+        Insert: {
+          alert_threshold?: number | null
+          check_type: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          schedule_cron?: string | null
+          updated_at?: string
+        }
+        Update: {
+          alert_threshold?: number | null
+          check_type?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          schedule_cron?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1870,6 +1945,18 @@ export type Database = {
           },
         ]
       }
+      security_dashboard_enhanced: {
+        Row: {
+          active_users_24h: number | null
+          critical_alerts: number | null
+          critical_events_24h: number | null
+          dashboard_updated_at: string | null
+          events_24h: number | null
+          last_security_check: string | null
+          unresolved_alerts: number | null
+        }
+        Relationships: []
+      }
       security_dashboard_summary: {
         Row: {
           active_users_24h: number | null
@@ -1904,6 +1991,16 @@ export type Database = {
           target_user_id: string
         }
         Returns: undefined
+      }
+      audit_profile_access_pattern: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          last_access: string
+          profile_queries_count: number
+          risk_level: string
+          unique_profiles_accessed: number
+          user_id: string
+        }[]
       }
       audit_profile_enumeration: {
         Args: Record<PropertyKey, never>
@@ -2066,6 +2163,18 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_security_dashboard_enhanced: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active_users_24h: number
+          critical_alerts: number
+          critical_events_24h: number
+          dashboard_updated_at: string
+          events_24h: number
+          last_security_check: string
+          unresolved_alerts: number
+        }[]
+      }
       get_security_dashboard_summary: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2110,6 +2219,19 @@ export type Database = {
           tin_accesses: number
           total_events: number
           unique_users: number
+        }[]
+      }
+      get_unresolved_security_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          age_hours: number
+          alert_type: string
+          created_at: string
+          description: string
+          details: Json
+          id: string
+          severity: string
+          title: string
         }[]
       }
       halfvec_avg: {
@@ -2203,11 +2325,19 @@ export type Database = {
           text: string
         }[]
       }
+      resolve_security_alert: {
+        Args: { _alert_id: string; _resolution_notes?: string }
+        Returns: undefined
+      }
       revoke_user_role: {
         Args: {
           role_name: Database["public"]["Enums"]["app_role"]
           target_user_id: string
         }
+        Returns: undefined
+      }
+      run_automated_security_checks: {
+        Args: Record<PropertyKey, never>
         Returns: undefined
       }
       run_security_health_check: {
