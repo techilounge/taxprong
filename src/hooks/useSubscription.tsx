@@ -259,11 +259,13 @@ export function useSubscription() {
         if (!existingPro) {
           console.log("🆕 No existing pro record, creating new one...");
           
-          // Get user's org_id
+          // Get user's org_id (take first one if multiple exist)
           const { data: orgUser, error: orgError } = await supabase
             .from("org_users")
             .select("org_id")
             .eq("user_id", session.user.id)
+            .order("created_at", { ascending: true })
+            .limit(1)
             .single();
 
           console.log("🏢 Org user data:", orgUser, "Error:", orgError);
