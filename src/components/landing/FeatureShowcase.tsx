@@ -14,6 +14,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import featureAiAdvisor from "@/assets/feature-ai-advisor.png";
 import featureCompliance from "@/assets/feature-compliance.png";
 import featureAnalytics from "@/assets/feature-analytics.png";
+import featureAutomation from "@/assets/feature-automation.png";
+import featureDocuments from "@/assets/feature-documents.png";
+import featureSecurity from "@/assets/feature-security.png";
 
 const features = [
   {
@@ -42,7 +45,7 @@ const features = [
       "Recurring expense tracking",
       "One-click report generation",
     ],
-    mockup: "⚡",
+    mockup: <img src={featureAutomation} alt="Smart Automation interface" className="w-full h-auto" />,
   },
   {
     id: "compliance",
@@ -84,7 +87,7 @@ const features = [
       "FIRS-compliant formats",
       "Instant PDF downloads",
     ],
-    mockup: "📄",
+    mockup: <img src={featureDocuments} alt="Document Generator interface" className="w-full h-auto" />,
   },
   {
     id: "security",
@@ -98,7 +101,7 @@ const features = [
       "Automated backups",
       "Multi-factor authentication",
     ],
-    mockup: "🔒",
+    mockup: <img src={featureSecurity} alt="Bank-Level Security interface" className="w-full h-auto" />,
   },
 ];
 
