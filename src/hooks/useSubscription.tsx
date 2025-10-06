@@ -219,7 +219,7 @@ export function useSubscription() {
     return false;
   };
 
-  const switchPlan = async (newPlan: SubscriptionPlan): Promise<{ success: boolean; error?: string }> => {
+  const switchPlan = async (newPlan: SubscriptionPlan): Promise<{ success: boolean; error?: string; proRegistered?: boolean }> => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -236,10 +236,54 @@ export function useSubscription() {
 
       if (error) throw error;
 
+      let proRegistered = false;
+
+      // Auto-register as Tax Professional for Practice plan
+      if (newPlan === "practice") {
+        // Check if already registered as pro
+        const { data: existingPro } = await supabase
+          .from("pros")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        if (!existingPro) {
+          // Get user's org_id
+          const { data: orgUser, error: orgError } = await supabase
+            .from("org_users")
+            .select("org_id")
+            .eq("user_id", session.user.id)
+            .single();
+
+          if (orgError || !orgUser) {
+            throw new Error("Could not find organization. Please ensure you have an organization set up.");
+          }
+
+          // Get user's profile name for default practice name
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("name")
+            .eq("id", session.user.id)
+            .single();
+
+          // Create pro record
+          const { error: proError } = await supabase
+            .from("pros")
+            .insert({
+              user_id: session.user.id,
+              org_id: orgUser.org_id,
+              practice_name: profile?.name ? `${profile.name}'s Practice` : "My Practice",
+            });
+
+          if (proError) throw proError;
+          proRegistered = true;
+        }
+      }
+
       // Reload subscription to get updated data
       await loadSubscription();
 
-      return { success: true };
+      return { success: true, proRegistered };
     } catch (error: any) {
       console.error("Error switching plan:", error);
       return { 

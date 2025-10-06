@@ -102,9 +102,13 @@ export default function Settings() {
     const result = await switchPlan(selectedPlan as "free" | "pro" | "business" | "practice" | "enterprise");
 
     if (result.success) {
+      const description = result.proRegistered 
+        ? `Successfully switched to ${selectedPlan} plan. You've been registered as a Tax Professional!`
+        : `Successfully switched to ${selectedPlan} plan`;
+      
       toast({
         title: "Plan Updated!",
-        description: `Successfully switched to ${selectedPlan} plan`,
+        description,
       });
     } else {
       toast({
