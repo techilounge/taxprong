@@ -2035,47 +2035,6 @@ export type Database = {
       }
     }
     Views: {
-      backup_settings_safe: {
-        Row: {
-          bucket: string | null
-          created_at: string | null
-          enabled: boolean | null
-          org_id: string | null
-          prefix: string | null
-          provider: string | null
-          region: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          bucket?: string | null
-          created_at?: string | null
-          enabled?: boolean | null
-          org_id?: string | null
-          prefix?: string | null
-          provider?: string | null
-          region?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          bucket?: string | null
-          created_at?: string | null
-          enabled?: boolean | null
-          org_id?: string | null
-          prefix?: string | null
-          provider?: string | null
-          region?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "backup_settings_org_id_fkey"
-            columns: ["org_id"]
-            isOneToOne: true
-            referencedRelation: "orgs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       safe_profiles: {
         Row: {
           created_at: string | null
@@ -2229,6 +2188,16 @@ export type Database = {
         Args: { decryption_key: string; encrypted_credential: string }
         Returns: string
       }
+      detect_backup_credential_theft_attempts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          attempt_count: number
+          first_attempt: string
+          last_attempt: string
+          severity: string
+          user_id: string
+        }[]
+      }
       detect_suspicious_access_patterns: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2260,6 +2229,19 @@ export type Database = {
         }[]
       }
       get_backup_settings_metadata: {
+        Args: { _org_id: string }
+        Returns: {
+          bucket: string
+          created_at: string
+          enabled: boolean
+          org_id: string
+          prefix: string
+          provider: string
+          region: string
+          updated_at: string
+        }[]
+      }
+      get_backup_settings_safe: {
         Args: { _org_id: string }
         Returns: {
           bucket: string
@@ -2575,7 +2557,15 @@ export type Database = {
         Returns: undefined
       }
       set_backup_credentials: {
-        Args: { _access_key: string; _org_id: string; _secret_key: string }
+        Args: {
+          _access_key: string
+          _bucket?: string
+          _org_id: string
+          _prefix?: string
+          _provider?: string
+          _region?: string
+          _secret_key: string
+        }
         Returns: undefined
       }
       sparsevec_out: {
