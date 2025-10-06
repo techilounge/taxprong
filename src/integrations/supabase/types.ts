@@ -2668,6 +2668,14 @@ export type Database = {
           status: string
         }[]
       }
+      verify_safe_profiles_security: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          details: string
+          status: string
+        }[]
+      }
       verify_view_security: {
         Args: Record<PropertyKey, never>
         Returns: {
