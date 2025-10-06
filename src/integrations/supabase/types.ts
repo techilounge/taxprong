@@ -59,6 +59,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       backup_runs: {
@@ -346,6 +353,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "businesses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       cgt_events: {
@@ -503,6 +517,13 @@ export type Database = {
             columns: ["person_user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_person_user_id_fkey"
+            columns: ["person_user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -783,6 +804,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1137,6 +1165,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       onboarding_progress: {
@@ -1209,6 +1244,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "org_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orgs: {
@@ -1272,6 +1314,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pit_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1457,6 +1506,27 @@ export type Database = {
           },
         ]
       }
+      profile_security_documentation: {
+        Row: {
+          description: string
+          implementation: string
+          last_reviewed_at: string | null
+          security_control: string
+        }
+        Insert: {
+          description: string
+          implementation: string
+          last_reviewed_at?: string | null
+          security_control: string
+        }
+        Update: {
+          description?: string
+          implementation?: string
+          last_reviewed_at?: string | null
+          security_control?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1540,6 +1610,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pros_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1999,6 +2076,24 @@ export type Database = {
           },
         ]
       }
+      safe_profiles: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
       scheduled_jobs_status: {
         Row: {
           active: boolean | null
@@ -2246,6 +2341,10 @@ export type Database = {
           updated_at: string
           user_id: string
         }[]
+      }
+      get_profile_display_name: {
+        Args: { _user_id: string }
+        Returns: string
       }
       get_profile_safely: {
         Args: { _profile_id: string }
@@ -2533,6 +2632,14 @@ export type Database = {
       verify_backup_health: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      verify_profile_security: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          check_name: string
+          details: string
+          status: string
+        }[]
       }
       verify_view_security: {
         Args: Record<PropertyKey, never>
