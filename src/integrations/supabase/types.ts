@@ -2369,6 +2369,20 @@ export type Database = {
         Args: { _user_id: string }
         Returns: string
       }
+      get_scheduled_jobs_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active: boolean
+          command: string
+          database: string
+          jobid: number
+          jobname: string
+          nodename: string
+          nodeport: number
+          schedule: string
+          username: string
+        }[]
+      }
       get_security_dashboard_enhanced: {
         Args: Record<PropertyKey, never>
         Returns: {
