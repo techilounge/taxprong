@@ -81,7 +81,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="flex min-h-screen w-full overflow-hidden">
         <AppSidebar />
         
         <div className="flex flex-col flex-1">
@@ -124,7 +124,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+          <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-x-hidden">
             {children}
           </main>
 
