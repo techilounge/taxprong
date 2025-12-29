@@ -87,14 +87,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex flex-col flex-1">
           {/* Header */}
           <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-14 items-center gap-4 px-4">
+            <div className="flex h-14 items-center gap-4 px-4 pr-6">
               <SidebarTrigger />
               
               <div className="flex-1" />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full shrink-0">
                     <Avatar className="h-9 w-9">
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {getInitials(userName || "U")}
