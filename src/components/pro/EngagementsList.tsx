@@ -63,43 +63,45 @@ export const EngagementsList = ({ engagements, loading, onNewEngagement }: Engag
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Client</TableHead>
-          <TableHead>Scope</TableHead>
-          <TableHead>Fee Type</TableHead>
-          <TableHead>Quote</TableHead>
-          <TableHead>Escrow</TableHead>
-          <TableHead>Created</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {engagements.map((engagement) => {
-          const clientName = engagement.client?.profile?.name || 
-                           engagement.client?.business?.name || 
-                           "Unknown Client";
-          
-          return (
-            <TableRow key={engagement.id}>
-              <TableCell className="font-medium">{clientName}</TableCell>
-              <TableCell>{engagement.scope || "—"}</TableCell>
-              <TableCell className="capitalize">{engagement.fee_type || "—"}</TableCell>
-              <TableCell>
-                {engagement.quote ? `₦${engagement.quote.toLocaleString()}` : "—"}
-              </TableCell>
-              <TableCell>
-                <Badge variant={getEscrowBadgeVariant(engagement.escrow_status)}>
-                  {engagement.escrow_status || "unfunded"}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {format(new Date(engagement.created_at), "MMM d, yyyy")}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-xs sm:text-sm">Client</TableHead>
+            <TableHead className="hidden md:table-cell">Scope</TableHead>
+            <TableHead className="hidden lg:table-cell">Fee Type</TableHead>
+            <TableHead className="text-xs sm:text-sm">Quote</TableHead>
+            <TableHead className="text-xs sm:text-sm">Escrow</TableHead>
+            <TableHead className="hidden sm:table-cell">Created</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {engagements.map((engagement) => {
+            const clientName = engagement.client?.profile?.name || 
+                             engagement.client?.business?.name || 
+                             "Unknown Client";
+            
+            return (
+              <TableRow key={engagement.id}>
+                <TableCell className="font-medium text-xs sm:text-sm max-w-[100px] sm:max-w-[150px] truncate">{clientName}</TableCell>
+                <TableCell className="hidden md:table-cell text-xs sm:text-sm max-w-[120px] truncate">{engagement.scope || "—"}</TableCell>
+                <TableCell className="hidden lg:table-cell text-xs sm:text-sm capitalize">{engagement.fee_type || "—"}</TableCell>
+                <TableCell className="text-xs sm:text-sm whitespace-nowrap">
+                  {engagement.quote ? `₦${engagement.quote.toLocaleString()}` : "—"}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={getEscrowBadgeVariant(engagement.escrow_status)} className="text-xs">
+                    {engagement.escrow_status || "unfunded"}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground hidden sm:table-cell text-xs sm:text-sm">
+                  {format(new Date(engagement.created_at), "MMM d")}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };

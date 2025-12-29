@@ -62,70 +62,73 @@ const ClientPortal = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Client Portal</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Client Portal</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Track your tax filing progress and communicate with your tax professional
           </p>
         </div>
 
         <Tabs defaultValue="tasks" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="tasks">Tasks & PBC</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="approvals">Approvals</TabsTrigger>
-            <TabsTrigger value="billing">Billing</TabsTrigger>
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start sm:justify-center">
+            <TabsTrigger value="tasks" className="text-xs sm:text-sm">Tasks</TabsTrigger>
+            <TabsTrigger value="documents" className="text-xs sm:text-sm">Docs</TabsTrigger>
+            <TabsTrigger value="messages" className="text-xs sm:text-sm">Messages</TabsTrigger>
+            <TabsTrigger value="approvals" className="text-xs sm:text-sm hidden sm:inline-flex">Approvals</TabsTrigger>
+            <TabsTrigger value="billing" className="text-xs sm:text-sm">Billing</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tasks">
             <Card>
-              <CardHeader>
-                <CardTitle>Prepared By Client (PBC) Tasks</CardTitle>
-                <CardDescription>Items required from you for tax filing</CardDescription>
+              <CardHeader className="px-4 sm:px-6">
+                <CardTitle className="text-base sm:text-lg">PBC Tasks</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Items required from you for tax filing</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4 sm:px-6">
                 {loading ? (
                   <p className="text-muted-foreground">Loading tasks...</p>
                 ) : tasks.length === 0 ? (
                   <p className="text-muted-foreground">No pending tasks</p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Task</TableHead>
-                        <TableHead>Due Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {tasks.map((task) => (
-                        <TableRow key={task.id}>
-                          <TableCell>{task.title}</TableCell>
-                          <TableCell>
-                            {task.due_date ? new Date(task.due_date).toLocaleDateString() : "No deadline"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={task.status === "done" ? "default" : "outline"}>
-                              {task.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {task.status !== "done" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleTaskComplete(task.id)}
-                              >
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Mark Done
-                              </Button>
-                            )}
-                          </TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs sm:text-sm">Task</TableHead>
+                          <TableHead className="hidden sm:table-cell">Due Date</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                          <TableHead className="text-xs sm:text-sm w-[80px]">Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {tasks.map((task) => (
+                          <TableRow key={task.id}>
+                            <TableCell className="text-xs sm:text-sm max-w-[150px] truncate">{task.title}</TableCell>
+                            <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
+                              {task.due_date ? new Date(task.due_date).toLocaleDateString() : "-"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={task.status === "done" ? "default" : "outline"} className="text-xs">
+                                {task.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {task.status !== "done" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 px-2"
+                                  onClick={() => handleTaskComplete(task.id)}
+                                >
+                                  <CheckCircle className="h-3.5 w-3.5 sm:mr-1" />
+                                  <span className="hidden sm:inline text-xs">Done</span>
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 )}
               </CardContent>
             </Card>

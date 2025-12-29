@@ -374,18 +374,18 @@ const VATConsole = () => {
               </TabsList>
 
               <TabsContent value="sales" className="mt-4">
-                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-                  <Table className="min-w-[700px]">
+                <div className="overflow-x-auto">
+                  <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Supply Type</TableHead>
-                      <TableHead className="text-right">Net</TableHead>
-                      <TableHead className="text-right">VAT</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                      <TableHead>E-Invoice</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Customer</TableHead>
+                      <TableHead className="hidden md:table-cell">Supply Type</TableHead>
+                      <TableHead className="text-right hidden lg:table-cell">Net</TableHead>
+                      <TableHead className="text-right text-xs sm:text-sm">VAT</TableHead>
+                      <TableHead className="text-right hidden sm:table-cell">Total</TableHead>
+                      <TableHead className="hidden sm:table-cell">E-Invoice</TableHead>
+                      <TableHead className="text-xs sm:text-sm w-[70px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -404,36 +404,36 @@ const VATConsole = () => {
                     ) : (
                       salesInvoices.map((invoice) => (
                         <TableRow key={invoice.id}>
-                          <TableCell>{format(new Date(invoice.issue_date), "MMM dd, yyyy")}</TableCell>
-                          <TableCell>{invoice.counterparty_name}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">
-                              {invoice.supply_type === "standard" && "Standard"}
-                              {invoice.supply_type === "zero" && "Zero Rated"}
+                          <TableCell className="text-xs sm:text-sm whitespace-nowrap">{format(new Date(invoice.issue_date), "MMM dd")}</TableCell>
+                          <TableCell className="text-xs sm:text-sm max-w-[100px] sm:max-w-[150px] truncate">{invoice.counterparty_name}</TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <Badge variant="outline" className="text-xs">
+                              {invoice.supply_type === "standard" && "Std"}
+                              {invoice.supply_type === "zero" && "Zero"}
                               {invoice.supply_type === "exempt" && "Exempt"}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right">
-                            ₦{Number(invoice.net).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          <TableCell className="text-right hidden lg:table-cell text-xs sm:text-sm">
+                            ₦{Number(invoice.net).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                           </TableCell>
-                          <TableCell className="text-right">
-                            ₦{Number(invoice.vat).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          <TableCell className="text-right text-xs sm:text-sm whitespace-nowrap">
+                            ₦{Number(invoice.vat).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
-                            ₦{(Number(invoice.net) + Number(invoice.vat)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          <TableCell className="text-right font-medium hidden sm:table-cell text-xs sm:text-sm">
+                            ₦{(Number(invoice.net) + Number(invoice.vat)).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden sm:table-cell">
                             {invoice.efs_status === "accepted" && (
-                              <Badge className="bg-green-500">Accepted</Badge>
+                              <Badge className="bg-green-500 text-xs">OK</Badge>
                             )}
                             {invoice.efs_status === "queued" && (
-                              <Badge variant="secondary">Queued</Badge>
+                              <Badge variant="secondary" className="text-xs">Queue</Badge>
                             )}
                             {invoice.efs_status === "rejected" && (
-                              <Badge variant="destructive">Rejected</Badge>
+                              <Badge variant="destructive" className="text-xs">Fail</Badge>
                             )}
                             {(!invoice.efs_status || invoice.efs_status === "draft") && (
-                              <Badge variant="outline">Draft</Badge>
+                              <Badge variant="outline" className="text-xs">Draft</Badge>
                             )}
                             {invoice.locked && <span className="text-xs ml-1">🔒</span>}
                           </TableCell>

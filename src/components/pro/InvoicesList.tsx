@@ -52,44 +52,44 @@ export const InvoicesList = ({ invoices, loading, stats, onCreateInvoice }: Invo
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case "paid":
-        return <Badge variant="default">Paid</Badge>;
+        return <Badge variant="default" className="text-xs">Paid</Badge>;
       case "pending":
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary" className="text-xs">Pending</Badge>;
       default:
-        return <Badge variant="outline">Unknown</Badge>;
+        return <Badge variant="outline" className="text-xs">Unknown</Badge>;
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Billed</CardDescription>
-            <CardTitle className="text-2xl">₦{stats.totalBilled.toLocaleString()}</CardTitle>
+          <CardHeader className="pb-2 px-3 sm:px-6">
+            <CardDescription className="text-xs sm:text-sm">Total Billed</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl">₦{stats.totalBilled.toLocaleString()}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Paid</CardDescription>
-            <CardTitle className="text-2xl text-green-600">
+          <CardHeader className="pb-2 px-3 sm:px-6">
+            <CardDescription className="text-xs sm:text-sm">Total Paid</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl text-green-600">
               ₦{stats.totalPaid.toLocaleString()}
             </CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Outstanding</CardDescription>
-            <CardTitle className="text-2xl text-orange-600">
+          <CardHeader className="pb-2 px-3 sm:px-6">
+            <CardDescription className="text-xs sm:text-sm">Outstanding</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl text-orange-600">
               ₦{stats.outstanding.toLocaleString()}
             </CardTitle>
           </CardHeader>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Platform Fees</CardDescription>
-            <CardTitle className="text-2xl">₦{stats.platformFees.toLocaleString()}</CardTitle>
+          <CardHeader className="pb-2 px-3 sm:px-6">
+            <CardDescription className="text-xs sm:text-sm">Platform Fees</CardDescription>
+            <CardTitle className="text-lg sm:text-2xl">₦{stats.platformFees.toLocaleString()}</CardTitle>
           </CardHeader>
         </Card>
       </div>
@@ -105,44 +105,46 @@ export const InvoicesList = ({ invoices, loading, stats, onCreateInvoice }: Invo
         />
       ) : (
         <Card>
-          <CardHeader>
-            <CardTitle>Recent Invoices</CardTitle>
+          <CardHeader className="px-4 sm:px-6">
+            <CardTitle className="text-base sm:text-lg">Recent Invoices</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Scope</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Your Payout</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice) => {
-                  const clientName = invoice.engagement?.client?.profile?.name || 
-                                   invoice.engagement?.client?.business?.name || 
-                                   "Unknown";
-                  
-                  return (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-medium">{clientName}</TableCell>
-                      <TableCell>{invoice.engagement?.scope || "—"}</TableCell>
-                      <TableCell>₦{invoice.amount.toLocaleString()}</TableCell>
-                      <TableCell className="text-green-600">
-                        ₦{(invoice.pro_payout_amount || 0).toLocaleString()}
-                      </TableCell>
-                      <TableCell>{getStatusBadge(invoice.status)}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {format(new Date(invoice.created_at), "MMM d, yyyy")}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+          <CardContent className="px-4 sm:px-6">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs sm:text-sm">Client</TableHead>
+                    <TableHead className="hidden md:table-cell">Scope</TableHead>
+                    <TableHead className="text-xs sm:text-sm">Amount</TableHead>
+                    <TableHead className="hidden lg:table-cell">Payout</TableHead>
+                    <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                    <TableHead className="hidden sm:table-cell">Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((invoice) => {
+                    const clientName = invoice.engagement?.client?.profile?.name || 
+                                     invoice.engagement?.client?.business?.name || 
+                                     "Unknown";
+                    
+                    return (
+                      <TableRow key={invoice.id}>
+                        <TableCell className="font-medium text-xs sm:text-sm max-w-[100px] sm:max-w-[150px] truncate">{clientName}</TableCell>
+                        <TableCell className="hidden md:table-cell text-xs sm:text-sm max-w-[120px] truncate">{invoice.engagement?.scope || "—"}</TableCell>
+                        <TableCell className="text-xs sm:text-sm whitespace-nowrap">₦{invoice.amount.toLocaleString()}</TableCell>
+                        <TableCell className="text-green-600 hidden lg:table-cell text-xs sm:text-sm">
+                          ₦{(invoice.pro_payout_amount || 0).toLocaleString()}
+                        </TableCell>
+                        <TableCell>{getStatusBadge(invoice.status)}</TableCell>
+                        <TableCell className="text-muted-foreground hidden sm:table-cell text-xs sm:text-sm">
+                          {format(new Date(invoice.created_at), "MMM d")}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}

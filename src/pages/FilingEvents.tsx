@@ -93,56 +93,58 @@ export default function FilingEvents() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Filing Events</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold">Filing Events</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Track filing compliance over the last 12 months
           </p>
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Filing History</CardTitle>
-            <CardDescription>
+          <CardHeader className="px-4 sm:px-6">
+            <CardTitle className="text-base sm:text-lg">Filing History</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               Filing events with on-time/late status indicators
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             {events.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 No filing events found for the last 12 months
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Filing Type</TableHead>
-                    <TableHead>Period</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Filed Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {events.map((event) => (
-                    <TableRow key={event.id}>
-                      <TableCell className="font-medium capitalize">
-                        {event.filing_type.replace('_', ' ')}
-                      </TableCell>
-                      <TableCell>{event.period}</TableCell>
-                      <TableCell>
-                        {format(new Date(event.due_date), "MMM dd, yyyy")}
-                      </TableCell>
-                      <TableCell>
-                        {event.filed_at 
-                          ? format(new Date(event.filed_at), "MMM dd, yyyy")
-                          : "-"
-                        }
-                      </TableCell>
-                      <TableCell>{getStatusBadge(event)}</TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs sm:text-sm">Filing Type</TableHead>
+                      <TableHead className="hidden sm:table-cell">Period</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Due Date</TableHead>
+                      <TableHead className="hidden md:table-cell">Filed Date</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {events.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell className="font-medium capitalize text-xs sm:text-sm">
+                          {event.filing_type.replace('_', ' ')}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs sm:text-sm">{event.period}</TableCell>
+                        <TableCell className="text-xs sm:text-sm whitespace-nowrap">
+                          {format(new Date(event.due_date), "MMM dd")}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-xs sm:text-sm">
+                          {event.filed_at 
+                            ? format(new Date(event.filed_at), "MMM dd")
+                            : "-"
+                          }
+                        </TableCell>
+                        <TableCell>{getStatusBadge(event)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>

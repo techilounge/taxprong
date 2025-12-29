@@ -52,38 +52,40 @@ export const ClientsList = ({ clients, loading, onAddClient }: ClientsListProps)
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Client Name</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Engagements</TableHead>
-          <TableHead>Added</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {clients.map((client) => {
-          const clientName = client.profile?.name || client.business?.name || "Unknown";
-          const clientType = client.profile ? "Individual" : "Business";
-          
-          return (
-            <TableRow key={client.id}>
-              <TableCell className="font-medium">{clientName}</TableCell>
-              <TableCell>{clientType}</TableCell>
-              <TableCell>
-                <Badge variant={client.status === "active" ? "default" : "secondary"}>
-                  {client.status}
-                </Badge>
-              </TableCell>
-              <TableCell>{client.engagements_count || 0}</TableCell>
-              <TableCell className="text-muted-foreground">
-                {format(new Date(client.created_at), "MMM d, yyyy")}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-xs sm:text-sm">Client Name</TableHead>
+            <TableHead className="hidden sm:table-cell">Type</TableHead>
+            <TableHead className="text-xs sm:text-sm">Status</TableHead>
+            <TableHead className="hidden md:table-cell">Engagements</TableHead>
+            <TableHead className="hidden sm:table-cell">Added</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {clients.map((client) => {
+            const clientName = client.profile?.name || client.business?.name || "Unknown";
+            const clientType = client.profile ? "Individual" : "Business";
+            
+            return (
+              <TableRow key={client.id}>
+                <TableCell className="font-medium text-xs sm:text-sm max-w-[120px] sm:max-w-[200px] truncate">{clientName}</TableCell>
+                <TableCell className="hidden sm:table-cell text-xs sm:text-sm">{clientType}</TableCell>
+                <TableCell>
+                  <Badge variant={client.status === "active" ? "default" : "secondary"} className="text-xs">
+                    {client.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="hidden md:table-cell text-xs sm:text-sm">{client.engagements_count || 0}</TableCell>
+                <TableCell className="text-muted-foreground hidden sm:table-cell text-xs sm:text-sm">
+                  {format(new Date(client.created_at), "MMM d")}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
