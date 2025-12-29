@@ -20,7 +20,7 @@ export type Database = {
           entity: string
           entity_id: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           payload_hash: string | null
           severity: string | null
           time: string
@@ -32,7 +32,7 @@ export type Database = {
           entity: string
           entity_id: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           payload_hash?: string | null
           severity?: string | null
           time?: string
@@ -44,7 +44,7 @@ export type Database = {
           entity?: string
           entity_id?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           payload_hash?: string | null
           severity?: string | null
           time?: string
@@ -2175,7 +2175,7 @@ export type Database = {
           entity: string | null
           event_type: string | null
           id: string | null
-          ip_address: unknown | null
+          ip_address: unknown
           severity: string | null
           time: string | null
           user_email: string | null
@@ -2196,10 +2196,7 @@ export type Database = {
       }
     }
     Functions: {
-      alert_on_backup_security_breach: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      alert_on_backup_security_breach: { Args: never; Returns: undefined }
       assign_role_by_email: {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
         Returns: Json
@@ -2212,7 +2209,7 @@ export type Database = {
         Returns: undefined
       }
       audit_profile_access_pattern: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           last_access: string
           profile_queries_count: number
@@ -2221,10 +2218,7 @@ export type Database = {
           user_id: string
         }[]
       }
-      audit_profile_enumeration: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      audit_profile_enumeration: { Args: never; Returns: undefined }
       audit_sensitive_access: {
         Args: {
           _operation: string
@@ -2234,12 +2228,8 @@ export type Database = {
         }
         Returns: undefined
       }
-      binary_quantize: {
-        Args: { "": string } | { "": unknown }
-        Returns: unknown
-      }
       check_enumeration_attacks: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           first_query: string
           last_query: string
@@ -2257,24 +2247,15 @@ export type Database = {
         }
         Returns: boolean
       }
-      cleanup_old_audit_logs: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      cleanup_old_security_alerts: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      create_monthly_vat_tasks: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_old_audit_logs: { Args: never; Returns: Json }
+      cleanup_old_security_alerts: { Args: never; Returns: Json }
+      create_monthly_vat_tasks: { Args: never; Returns: undefined }
       decrypt_backup_credential: {
         Args: { decryption_key: string; encrypted_credential: string }
         Returns: string
       }
       detect_backup_credential_theft_attempts: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           attempt_count: number
           first_attempt: string
@@ -2284,7 +2265,7 @@ export type Database = {
         }[]
       }
       detect_suspicious_access_patterns: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           action_type: string
           first_request: string
@@ -2409,10 +2390,7 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_profile_display_name: {
-        Args: { _user_id: string }
-        Returns: string
-      }
+      get_profile_display_name: { Args: { _user_id: string }; Returns: string }
       get_profile_safely: {
         Args: { _profile_id: string }
         Returns: {
@@ -2440,12 +2418,9 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_safe_profile_name: {
-        Args: { _user_id: string }
-        Returns: string
-      }
+      get_safe_profile_name: { Args: { _user_id: string }; Returns: string }
       get_scheduled_jobs_status: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           active: boolean
           command: string
@@ -2459,7 +2434,7 @@ export type Database = {
         }[]
       }
       get_security_dashboard_enhanced: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           active_users_24h: number
           critical_alerts: number
@@ -2471,7 +2446,7 @@ export type Database = {
         }[]
       }
       get_security_dashboard_summary: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           active_users_24h: number
           backups_enabled: number
@@ -2483,7 +2458,7 @@ export type Database = {
         }[]
       }
       get_security_events: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           action: Database["public"]["Enums"]["audit_action"]
           entity: string
@@ -2517,7 +2492,7 @@ export type Database = {
         }[]
       }
       get_unresolved_security_alerts: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           age_hours: number
           alert_type: string
@@ -2539,7 +2514,7 @@ export type Database = {
         }[]
       }
       get_view_security_status: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           access_control_method: string
           direct_access_allowed: boolean
@@ -2548,44 +2523,12 @@ export type Database = {
           view_name: string
         }[]
       }
-      halfvec_avg: {
-        Args: { "": number[] }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      halfvec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
-      }
-      hnsw_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: { "": unknown }
-        Returns: unknown
       }
       is_org_member: {
         Args: { _org_id: string; _user_id: string }
@@ -2594,26 +2537,6 @@ export type Database = {
       is_org_owner: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
-      }
-      ivfflat_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      l2_norm: {
-        Args: { "": unknown } | { "": unknown }
-        Returns: number
-      }
-      l2_normalize: {
-        Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
       }
       log_and_check_rate_limit: {
         Args: {
@@ -2654,12 +2577,9 @@ export type Database = {
         }
         Returns: undefined
       }
-      run_automated_security_checks: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      run_automated_security_checks: { Args: never; Returns: undefined }
       run_security_health_check: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           check_name: string
           details: string
@@ -2668,10 +2588,7 @@ export type Database = {
           status: string
         }[]
       }
-      send_task_reminders: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      send_task_reminders: { Args: never; Returns: undefined }
       set_backup_credentials: {
         Args: {
           _access_key: string
@@ -2684,18 +2601,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      sparsevec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
       update_backup_metadata: {
         Args: {
           _bucket: string
@@ -2707,40 +2612,10 @@ export type Database = {
         }
         Returns: undefined
       }
-      user_can_view_tin: {
-        Args: { _business_id: string }
-        Returns: boolean
-      }
-      vector_avg: {
-        Args: { "": number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { "": string } | { "": unknown }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { "": string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { "": string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      verify_backup_health: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      user_can_view_tin: { Args: { _business_id: string }; Returns: boolean }
+      verify_backup_health: { Args: never; Returns: Json }
       verify_backup_security: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           check_name: string
           details: string
@@ -2749,7 +2624,7 @@ export type Database = {
         }[]
       }
       verify_profile_security: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           check_name: string
           details: string
@@ -2757,7 +2632,7 @@ export type Database = {
         }[]
       }
       verify_safe_profiles_security: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           check_name: string
           details: string
@@ -2765,7 +2640,7 @@ export type Database = {
         }[]
       }
       verify_view_security: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           access_method: string
           has_rls_protection: boolean
