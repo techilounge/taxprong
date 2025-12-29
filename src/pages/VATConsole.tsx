@@ -252,7 +252,7 @@ const VATConsole = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 overflow-hidden">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -454,7 +454,8 @@ const VATConsole = () => {
                                 onClick={() => transmitInvoice(invoice.id)}
                                 disabled={invoice.efs_status === "queued"}
                               >
-                                {invoice.efs_status === "queued" ? "Processing" : "Transmit"}
+                                <Send className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">{invoice.efs_status === "queued" ? "..." : "Send"}</span>
                               </Button>
                             )}
                           </TableCell>
@@ -467,78 +468,82 @@ const VATConsole = () => {
               </TabsContent>
 
               <TabsContent value="purchases" className="mt-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Supplier</TableHead>
-                      <TableHead>Supply Type</TableHead>
-                      <TableHead className="text-right">Net</TableHead>
-                      <TableHead className="text-right">VAT</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                          Loading invoices...
-                        </TableCell>
+                        <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                        <TableHead className="text-xs sm:text-sm">Supplier</TableHead>
+                        <TableHead className="hidden sm:table-cell">Supply Type</TableHead>
+                        <TableHead className="text-right hidden md:table-cell">Net</TableHead>
+                        <TableHead className="text-right text-xs sm:text-sm">VAT</TableHead>
+                        <TableHead className="text-right hidden sm:table-cell">Total</TableHead>
                       </TableRow>
-                    ) : purchaseInvoices.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                          No purchase invoices recorded.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      purchaseInvoices.map((invoice) => (
-                        <TableRow key={invoice.id}>
-                          <TableCell>{format(new Date(invoice.issue_date), "MMM dd, yyyy")}</TableCell>
-                          <TableCell>{invoice.counterparty_name}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">
-                              {invoice.supply_type === "standard" && "Standard"}
-                              {invoice.supply_type === "zero" && "Zero Rated"}
-                              {invoice.supply_type === "exempt" && "Exempt"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ₦{Number(invoice.net).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ₦{Number(invoice.vat).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </TableCell>
-                          <TableCell className="text-right font-medium">
-                            ₦{(Number(invoice.net) + Number(invoice.vat)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                            Loading invoices...
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
+                      ) : purchaseInvoices.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                            No purchase invoices recorded.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        purchaseInvoices.map((invoice) => (
+                          <TableRow key={invoice.id}>
+                            <TableCell className="text-xs sm:text-sm whitespace-nowrap">{format(new Date(invoice.issue_date), "MMM dd")}</TableCell>
+                            <TableCell className="text-xs sm:text-sm max-w-[100px] sm:max-w-[150px] truncate">{invoice.counterparty_name}</TableCell>
+                            <TableCell className="hidden sm:table-cell">
+                              <Badge variant="outline" className="text-xs">
+                                {invoice.supply_type === "standard" && "Std"}
+                                {invoice.supply_type === "zero" && "Zero"}
+                                {invoice.supply_type === "exempt" && "Exempt"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right hidden md:table-cell text-xs sm:text-sm">
+                              ₦{Number(invoice.net).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                            </TableCell>
+                            <TableCell className="text-right text-xs sm:text-sm whitespace-nowrap">
+                              ₦{Number(invoice.vat).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                            </TableCell>
+                            <TableCell className="text-right font-medium hidden sm:table-cell text-xs sm:text-sm">
+                              ₦{(Number(invoice.net) + Number(invoice.vat)).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </TabsContent>
 
               <TabsContent value="returns" className="mt-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Period</TableHead>
-                      <TableHead className="text-right">Output VAT</TableHead>
-                      <TableHead className="text-right">Input VAT</TableHead>
-                      <TableHead className="text-right">Payable</TableHead>
-                      <TableHead>Due Date</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                        No VAT returns filed yet.
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs sm:text-sm">Period</TableHead>
+                        <TableHead className="text-right hidden sm:table-cell">Output VAT</TableHead>
+                        <TableHead className="text-right hidden sm:table-cell">Input VAT</TableHead>
+                        <TableHead className="text-right text-xs sm:text-sm">Payable</TableHead>
+                        <TableHead className="hidden md:table-cell">Due Date</TableHead>
+                        <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground text-xs sm:text-sm">
+                          No VAT returns filed yet.
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
