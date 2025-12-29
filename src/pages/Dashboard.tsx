@@ -127,14 +127,14 @@ const Dashboard = () => {
         <TrialBanner />
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Welcome to your TaxProNG workspace
           </p>
         </div>
 
         {/* Enhanced Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           <EnhancedStatCard
             title="Tasks Due"
             value={stats.pendingTasks}
@@ -177,7 +177,7 @@ const Dashboard = () => {
 
         {/* Financial Overview & Compliance */}
         {organization && (
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <FinancialOverviewWidget orgId={organization.id} />
             </div>
@@ -189,7 +189,7 @@ const Dashboard = () => {
 
         {/* Analytics Widgets */}
         {organization && (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
             <ExpensesByCategoryWidget orgId={organization.id} />
             <InputVATTrendWidget orgId={organization.id} />
           </div>
@@ -197,22 +197,22 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base sm:text-lg">Quick Actions</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               Common tasks to get you started
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <Button variant="outline" className="justify-start" onClick={() => navigate('/expenses')}>
+          <CardContent className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <Button variant="outline" className="justify-start text-sm" onClick={() => navigate('/expenses')}>
               <Receipt className="mr-2 h-4 w-4" />
               Add Expense
             </Button>
-            <Button variant="outline" className="justify-start" onClick={() => navigate('/vat')}>
+            <Button variant="outline" className="justify-start text-sm" onClick={() => navigate('/vat')}>
               <FileText className="mr-2 h-4 w-4" />
               Create Invoice
             </Button>
-            <Button variant="outline" className="justify-start" onClick={() => navigate('/vat')}>
+            <Button variant="outline" className="justify-start text-sm" onClick={() => navigate('/vat')}>
               <Calendar className="mr-2 h-4 w-4" />
               File VAT Return
             </Button>
@@ -220,7 +220,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Recent Activity */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
