@@ -256,20 +256,20 @@ const VATConsole = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">VAT Console</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">VAT Console</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Manage VAT invoices and file returns
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
-                <Button disabled={!businessId}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Invoice
+                <Button disabled={!businessId} size="sm" className="sm:size-default">
+                  <Plus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">New Invoice</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Create Invoice</DialogTitle>
                   <DialogDescription>
@@ -288,93 +288,94 @@ const VATConsole = () => {
                 )}
               </DialogContent>
             </Dialog>
-            <Button variant="outline" onClick={exportVATReturn} disabled={!businessId}>
-              <Download className="mr-2 h-4 w-4" />
-              Export Return
+            <Button variant="outline" size="sm" className="sm:size-default" onClick={exportVATReturn} disabled={!businessId}>
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export</span>
             </Button>
-            <Button onClick={submitVATReturn} disabled={!businessId}>
-              <Send className="mr-2 h-4 w-4" />
-              Submit Return
+            <Button size="sm" className="sm:size-default" onClick={submitVATReturn} disabled={!businessId}>
+              <Send className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Submit</span>
             </Button>
           </div>
         </div>
 
         {/* VAT Summary */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
                 <FileText className="h-4 w-4 text-primary" />
                 Output VAT
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ₦{vatSummary.outputVAT.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            <CardContent className="px-3 sm:px-6">
+              <div className="text-lg sm:text-2xl font-bold">
+                ₦{vatSummary.outputVAT.toLocaleString(undefined, { minimumFractionDigits: 0 })}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Sales VAT collected</p>
+              <p className="text-xs text-muted-foreground mt-1">Sales VAT</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
                 <FileText className="h-4 w-4 text-secondary" />
                 Input VAT
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ₦{vatSummary.inputVAT.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            <CardContent className="px-3 sm:px-6">
+              <div className="text-lg sm:text-2xl font-bold">
+                ₦{vatSummary.inputVAT.toLocaleString(undefined, { minimumFractionDigits: 0 })}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Purchase VAT to recover</p>
+              <p className="text-xs text-muted-foreground mt-1">To recover</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Card className="col-span-2 md:col-span-1">
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-warning" />
                 VAT Payable
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ₦{Math.max(vatSummary.payable, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            <CardContent className="px-3 sm:px-6">
+              <div className="text-lg sm:text-2xl font-bold">
+                ₦{Math.max(vatSummary.payable, 0).toLocaleString(undefined, { minimumFractionDigits: 0 })}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Due by 14th next month</p>
+              <p className="text-xs text-muted-foreground mt-1">Due by 14th</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Deadline Banner */}
         <Card className="bg-warning/10 border-warning">
-          <CardContent className="flex items-center gap-3 py-4">
-            <Calendar className="h-5 w-5 text-warning" />
+          <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-3 py-4">
+            <Calendar className="h-5 w-5 text-warning flex-shrink-0" />
             <div className="flex-1">
-              <p className="font-medium">VAT Return Deadline</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-medium text-sm sm:text-base">VAT Return Deadline</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 File your November 2025 return by 14th December 2025
               </p>
             </div>
-            <Button variant="outline" onClick={() => navigate('/compliance')}>View Details</Button>
+            <Button variant="outline" size="sm" onClick={() => navigate('/compliance')}>View Details</Button>
           </CardContent>
         </Card>
 
         {/* Invoices Table */}
         <Card>
-          <CardHeader>
-            <CardTitle>VAT Invoices</CardTitle>
-            <CardDescription>Manage sales and purchase invoices</CardDescription>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base sm:text-lg">VAT Invoices</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Manage sales and purchase invoices</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="sales">
-              <TabsList>
-                <TabsTrigger value="sales">Sales Invoices</TabsTrigger>
-                <TabsTrigger value="purchases">Purchase Invoices</TabsTrigger>
-                <TabsTrigger value="returns">VAT Returns</TabsTrigger>
+              <TabsList className="w-full grid grid-cols-3 lg:w-auto lg:inline-flex">
+                <TabsTrigger value="sales" className="text-xs sm:text-sm">Sales</TabsTrigger>
+                <TabsTrigger value="purchases" className="text-xs sm:text-sm">Purchases</TabsTrigger>
+                <TabsTrigger value="returns" className="text-xs sm:text-sm">Returns</TabsTrigger>
               </TabsList>
 
               <TabsContent value="sales" className="mt-4">
-                <Table>
+                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                  <Table className="min-w-[700px]">
                   <TableHeader>
                     <TableRow>
                       <TableHead>Date</TableHead>
@@ -462,6 +463,7 @@ const VATConsole = () => {
                     )}
                   </TableBody>
                 </Table>
+                </div>
               </TabsContent>
 
               <TabsContent value="purchases" className="mt-4">

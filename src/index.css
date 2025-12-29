@@ -133,3 +133,17 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Safe area insets for mobile devices */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mobile-bottom-nav {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Mobile responsive table scrolling */
+.table-responsive {
+  @apply overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0;
+}

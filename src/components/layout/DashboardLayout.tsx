@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { MobileBottomNav } from "./MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { toast } from "sonner";
@@ -123,15 +124,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 p-6 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+          <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
             {children}
           </main>
 
-          {/* Footer */}
-          <footer className="border-t bg-background py-4 px-6">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <p>© 2025 Nigeria Tax Platform. All rights reserved.</p>
-              <div className="flex items-center gap-4">
+          {/* Footer - hidden on mobile */}
+          <footer className="hidden md:block border-t bg-background py-4 px-6">
+            <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-2 text-sm text-muted-foreground">
+              <p className="text-center sm:text-left">© 2025 Nigeria Tax Platform. All rights reserved.</p>
+              <div className="flex flex-wrap items-center justify-center gap-4">
                 <button
                   onClick={() => setPrivacyModalOpen(true)}
                   className="hover:text-foreground transition-colors hover:underline"
@@ -149,6 +150,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </footer>
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
 
       {/* Privacy Modal */}
       <PrivacyModal open={privacyModalOpen} onOpenChange={setPrivacyModalOpen} />

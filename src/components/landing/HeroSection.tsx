@@ -118,9 +118,9 @@ export const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative hidden lg:block"
+            className="relative mt-8 lg:mt-0"
           >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border bg-card">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border bg-card max-w-sm mx-auto lg:max-w-none">
               <img 
                 src={heroDashboard} 
                 alt="TaxProNG Dashboard Preview - Modern tax management interface"
@@ -128,9 +128,9 @@ export const HeroSection = () => {
               />
             </div>
 
-            {/* Floating Cards */}
+            {/* Floating Cards - hidden on mobile */}
             <motion.div
-              className="absolute -top-4 -right-4 p-4 rounded-lg bg-card border border-border shadow-lg"
+              className="absolute -top-4 -right-4 p-4 rounded-lg bg-card border border-border shadow-lg hidden lg:block"
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
@@ -141,7 +141,7 @@ export const HeroSection = () => {
             </motion.div>
 
             <motion.div
-              className="absolute -bottom-4 -left-4 p-4 rounded-lg bg-card border border-border shadow-lg"
+              className="absolute -bottom-4 -left-4 p-4 rounded-lg bg-card border border-border shadow-lg hidden lg:block"
               animate={{ y: [0, 10, 0] }}
               transition={{ duration: 3, repeat: Infinity, delay: 1 }}
             >

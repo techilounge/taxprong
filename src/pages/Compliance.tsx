@@ -23,7 +23,7 @@ export default function Compliance() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -79,9 +79,9 @@ export default function Compliance() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="calendar" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 lg:w-auto">
-            <TabsTrigger value="calendar">Tax Calendar</TabsTrigger>
-            <TabsTrigger value="penalties">Penalty Calculator</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-2 lg:w-auto lg:inline-flex">
+            <TabsTrigger value="calendar" className="text-xs sm:text-sm">Tax Calendar</TabsTrigger>
+            <TabsTrigger value="penalties" className="text-xs sm:text-sm">Penalty Calculator</TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="space-y-4">
@@ -89,7 +89,7 @@ export default function Compliance() {
           </TabsContent>
 
           <TabsContent value="penalties" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <PenaltyCalculator />
               
               <div className="space-y-6">

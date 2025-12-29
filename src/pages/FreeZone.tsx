@@ -174,15 +174,15 @@ export default function FreeZone() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-6 space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="container mx-auto py-4 sm:py-6 space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Free Zones & EDI</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold">Free Zones & EDI</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Analyze eligibility for Free Zone status and Economic Development Incentives
             </p>
           </div>
-          <Badge variant="secondary">Nigeria Tax Act 2025</Badge>
+          <Badge variant="secondary" className="text-xs sm:text-sm">Nigeria Tax Act 2025</Badge>
         </div>
 
         {/* Info Banner */}
@@ -204,10 +204,10 @@ export default function FreeZone() {
         </Card>
 
         <Tabs defaultValue="assessment" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="assessment">Eligibility Assessment</TabsTrigger>
-            <TabsTrigger value="comparison">Tax Comparison</TabsTrigger>
-            <TabsTrigger value="edi">EDI Programs</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-3 lg:w-auto lg:inline-flex">
+            <TabsTrigger value="assessment" className="text-xs sm:text-sm">Assessment</TabsTrigger>
+            <TabsTrigger value="comparison" className="text-xs sm:text-sm">Comparison</TabsTrigger>
+            <TabsTrigger value="edi" className="text-xs sm:text-sm">EDI</TabsTrigger>
           </TabsList>
 
           <TabsContent value="assessment" className="space-y-4">

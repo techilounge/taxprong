@@ -77,12 +77,12 @@ const ProConsole = () => {
         </div>
 
         <Tabs defaultValue="clients" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="clients">Clients</TabsTrigger>
-            <TabsTrigger value="engagements">Engagements</TabsTrigger>
-            <TabsTrigger value="work">Work in Progress</TabsTrigger>
-            <TabsTrigger value="billing">Billing</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start sm:justify-center h-auto flex-wrap sm:flex-nowrap">
+            <TabsTrigger value="clients" className="text-xs sm:text-sm">Clients</TabsTrigger>
+            <TabsTrigger value="engagements" className="text-xs sm:text-sm">Engagements</TabsTrigger>
+            <TabsTrigger value="work" className="text-xs sm:text-sm hidden sm:inline-flex">Work in Progress</TabsTrigger>
+            <TabsTrigger value="billing" className="text-xs sm:text-sm">Billing</TabsTrigger>
+            <TabsTrigger value="messages" className="text-xs sm:text-sm">Messages</TabsTrigger>
           </TabsList>
 
           <TabsContent value="clients">

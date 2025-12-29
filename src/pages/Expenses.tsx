@@ -199,27 +199,27 @@ const Expenses = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Expense Tracker</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Expense Tracker</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Track business expenses and manage VAT recovery
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setGuideOpen(true)}>
-              <HelpCircle className="mr-2 h-4 w-4" />
-              Guide
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" className="sm:size-default" onClick={() => setGuideOpen(true)}>
+              <HelpCircle className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Guide</span>
             </Button>
             <Dialog open={dialogOpen} onOpenChange={(open) => {
               setDialogOpen(open);
               if (!open) setEditingExpense(null);
             }}>
               <DialogTrigger asChild>
-                <Button disabled={!organization}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Expense
+                <Button disabled={!organization} size="sm" className="sm:size-default">
+                  <Plus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Add Expense</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="w-[95vw] max-w-2xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{editingExpense ? "Edit Expense" : "Add New Expense"}</DialogTitle>
                   <DialogDescription>
@@ -244,9 +244,9 @@ const Expenses = () => {
               </DialogContent>
             </Dialog>
             
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export
+            <Button variant="outline" size="sm" className="sm:size-default">
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export</span>
             </Button>
           </div>
         </div>
@@ -260,35 +260,35 @@ const Expenses = () => {
         )}
 
         {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Expenses</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ₦{stats.totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <CardContent className="px-3 sm:px-6">
+              <div className="text-lg sm:text-2xl font-bold">
+                ₦{stats.totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </div>
               <p className="text-xs text-muted-foreground mt-1">This month</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">VAT Recoverable</CardTitle>
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">VAT Recoverable</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ₦{stats.vatRecoverable.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <CardContent className="px-3 sm:px-6">
+              <div className="text-lg sm:text-2xl font-bold">
+                ₦{stats.vatRecoverable.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Input VAT</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+          <Card className="col-span-2 md:col-span-1">
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Pending Review</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.pendingReview}</div>
+            <CardContent className="px-3 sm:px-6">
+              <div className="text-lg sm:text-2xl font-bold">{stats.pendingReview}</div>
               <p className="text-xs text-muted-foreground mt-1">Expenses to categorize</p>
             </CardContent>
           </Card>
@@ -313,87 +313,91 @@ const Expenses = () => {
               </div>
             </div>
 
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Merchant</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">VAT</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
+            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+              <Table className="min-w-[700px]">
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      Loading expenses...
-                    </TableCell>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Merchant</TableHead>
+                    <TableHead className="hidden md:table-cell">Description</TableHead>
+                    <TableHead className="hidden sm:table-cell">Category</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="text-right hidden sm:table-cell">VAT</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ) : filteredExpenses.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      {searchTerm
-                        ? "No expenses match your search."
-                        : "No expenses recorded yet. Add your first expense to get started."}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredExpenses.map((expense) => (
-                    <TableRow key={expense.id}>
-                      <TableCell>{format(new Date(expense.date), "MMM dd, yyyy")}</TableCell>
-                      <TableCell>{expense.merchant}</TableCell>
-                      <TableCell>{expense.description || "-"}</TableCell>
-                      <TableCell>{expense.category}</TableCell>
-                      <TableCell className="text-right">
-                        ₦{Number(expense.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {expense.vat_amount
-                          ? `₦${Number(expense.vat_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
-                          : "-"}
-                      </TableCell>
-                      <TableCell>
-                        {(() => {
-                          const flags = expense.flags_json as any;
-                          return flags?.needs_review ? (
-                            <Badge variant="outline" className="bg-warning/10 text-warning border-warning">
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              Review
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-accent/10 text-accent border-accent">
-                              OK
-                            </Badge>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(expense)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeleteExpenseId(expense.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        Loading expenses...
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : filteredExpenses.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        {searchTerm
+                          ? "No expenses match your search."
+                          : "No expenses recorded yet. Add your first expense to get started."}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredExpenses.map((expense) => (
+                      <TableRow key={expense.id}>
+                        <TableCell className="text-xs sm:text-sm">{format(new Date(expense.date), "MMM dd")}</TableCell>
+                        <TableCell className="text-xs sm:text-sm max-w-[120px] truncate">{expense.merchant}</TableCell>
+                        <TableCell className="hidden md:table-cell text-xs sm:text-sm">{expense.description || "-"}</TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs sm:text-sm">{expense.category}</TableCell>
+                        <TableCell className="text-right text-xs sm:text-sm">
+                          ₦{Number(expense.amount).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                        </TableCell>
+                        <TableCell className="text-right hidden sm:table-cell text-xs sm:text-sm">
+                          {expense.vat_amount
+                            ? `₦${Number(expense.vat_amount).toLocaleString(undefined, { minimumFractionDigits: 0 })}`
+                            : "-"}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const flags = expense.flags_json as any;
+                            return flags?.needs_review ? (
+                              <Badge variant="outline" className="bg-warning/10 text-warning border-warning text-xs">
+                                <AlertCircle className="h-3 w-3 mr-1" />
+                                Review
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-accent/10 text-accent border-accent text-xs">
+                                OK
+                              </Badge>
+                            );
+                          })()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEdit(expense)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => setDeleteExpenseId(expense.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
