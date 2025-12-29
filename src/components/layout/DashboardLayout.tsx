@@ -94,7 +94,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full shrink-0">
+                  <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full shrink-0 p-0">
                     <Avatar className="h-9 w-9">
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {getInitials(userName || "U")}

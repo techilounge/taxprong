@@ -25,10 +25,10 @@ export function FloatingTaxQA({ orgId, returnId, returnType, onInsertNote }: Flo
       >
         <Button
           onClick={() => setIsOpen(true)}
-          size="lg"
-          className="h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 ring-2 ring-amber-400"
+          size="icon"
+          className="h-10 w-10 sm:h-12 sm:w-12 rounded-full p-0 shadow-lg hover:shadow-xl transition-all hover:scale-110 ring-1 ring-amber-400"
         >
-          <MessageCircleQuestion className="h-5 w-5" />
+          <MessageCircleQuestion className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       </motion.div>
 
