@@ -21,7 +21,7 @@ export function FloatingTaxQA({ orgId, returnId, returnType, onInsertNote }: Flo
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50"
       >
         <Button
           onClick={() => setIsOpen(true)}
