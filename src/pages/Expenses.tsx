@@ -313,18 +313,18 @@ const Expenses = () => {
               </div>
             </div>
 
-            <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-              <Table className="min-w-[700px]">
+            <div className="overflow-x-auto">
+              <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Merchant</TableHead>
-                    <TableHead className="hidden md:table-cell">Description</TableHead>
-                    <TableHead className="hidden sm:table-cell">Category</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right hidden sm:table-cell">VAT</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                    <TableHead className="text-xs sm:text-sm">Merchant</TableHead>
+                    <TableHead className="hidden lg:table-cell">Description</TableHead>
+                    <TableHead className="hidden md:table-cell">Category</TableHead>
+                    <TableHead className="text-right text-xs sm:text-sm">Amount</TableHead>
+                    <TableHead className="text-right hidden md:table-cell">VAT</TableHead>
+                    <TableHead className="hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-right text-xs sm:text-sm w-[80px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -345,19 +345,19 @@ const Expenses = () => {
                   ) : (
                     filteredExpenses.map((expense) => (
                       <TableRow key={expense.id}>
-                        <TableCell className="text-xs sm:text-sm">{format(new Date(expense.date), "MMM dd")}</TableCell>
-                        <TableCell className="text-xs sm:text-sm max-w-[120px] truncate">{expense.merchant}</TableCell>
-                        <TableCell className="hidden md:table-cell text-xs sm:text-sm">{expense.description || "-"}</TableCell>
-                        <TableCell className="hidden sm:table-cell text-xs sm:text-sm">{expense.category}</TableCell>
-                        <TableCell className="text-right text-xs sm:text-sm">
+                        <TableCell className="text-xs sm:text-sm whitespace-nowrap">{format(new Date(expense.date), "MMM dd")}</TableCell>
+                        <TableCell className="text-xs sm:text-sm max-w-[100px] sm:max-w-[150px] truncate">{expense.merchant}</TableCell>
+                        <TableCell className="hidden lg:table-cell text-xs sm:text-sm max-w-[150px] truncate">{expense.description || "-"}</TableCell>
+                        <TableCell className="hidden md:table-cell text-xs sm:text-sm">{expense.category}</TableCell>
+                        <TableCell className="text-right text-xs sm:text-sm whitespace-nowrap">
                           ₦{Number(expense.amount).toLocaleString(undefined, { minimumFractionDigits: 0 })}
                         </TableCell>
-                        <TableCell className="text-right hidden sm:table-cell text-xs sm:text-sm">
+                        <TableCell className="text-right hidden md:table-cell text-xs sm:text-sm">
                           {expense.vat_amount
                             ? `₦${Number(expense.vat_amount).toLocaleString(undefined, { minimumFractionDigits: 0 })}`
                             : "-"}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           {(() => {
                             const flags = expense.flags_json as any;
                             return flags?.needs_review ? (
@@ -373,22 +373,22 @@ const Expenses = () => {
                           })()}
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
+                          <div className="flex justify-end gap-0.5">
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0"
+                              className="h-7 w-7 p-0"
                               onClick={() => handleEdit(expense)}
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Pencil className="h-3.5 w-3.5" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0"
+                              className="h-7 w-7 p-0"
                               onClick={() => setDeleteExpenseId(expense.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         </TableCell>
