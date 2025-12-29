@@ -3,8 +3,7 @@ import { LayoutDashboard, Receipt, FileText, Shield, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { AppSidebar } from "./AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { MobileSidebarContent } from "./MobileSidebarContent";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -52,9 +51,7 @@ export function MobileBottomNav() {
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-72">
-            <SidebarProvider>
-              <AppSidebar />
-            </SidebarProvider>
+            <MobileSidebarContent />
           </SheetContent>
         </Sheet>
       </div>

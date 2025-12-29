@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAdmin } from "@/hooks/useAdmin";
 
-const mainNavItems = [
+export const mainNavItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Expenses", url: "/expenses", icon: Receipt },
@@ -51,7 +51,7 @@ const mainNavItems = [
   { title: "Industry Modules", url: "/industry", icon: Briefcase },
 ];
 
-const proNavItems = [
+export const proNavItems = [
   { title: "Marketplace", url: "/marketplace", icon: Building2 },
   { title: "Pro Console", url: "/pro-console", icon: UserCog },
   { title: "Client Portal", url: "/client-portal", icon: Presentation },
