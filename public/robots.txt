@@ -1,3 +1,6 @@
+# TaxProNG Robots.txt
+# https://taxprong.com
+
 User-agent: Googlebot
 Allow: /
 
@@ -12,3 +15,28 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap location
+Sitemap: https://taxprong.com/sitemap.xml
+
+# Disallow authenticated/private areas from crawling
+User-agent: *
+Disallow: /dashboard
+Disallow: /expenses
+Disallow: /vat
+Disallow: /pit
+Disallow: /cit
+Disallow: /cgt
+Disallow: /compliance
+Disallow: /free-zone
+Disallow: /non-resident
+Disallow: /ai-advisor
+Disallow: /pro-console
+Disallow: /client-portal
+Disallow: /exceptions
+Disallow: /marketplace
+Disallow: /settings
+Disallow: /admin
+Disallow: /analytics
+Disallow: /filing-events
+Disallow: /stamp
