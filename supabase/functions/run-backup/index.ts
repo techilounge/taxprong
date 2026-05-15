@@ -242,9 +242,19 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
+    // Require the service role key in the Authorization header (cron / server-only)
+    const authHeader = req.headers.get('Authorization') || '';
+    const presented = authHeader.replace(/^Bearer\s+/i, '').trim();
+    if (!presented || presented !== supabaseServiceKey) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
+
     console.log('Starting backup process...');
     
     // Get all orgs with backup enabled (fetch only non-sensitive fields)
