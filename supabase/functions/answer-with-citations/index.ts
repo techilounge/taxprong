@@ -92,42 +92,9 @@ serve(async (req) => {
     });
 
     if (searchError) {
-      // If the RPC doesn't exist, fall back to a simple query
-      console.log('RPC not found, using fallback query');
-      const { data: allChunks, error: fallbackError } = await supabase
-        .from('kb_chunks')
-        .select('id, text, chunk_index, doc_id, embedding')
-        .limit(100);
-
-      if (fallbackError) throw fallbackError;
-
-      // Manual cosine similarity calculation
-      const chunksWithScores = allChunks.map((chunk: any) => {
-        const similarity = cosineSimilarity(queryEmbedding, chunk.embedding);
-        return { ...chunk, score: similarity };
-      });
-
-      chunksWithScores.sort((a, b) => b.score - a.score);
-      const topChunks = chunksWithScores.slice(0, 8);
-
-      // Get doc titles
-      const docIds = [...new Set(topChunks.map(c => c.doc_id))];
-      const { data: docs } = await supabase
-        .from('kb_docs')
-        .select('id, title')
-        .in('id', docIds);
-
-      const docMap = new Map(docs?.map(d => [d.id, d.title]) || []);
-
-      const results = topChunks.map(chunk => ({
-        text: chunk.text,
-        score: chunk.score,
-        doc_id: chunk.doc_id,
-        chunk_index: chunk.chunk_index,
-        doc_title: docMap.get(chunk.doc_id) || 'Unknown Document',
-      }));
-
-      console.log(`Found ${results.length} relevant chunks`);
+      console.error('Vector search RPC failed:', searchError);
+      throw new Error('Knowledge base search is temporarily unavailable');
+    }
 
       // Step 3: Build prompt with context
       const context = results
