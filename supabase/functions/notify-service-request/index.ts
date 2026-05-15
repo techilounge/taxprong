@@ -50,19 +50,19 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">New Professional Services Request</h2>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Service Type:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${request.service_type}</span></p>
-            <p><strong>Contact Name:</strong> ${request.contact_name}</p>
-            <p><strong>Email:</strong> ${request.contact_email}</p>
-            ${request.contact_phone ? `<p><strong>Phone:</strong> ${request.contact_phone}</p>` : ''}
-            ${request.company_name ? `<p><strong>Company:</strong> ${request.company_name}</p>` : ''}
-            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${request.budget_range}</p>` : ''}
-            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${request.preferred_date}</p>` : ''}
+            <p><strong>Service Type:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${escHtml(request.service_type)}</span></p>
+            <p><strong>Contact Name:</strong> ${escHtml(request.contact_name)}</p>
+            <p><strong>Email:</strong> ${escHtml(request.contact_email)}</p>
+            ${request.contact_phone ? `<p><strong>Phone:</strong> ${escHtml(request.contact_phone)}</p>` : ''}
+            ${request.company_name ? `<p><strong>Company:</strong> ${escHtml(request.company_name)}</p>` : ''}
+            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${escHtml(request.budget_range)}</p>` : ''}
+            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${escHtml(request.preferred_date)}</p>` : ''}
           </div>
           <div style="margin: 20px 0;">
             <h3 style="color: #1a1a1a;">Description:</h3>
-            <p style="line-height: 1.6;">${request.description.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6;">${escMultiline(request.description)}</p>
           </div>
-          <p style="color: #666; font-size: 12px; margin-top: 30px;">Request ID: ${request.id}<br/>Received at ${new Date().toLocaleString()}</p>
+          <p style="color: #666; font-size: 12px; margin-top: 30px;">Request ID: ${escHtml(request.id)}<br/>Received at ${new Date().toLocaleString()}</p>
         </div>
       `,
     });
