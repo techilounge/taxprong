@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { SEO } from "@/components/seo/SEO";
 import { ProfessionalServicesRequest } from "@/components/services/ProfessionalServicesRequest";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
@@ -6,6 +7,11 @@ import { CheckCircle2 } from "lucide-react";
 const ProfessionalServices = () => {
   return (
     <DashboardLayout>
+      <SEO
+        title="Professional Tax Services — TaxProNG"
+        description="Engage Nigerian tax professionals for setup, advisory, and ongoing compliance support tailored to your business."
+        path="/professional-services"
+      />
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Professional Services</h1>
