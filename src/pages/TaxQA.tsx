@@ -68,6 +68,11 @@ export default function TaxQA() {
 
   return (
     <DashboardLayout>
+      <SEO
+        title="Ask Nigerian Tax Questions — TaxProNG Tax Q&A"
+        description="Ask questions about Nigerian tax law and get cited answers from TaxProNG's AI advisor."
+        path="/tax-qa"
+      />
       <div className="container mx-auto py-6 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Tax Q&A with Citations</h1>
