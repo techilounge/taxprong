@@ -75,15 +75,15 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Thank you for your interest in TaxProNG Professional Services</h2>
-          <p>Hi ${request.contact_name},</p>
-          <p>We've received your request for <strong>${request.service_type}</strong> services and our team will review it shortly.</p>
+          <p>Hi ${escHtml(request.contact_name)},</p>
+          <p>We've received your request for <strong>${escHtml(request.service_type)}</strong> services and our team will review it shortly.</p>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Your Request Details:</h3>
-            <p><strong>Service:</strong> ${request.service_type}</p>
-            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${request.budget_range}</p>` : ''}
-            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${request.preferred_date}</p>` : ''}
+            <p><strong>Service:</strong> ${escHtml(request.service_type)}</p>
+            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${escHtml(request.budget_range)}</p>` : ''}
+            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${escHtml(request.preferred_date)}</p>` : ''}
             <p style="margin-bottom: 0;"><strong>Description:</strong></p>
-            <p style="line-height: 1.6; margin-top: 8px;">${request.description.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6; margin-top: 8px;">${escMultiline(request.description)}</p>
           </div>
           <p>Our team will contact you within 1-2 business days to discuss your needs and provide a customized quote.</p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
