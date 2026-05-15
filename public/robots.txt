@@ -1,5 +1,5 @@
 # TaxProNG Robots.txt
-# https://taxprong.com
+# https://taxprong.lovable.app
 
 User-agent: Googlebot
 Allow: /
@@ -17,7 +17,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://taxprong.com/sitemap.xml
+Sitemap: https://taxprong.lovable.app/sitemap.xml
 
 # Disallow authenticated/private areas from crawling
 User-agent: *
