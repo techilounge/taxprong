@@ -34,6 +34,36 @@ serve(async (req) => {
 
     const { templateId, period, businessId, orgId }: DocumentRequest = await req.json();
 
+    // Verify caller is a member of the org
+    const { data: membership, error: memErr } = await supabase
+      .from('org_users')
+      .select('role')
+      .eq('org_id', orgId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (memErr || !membership || !['owner', 'staff', 'admin'].includes(membership.role)) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // If a businessId is provided, verify it belongs to the same org
+    if (businessId) {
+      const { data: biz } = await supabase
+        .from('businesses')
+        .select('id')
+        .eq('id', businessId)
+        .eq('org_id', orgId)
+        .maybeSingle();
+      if (!biz) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     console.log(`Generating document: ${templateId} for period ${period}`);
 
     // Fetch organization data
