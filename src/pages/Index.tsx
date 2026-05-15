@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/seo/SEO";
 import { TaxProNGLogo } from "@/components/branding/TaxProNGLogo";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { TrustBar } from "@/components/landing/TrustBar";
@@ -17,6 +18,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="TaxProNG — Nigerian Tax Compliance Software"
+        description="Automate VAT, CIT, PIT, and WHT filing for Nigerian businesses. FIRS-compliant under Nigeria Tax Act 2025."
+        path="/"
+      />
       {/* Sticky Navigation */}
       <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
