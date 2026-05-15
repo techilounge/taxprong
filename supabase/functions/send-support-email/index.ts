@@ -56,14 +56,14 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">New Support Request</h2>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>From:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Category:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${category}</span></p>
-            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>From:</strong> ${escHtml(name)}</p>
+            <p><strong>Email:</strong> ${escHtml(email)}</p>
+            <p><strong>Category:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${escHtml(category)}</span></p>
+            <p><strong>Subject:</strong> ${escHtml(subject)}</p>
           </div>
           <div style="margin: 20px 0;">
             <h3 style="color: #1a1a1a;">Message:</h3>
-            <p style="line-height: 1.6;">${message.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6;">${escMultiline(message)}</p>
           </div>
           <p style="color: #666; font-size: 12px; margin-top: 30px;">Received at ${new Date().toLocaleString()}</p>
         </div>
