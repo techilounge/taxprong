@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { SEO } from "@/components/seo/SEO";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -213,6 +214,11 @@ export default function Knowledge() {
 
   return (
     <DashboardLayout>
+      <SEO
+        title="Tax Knowledge Base — TaxProNG"
+        description="Browse Nigerian tax guides, FIRS reference material, and Nigeria Tax Act 2025 documentation."
+        path="/knowledge"
+      />
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>

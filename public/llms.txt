@@ -1,0 +1,20 @@
+# TaxProNG
+
+> Nigerian tax compliance platform for VAT, CIT, PIT, WHT, CGT, and Stamp Duty filing under Nigeria Tax Act 2025. Built for businesses and tax professionals.
+
+TaxProNG automates tax calculations, tracks FIRS deadlines, generates compliant returns, and provides an AI-powered tax advisor trained on Nigerian tax law.
+
+## Pages
+
+- [Home](/): Product overview, features, and pricing.
+- [Knowledge Base](/knowledge): Tax documentation, guides, and reference material.
+- [Tax Q&A](/tax-qa): Ask questions about Nigerian tax law and get cited answers.
+- [Industry Modules](/industry): Sector-specific calculators for oil & gas, banking, and digital economy.
+- [Professional Services](/professional-services): Expert tax consulting and setup assistance.
+- [Support](/support): Help center and contact form.
+- [Sign In / Sign Up](/auth): Account access.
+
+## Optional
+
+- [Sitemap](/sitemap.xml)
+- [Robots](/robots.txt)

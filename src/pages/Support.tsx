@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { SEO } from "@/components/seo/SEO";
 import { SupportForm } from "@/components/support/SupportForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Book, MessageCircle, Video } from "lucide-react";
@@ -7,6 +8,11 @@ import { Button } from "@/components/ui/button";
 const Support = () => {
   return (
     <DashboardLayout>
+      <SEO
+        title="Support — TaxProNG Help Center"
+        description="Get help with TaxProNG. Browse guides or contact our Nigerian tax compliance support team."
+        path="/support"
+      />
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Support Center</h1>

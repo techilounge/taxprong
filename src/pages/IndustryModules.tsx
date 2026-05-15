@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { SEO } from "@/components/seo/SEO";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,11 @@ import { DigitalEconomyCalculator } from "@/components/industry/DigitalEconomyCa
 export default function IndustryModules() {
   return (
     <DashboardLayout>
+      <SEO
+        title="Industry Tax Modules — TaxProNG"
+        description="Sector-specific Nigerian tax calculators for oil & gas, banking, and the digital economy under Nigeria Tax Act 2025."
+        path="/industry"
+      />
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
