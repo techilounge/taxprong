@@ -9,6 +9,15 @@ const corsHeaders = {
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
+const escHtml = (s: string) =>
+  String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+const escMultiline = (s: string) => escHtml(s).replace(/\n/g, '<br>');
+
 interface ServiceRequest {
   id: string;
   service_type: string;
@@ -41,19 +50,19 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">New Professional Services Request</h2>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Service Type:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${request.service_type}</span></p>
-            <p><strong>Contact Name:</strong> ${request.contact_name}</p>
-            <p><strong>Email:</strong> ${request.contact_email}</p>
-            ${request.contact_phone ? `<p><strong>Phone:</strong> ${request.contact_phone}</p>` : ''}
-            ${request.company_name ? `<p><strong>Company:</strong> ${request.company_name}</p>` : ''}
-            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${request.budget_range}</p>` : ''}
-            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${request.preferred_date}</p>` : ''}
+            <p><strong>Service Type:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${escHtml(request.service_type)}</span></p>
+            <p><strong>Contact Name:</strong> ${escHtml(request.contact_name)}</p>
+            <p><strong>Email:</strong> ${escHtml(request.contact_email)}</p>
+            ${request.contact_phone ? `<p><strong>Phone:</strong> ${escHtml(request.contact_phone)}</p>` : ''}
+            ${request.company_name ? `<p><strong>Company:</strong> ${escHtml(request.company_name)}</p>` : ''}
+            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${escHtml(request.budget_range)}</p>` : ''}
+            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${escHtml(request.preferred_date)}</p>` : ''}
           </div>
           <div style="margin: 20px 0;">
             <h3 style="color: #1a1a1a;">Description:</h3>
-            <p style="line-height: 1.6;">${request.description.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6;">${escMultiline(request.description)}</p>
           </div>
-          <p style="color: #666; font-size: 12px; margin-top: 30px;">Request ID: ${request.id}<br/>Received at ${new Date().toLocaleString()}</p>
+          <p style="color: #666; font-size: 12px; margin-top: 30px;">Request ID: ${escHtml(request.id)}<br/>Received at ${new Date().toLocaleString()}</p>
         </div>
       `,
     });
@@ -66,15 +75,15 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Thank you for your interest in TaxProNG Professional Services</h2>
-          <p>Hi ${request.contact_name},</p>
-          <p>We've received your request for <strong>${request.service_type}</strong> services and our team will review it shortly.</p>
+          <p>Hi ${escHtml(request.contact_name)},</p>
+          <p>We've received your request for <strong>${escHtml(request.service_type)}</strong> services and our team will review it shortly.</p>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Your Request Details:</h3>
-            <p><strong>Service:</strong> ${request.service_type}</p>
-            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${request.budget_range}</p>` : ''}
-            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${request.preferred_date}</p>` : ''}
+            <p><strong>Service:</strong> ${escHtml(request.service_type)}</p>
+            ${request.budget_range ? `<p><strong>Budget Range:</strong> ${escHtml(request.budget_range)}</p>` : ''}
+            ${request.preferred_date ? `<p><strong>Preferred Date:</strong> ${escHtml(request.preferred_date)}</p>` : ''}
             <p style="margin-bottom: 0;"><strong>Description:</strong></p>
-            <p style="line-height: 1.6; margin-top: 8px;">${request.description.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6; margin-top: 8px;">${escMultiline(request.description)}</p>
           </div>
           <p>Our team will contact you within 1-2 business days to discuss your needs and provide a customized quote.</p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">

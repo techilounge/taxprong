@@ -9,6 +9,15 @@ const corsHeaders = {
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
+const escHtml = (s: string) =>
+  String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+const escMultiline = (s: string) => escHtml(s).replace(/\n/g, '<br>');
+
 interface DeleteRequest {
   id: string;
   scope: "user" | "organization" | "engagement";
@@ -46,10 +55,10 @@ const handler = async (req: Request): Promise<Response> => {
             <p><strong>This request requires immediate attention under GDPR/data privacy regulations.</strong></p>
           </div>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Request Type:</strong> <span style="background-color: #ffcdd2; padding: 4px 8px; border-radius: 4px;">${scopeLabel}</span></p>
-            <p><strong>Requester:</strong> ${request.user_name || 'N/A'} (${request.user_email})</p>
-            <p><strong>Scope Reference:</strong> ${request.scope_ref}</p>
-            ${request.reason ? `<p><strong>Reason:</strong></p><p style="line-height: 1.6;">${request.reason.replace(/\n/g, '<br>')}</p>` : ''}
+            <p><strong>Request Type:</strong> <span style="background-color: #ffcdd2; padding: 4px 8px; border-radius: 4px;">${escHtml(scopeLabel)}</span></p>
+            <p><strong>Requester:</strong> ${escHtml(request.user_name || 'N/A')} (${escHtml(request.user_email)})</p>
+            <p><strong>Scope Reference:</strong> ${escHtml(request.scope_ref)}</p>
+            ${request.reason ? `<p><strong>Reason:</strong></p><p style="line-height: 1.6;">${escMultiline(request.reason)}</p>` : ''}
           </div>
           <div style="background-color: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Action Required:</h3>
@@ -60,7 +69,7 @@ const handler = async (req: Request): Promise<Response> => {
               <li>Document the decision and notify the requester</li>
             </ol>
           </div>
-          <p style="color: #666; font-size: 12px; margin-top: 30px;">Request ID: ${request.id}<br/>Received at ${new Date().toLocaleString()}</p>
+          <p style="color: #666; font-size: 12px; margin-top: 30px;">Request ID: ${escHtml(request.id)}<br/>Received at ${new Date().toLocaleString()}</p>
         </div>
       `,
     });

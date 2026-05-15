@@ -9,6 +9,15 @@ const corsHeaders = {
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
+const escHtml = (s: string) =>
+  String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+const escMultiline = (s: string) => escHtml(s).replace(/\n/g, '<br>');
+
 interface SupportRequest {
   name: string;
   email: string;
@@ -47,14 +56,14 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">New Support Request</h2>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>From:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Category:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${category}</span></p>
-            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>From:</strong> ${escHtml(name)}</p>
+            <p><strong>Email:</strong> ${escHtml(email)}</p>
+            <p><strong>Category:</strong> <span style="background-color: #e0e0e0; padding: 4px 8px; border-radius: 4px;">${escHtml(category)}</span></p>
+            <p><strong>Subject:</strong> ${escHtml(subject)}</p>
           </div>
           <div style="margin: 20px 0;">
             <h3 style="color: #1a1a1a;">Message:</h3>
-            <p style="line-height: 1.6;">${message.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6;">${escMultiline(message)}</p>
           </div>
           <p style="color: #666; font-size: 12px; margin-top: 30px;">Received at ${new Date().toLocaleString()}</p>
         </div>
@@ -69,14 +78,14 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Thank you for contacting TaxProNG Support</h2>
-          <p>Hi ${name},</p>
+          <p>Hi ${escHtml(name)},</p>
           <p>We've received your support request and will get back to you within 24 hours.</p>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Your Request:</h3>
-            <p><strong>Category:</strong> ${category}</p>
-            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Category:</strong> ${escHtml(category)}</p>
+            <p><strong>Subject:</strong> ${escHtml(subject)}</p>
             <p style="margin-bottom: 0;"><strong>Message:</strong></p>
-            <p style="line-height: 1.6; margin-top: 8px;">${message.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6; margin-top: 8px;">${escMultiline(message)}</p>
           </div>
           <p>If you have any additional information to add, please reply to this email.</p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">

@@ -23,3 +23,18 @@ verify_jwt = true
 
 [functions.generate-tax-document]
 verify_jwt = true
+
+[functions.send-welcome-email]
+verify_jwt = true
+
+[functions.send-support-email]
+verify_jwt = true
+
+[functions.notify-service-request]
+verify_jwt = true
+
+[functions.notify-delete-request]
+verify_jwt = true
+
+[functions.run-backup]
+verify_jwt = false

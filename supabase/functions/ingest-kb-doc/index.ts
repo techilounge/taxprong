@@ -225,10 +225,57 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Authenticate caller
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const userId = userData.user.id;
+
     const { docId } = await req.json();
 
     if (!docId) {
       throw new Error('Document ID is required');
+    }
+
+    // Verify caller has access to this doc
+    const { data: doc, error: docErr } = await supabase
+      .from('kb_docs')
+      .select('id, org_id, uploaded_by')
+      .eq('id', docId)
+      .maybeSingle();
+    if (docErr || !doc) {
+      return new Response(JSON.stringify({ error: 'Not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    let allowed = doc.uploaded_by === userId;
+    if (!allowed && doc.org_id) {
+      const { data: m } = await supabase
+        .from('org_users')
+        .select('role')
+        .eq('org_id', doc.org_id)
+        .eq('user_id', userId)
+        .maybeSingle();
+      allowed = !!m && ['owner', 'staff'].includes(m.role);
+    }
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     console.log(`Received ingestion request for document: ${docId}`);
