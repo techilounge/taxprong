@@ -13,7 +13,26 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Authenticate caller
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const userId = userData.user.id;
 
     const { invoiceId } = await req.json();
 
@@ -31,6 +50,31 @@ Deno.serve(async (req) => {
       .single();
 
     if (fetchError) throw fetchError;
+
+    // Verify caller belongs to the org that owns this invoice's business
+    const { data: biz } = await supabase
+      .from('businesses')
+      .select('org_id')
+      .eq('id', invoice.business_id)
+      .single();
+    if (!biz) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const { data: membership } = await supabase
+      .from('org_users')
+      .select('role')
+      .eq('org_id', biz.org_id)
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (!membership || !['owner', 'staff'].includes(membership.role)) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Simulate e-filing system validation
     const validationIssues: string[] = [];
