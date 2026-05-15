@@ -78,14 +78,14 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1a1a1a;">Thank you for contacting TaxProNG Support</h2>
-          <p>Hi ${name},</p>
+          <p>Hi ${escHtml(name)},</p>
           <p>We've received your support request and will get back to you within 24 hours.</p>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Your Request:</h3>
-            <p><strong>Category:</strong> ${category}</p>
-            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Category:</strong> ${escHtml(category)}</p>
+            <p><strong>Subject:</strong> ${escHtml(subject)}</p>
             <p style="margin-bottom: 0;"><strong>Message:</strong></p>
-            <p style="line-height: 1.6; margin-top: 8px;">${message.replace(/\n/g, '<br>')}</p>
+            <p style="line-height: 1.6; margin-top: 8px;">${escMultiline(message)}</p>
           </div>
           <p>If you have any additional information to add, please reply to this email.</p>
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
